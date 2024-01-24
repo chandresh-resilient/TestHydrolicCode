@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>D:\HydraCalWebAPI\publish</_PublishTargetUrl>
+    <History>True|2024-01-24T15:30:17.9526394Z;True|2024-01-24T19:11:36.8719140+05:30;True|2024-01-24T17:08:47.3607236+05:30;True|2024-01-23T20:11:17.9897162+05:30;True|2024-01-23T20:01:21.4654233+05:30;True|2024-01-18T00:30:06.2136328+05:30;True|2024-01-18T00:20:42.8267339+05:30;True|2024-01-11T15:01:32.2607202+05:30;</History>
+  </PropertyGroup>
+</Project>
