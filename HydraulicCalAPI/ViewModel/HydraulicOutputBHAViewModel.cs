@@ -51,6 +51,7 @@ namespace HydraulicCalAPI.ViewModel
         public bool _isToolInputDetailsVisible;
         public string _toolType;
         public string _toolSourcePath;
+        Dictionary<string, List<XYValueModelForLineData<double>>> _bhaChart;
         #endregion
         readonly ViewModelBase objvmb;
         #region Constants
@@ -133,7 +134,16 @@ namespace HydraulicCalAPI.ViewModel
                 SetProperty<string>(toolTypeField, ref _toolType, ref value);
             }
         }
-        public ChartViewModel<double> StandpipeVsFlowRateChart
+
+        public Dictionary<string, List<XYValueModelForLineData<double>>> BHAchart
+        {
+            get { return _bhaChart; }
+            set
+            {
+                _bhaChart = value;
+            }
+        }
+        protected ChartViewModel<double> StandpipeVsFlowRateChart
         {
             get { return _standpipeVsFlowRateChart; }
             set
@@ -517,14 +527,17 @@ namespace HydraulicCalAPI.ViewModel
             annotationForOperatingPoint.SecondaryAxisValue = pressureDrop;
             this.StandpipeVsFlowRateChart.AddAnnoation("OperatingPoint", annotationForOperatingPoint);
         }
+       
+        
 
-        public virtual List<Array> PlotChart()
+        public virtual void PlotChart()
         {
             List<Array> innerBHADataPoints = new List<Array>();
             double flowrate = 0;
             double lastRecordedStandpipePressure = 0;
 
-            List<XYValueModel<double>> standpipePressureList = new List<XYValueModel<double>>();
+            List < XYValueModelForLineData<double>> ontainer
+                = new List<XYValueModelForLineData<double>>();
 
             int exitLoopCounter = 0;
             double currentSecondaryAxisValue = 0;
@@ -550,7 +563,7 @@ namespace HydraulicCalAPI.ViewModel
                 valuemodelForLineData.PrimaryAxisValue = Convert.ToDouble(flowrate);
                 valuemodelForLineData.SecondaryAxisValue = currentSecondaryAxisValue = Convert.ToDouble(lastRecordedStandpipePressure);
 
-                standpipePressureList.Add(valuemodelForLineData);
+                ontainer.Add(valuemodelForLineData);
 
                 if (currentSecondaryAxisValue == 0)
                 {
@@ -567,19 +580,20 @@ namespace HydraulicCalAPI.ViewModel
             
 
             //TODO: check plotting operating point logic...
-            if (standpipePressureList.Count > 0 && InputFlowRate > 0)
+            if (ontainer.Count > 0 && InputFlowRate > 0)
             {
                 var operatingPointFlowRate = Convert.ToDouble(InputFlowRate);
-                var operatingPoint = standpipePressureList.Where(o => o.PrimaryAxisValue < operatingPointFlowRate).LastOrDefault();
+                var operatingPoint = ontainer.Where(o => o.PrimaryAxisValue < operatingPointFlowRate).LastOrDefault();
                 if (operatingPoint != null)
                 {
                     this.PlotOperatingPoint(operatingPoint.PrimaryAxisValue, ((XYValueModelForLineData<double>)operatingPoint).SecondaryAxisValue);
                 }
             }
+            List<XYValueModel<double>> parentList = ontainer.Select(item => (XYValueModel<double>)item).ToList();
 
-            StandpipeVsFlowRateChart.AddBulkValue("HydraproLineSeries", standpipePressureList);
-            innerBHADataPoints.Add(standpipePressureList.ToArray());
-            return innerBHADataPoints;
+            StandpipeVsFlowRateChart.AddBulkValue("HydraproLineSeries", parentList);
+            //innerBHADataPoints.Add(BHAchart.ToArray());
+            //return innerBHADataPoints;
         }
 
         public virtual void SetTypeSpecificInfo(BHATool bha)

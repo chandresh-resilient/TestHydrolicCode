@@ -13,14 +13,15 @@ using WFT.UI.Common.Validation;
 using HydraulicEngine;
 using HydraulicCalAPI.Controllers;
 using HydraulicCalAPI.ViewModel;
+using WFT.UI.Common.SyncfusionLikeControl;
 
 
 namespace HydraulicCalAPI.Service
 {
     public class ChartAndGraphService
     {
-        public List<Array> ChartNGraphDataPoints = new List<Array>();
-        public List<Array> innStandardVSFlowrateDp = new List<Array>();
+        public Dictionary<string, object> ChartNGraphDataPoints = new Dictionary<string, object>();
+       
         public Fluid _fluidInput;
         public Cuttings _cuttingsInput;
         public List<BHATool> _bhaInput;
@@ -365,7 +366,7 @@ namespace HydraulicCalAPI.Service
         }
 
         #region "Calculate Hydraulics"
-        public List<Array> GetDataPoints(HydraulicAnalysisOutput hydraulicOutput, Fluid fluidInput,
+        public Dictionary<string, object> GetDataPoints(HydraulicAnalysisOutput hydraulicOutput, Fluid fluidInput,
             double __flowRateOfChartedData, Cuttings cuttingInput, List<BHATool> bhaInput, List<Annulus> annulusInput, SurfaceEquipment surfaceEquipment,double maxflow, double maxpres)
         {
             MaxFlowRate = maxflow;
@@ -402,7 +403,7 @@ namespace HydraulicCalAPI.Service
                     totalPressureDrolAtAnnulus = totalPressureDrolAtAnnulus + item.SegmentHydraulicsOutput.PressureDropInPSI;
                 }
             // Get the lis and colour code for Annulus Table
-            ChartNGraphDataPoints.Add(HydraulicOutputAnnulusList.ToArray());
+            ChartNGraphDataPoints.Add("HydraulicOutputAnnulusList",HydraulicOutputAnnulusList.ToArray());
             
             PressureDistributionChartCollection.Clear();
             if (totalPressureDrolAtAnnulus != null)
@@ -472,7 +473,7 @@ namespace HydraulicCalAPI.Service
                     //var tempPressureValue = Convert.ToDouble((new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Pressure) { BaseValue = item.BHAHydraulicsOutput.PressureDropInPSI }));
                     var tempPressureValue = (double)item.BHAHydraulicsOutput.PressureDropInPSI;
                     PressureDistributionChartCollection.Add(new PieChartViewModel<double>() { Name = item.toolDescription, Value = tempPressureValue, Color = color.Name.ToString() });
-                    var bhaObject = HydraulicToolTypeObjectManager.GetToolTypeObject(item, color, _fluidInput, MaxFlowRate, MaxPressure, _bhaInput, inputFlowRate);
+                    HydraulicOutputBHAViewModel bhaObject = HydraulicToolTypeObjectManager.GetToolTypeObject(item, color, _fluidInput, MaxFlowRate, MaxPressure, _bhaInput, inputFlowRate);
                     //if (_bhaVMList.Exists(o => o.BHAID == bhaObject.ToolID.Value))
                     //{
                     //    bhaObject.IsToolInputDetailsVisible = true;
@@ -482,15 +483,13 @@ namespace HydraulicCalAPI.Service
                     HydraulicOutputBHAList.Add(bhaObject);
                     if (!double.IsNaN(item.BHAHydraulicsOutput.OutputFlowInGallonsPerMinute))
                         inputFlowRate = item.BHAHydraulicsOutput.OutputFlowInGallonsPerMinute;
-                }
-            ChartNGraphDataPoints.Add(PressureDistributionChartCollection.ToArray());
-            
-
-            DateTime startOfCalculations = DateTime.UtcNow;
-            foreach (var item in HydraulicOutputBHAList)
+                }DateTime startOfCalculations = DateTime.UtcNow;
+            foreach (HydraulicOutputBHAViewModel item in HydraulicOutputBHAList)
             {
-                innStandardVSFlowrateDp.Add(item.PlotChart().ToArray());
-
+                item.PlotChart();
+                item.BHAchart=item.GetSPvsFRChartData();
+                
+   
                 if (item.ToolID.HasValue && scalingCache.ContainsKey(item.ToolID.Value))
                 {
                     var scalingValues = scalingCache[item.ToolID.Value];
@@ -501,9 +500,11 @@ namespace HydraulicCalAPI.Service
                     //item.SetSPVsFRScalingCommand.Execute(null);
                 }
             }
-            ChartNGraphDataPoints.Add("B".ToArray());
-            ChartNGraphDataPoints.Add(HydraulicOutputBHAList.ToArray());
-            ChartNGraphDataPoints.Add(innStandardVSFlowrateDp.ToArray());
+            //ChartNGraphDataPoints.Add("B".ToArray());
+            ChartNGraphDataPoints.Add("HydraulicOutputBHAList",HydraulicOutputBHAList.ToArray());
+            ChartNGraphDataPoints.Add("PressureDistributionChartCollection", PressureDistributionChartCollection.ToArray());
+
+            //ChartNGraphDataPoints.Add(innStandardVSFlowrateDp.ToArray());
             ToolDepth += ToolDepth + BhaToolLength;
             PlotChart();
 
@@ -552,13 +553,13 @@ namespace HydraulicCalAPI.Service
             double flowrate = 0;
             double lastRecordedStandpipePressure = 0.00;
            
-            List <XYValueModel<double>> standpipePressureListRL = new List<XYValueModel<double>>();
-            List<XYValueModel<double>> standpipePressureListYL = new List<XYValueModel<double>>();
-            List<XYValueModel<double>> standpipePressureListG = new List<XYValueModel<double>>();
-            List<XYValueModel<double>> standpipePressureListYH = new List<XYValueModel<double>>();
-            List<XYValueModel<double>> standpipePressureListRH = new List<XYValueModel<double>>();
-            List<XYValueModel<double>> estimatedStandpipePressureList = new List<XYValueModel<double>>();
-            List<XYValueModel<double>> standpipePressureRangeData = new List<XYValueModel<double>>();
+            List <XYValueModelForLineData<double>> standpipePressureListRL = new List<XYValueModelForLineData<double>>();
+            List<XYValueModelForLineData<double>> standpipePressureListYL = new List<XYValueModelForLineData<double>>();
+            List<XYValueModelForLineData<double>> standpipePressureListG = new List<XYValueModelForLineData<double>>();
+            List<XYValueModelForLineData<double>> standpipePressureListYH = new List<XYValueModelForLineData<double>>();
+            List<XYValueModelForLineData<double>> standpipePressureListRH = new List<XYValueModelForLineData<double>>();
+            List<XYValueModelForLineData<double>> estimatedStandpipePressureList = new List<XYValueModelForLineData<double>>();
+            List<XYValueModelForLineData<double>> standpipePressureRangeData = new List<XYValueModelForLineData<double>>();
             SeriesModel<XYValueModel<double>, double> estimatedStandpipeSeries = new SeriesModel<XYValueModel<double>, double>();
             SeriesModel<XYValueModel<double>, double> hydraproRangeSeries = new SeriesModel<XYValueModel<double>, double>();
             int exitLoopCounter = 0;
@@ -611,7 +612,7 @@ namespace HydraulicCalAPI.Service
                 SeriesName = "HydraproLineSeriesRedHigher",
 
             });
-
+           
 
             StandpipeVsFlowRateChart.RemoveSeries("EstimatedStandpipeLineSeries");
             estimatedStandpipeSeries.SeriesType = "Line";
@@ -660,7 +661,7 @@ namespace HydraulicCalAPI.Service
                         valueModelForRangeData.LowerBoundValue = currentSecondaryAxisValue;
                         valueModelForRangeData.UpperBoundValue = Convert.ToDouble(pressureValueMax);
                         valueModelForRangeData.PrimaryAxisValue = Convert.ToDouble(flowrate);
-                        standpipePressureRangeData.Add(valueModelForRangeData);
+                      //  standpipePressureRangeData.Add(valueModelForRangeData);
                     }
                 }
 
@@ -704,8 +705,7 @@ namespace HydraulicCalAPI.Service
                 _hydraulicMainSeriesWholeData.Add(new XYValueModelForLineData<double>() { PrimaryAxisValue = valuemodelForLineData.PrimaryAxisValue, SecondaryAxisValue = valuemodelForLineData.SecondaryAxisValue });
             }
             while (lastRecordedStandpipePressure < 1.2 * this.MaxPressure);
-            ChartNGraphDataPoints.Add("W".ToArray());
-            ChartNGraphDataPoints.Add(_hydraulicMainSeriesWholeData.ToArray());
+         
                      
             var firstValueOfYL = (standpipePressureListYL.FirstOrDefault() as XYValueModelForLineData<double>);
             var firstValueOfG = (standpipePressureListG.FirstOrDefault() as XYValueModelForLineData<double>);
@@ -746,7 +746,7 @@ namespace HydraulicCalAPI.Service
                 }
             }
 
-            StandpipeVsFlowRateChart.AddBulkValue("HydraproRangeSeries", standpipePressureRangeData);
+            /*tandpipeVsFlowRateChart.AddBulkValue("HydraproRangeSeries", standpipePressureRangeData);
 
             StandpipeVsFlowRateChart.AddBulkValue("HydraproLineSeriesRedLower", standpipePressureListRL);
             StandpipeVsFlowRateChart.AddBulkValue("HydraproLineSeriesYellowLower", standpipePressureListYL);
@@ -754,22 +754,22 @@ namespace HydraulicCalAPI.Service
             StandpipeVsFlowRateChart.AddBulkValue("HydraproLineSeriesYellowHigher", standpipePressureListYH);
             StandpipeVsFlowRateChart.AddBulkValue("HydraproLineSeriesRedHigher", standpipePressureListRH);
             StandpipeVsFlowRateChart.AddBulkValue("EstimatedStandpipeLineSeries", estimatedStandpipePressureList);
-
+*/
             MinimumFlowRate = 0;
             MaximumFlowRate = lastFlowRate;
             LowerCriticalPoint = standpipePressureListRL.LastOrDefault() == null ? 0 : standpipePressureListRL.LastOrDefault().PrimaryAxisValue;
             LowerOperatingPoint = standpipePressureListYL.LastOrDefault() == null ? LowerCriticalPoint : standpipePressureListYL.LastOrDefault().PrimaryAxisValue;
             UpperOperatingPoint = standpipePressureListG.LastOrDefault() == null ? LowerOperatingPoint : standpipePressureListG.LastOrDefault().PrimaryAxisValue;
             UpperCriticalPoint = standpipePressureListYH.LastOrDefault() == null ? UpperOperatingPoint : standpipePressureListYH.LastOrDefault().PrimaryAxisValue;
-            ChartNGraphDataPoints.Add("L".ToArray());
-            ChartNGraphDataPoints.Add(standpipePressureRangeData.ToArray());
 
-            ChartNGraphDataPoints.Add(standpipePressureListRL.ToArray());
-            ChartNGraphDataPoints.Add(standpipePressureListYL.ToArray());
-            ChartNGraphDataPoints.Add(standpipePressureListG.ToArray());
-            ChartNGraphDataPoints.Add(standpipePressureListYH.ToArray());
-            ChartNGraphDataPoints.Add(standpipePressureListRH.ToArray());
-            ChartNGraphDataPoints.Add(estimatedStandpipePressureList.ToArray());
+            ChartNGraphDataPoints.Add("standpipePressureRangeData",standpipePressureRangeData);
+
+           ChartNGraphDataPoints.Add("standpipePressureListRL",standpipePressureListRL.ToArray());
+            ChartNGraphDataPoints.Add("standpipePressureListYL",standpipePressureListYL.ToArray());
+            ChartNGraphDataPoints.Add("standpipePressureListG",standpipePressureListG.ToArray());
+            ChartNGraphDataPoints.Add("standpipePressureListYH",standpipePressureListYH.ToArray());
+            ChartNGraphDataPoints.Add("standpipePressureListRH",standpipePressureListRH.ToArray());
+
         }
 
         private double? CalculateStandPipePressure(double? flowRateBaseValue, double? depthBaseValue, out double? annularVelocityMin)

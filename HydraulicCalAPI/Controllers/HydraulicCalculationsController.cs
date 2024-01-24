@@ -20,7 +20,7 @@ namespace HydraulicCalAPI.Controllers
         }
     
         [HttpPost("getHydraulicCalculations")]
-        public List<Array> getHydraulicCalculations([FromBody] HydraulicCalAPI.Service.HydraulicCalculationService objHcs)
+        public Dictionary<String,Object> getHydraulicCalculations([FromBody] HydraulicCalAPI.Service.HydraulicCalculationService objHcs)
         {
             List<HydraulicEngine.BHATool> bhatools = new List<HydraulicEngine.BHATool>();
             //List<HydraulicAnalysisOutput> resultantResponse = new List<HydraulicAnalysisOutput>();
@@ -197,25 +197,21 @@ namespace HydraulicCalAPI.Controllers
                         }
                 }
             }
-            List<HydraulicAnalysisOutput> lstresponse = new List<HydraulicAnalysisOutput>();
+           // List<HydraulicAnalysisOutput> lstresponse = new List<HydraulicAnalysisOutput>();
 
             HydraulicAnalysisOutput response = Main.CompleteHydraulicAnalysis(objHcs.fluidInput, objHcs.flowRateInGPMInput, objHcs.cuttingsInput, bhatools, objHcs.annulusInput, objHcs.surfaceEquipmentInput, objHcs.torqueInFeetPound = 0, objHcs.toolDepthInFeet = double.MinValue, objHcs.blockPostionInFeet = double.MinValue);
 
-            lstresponse.Add(response);
+            //lstresponse.Add(response);
                     
             ChartAndGraphService objChartnGraph = new ChartAndGraphService();
-            List<Array> abc = new List<Array>();
-              abc.Add(objChartnGraph.GetDataPoints(response, objHcs.fluidInput, 
+            //List<Array> abc = new List<Array>();
+              return objChartnGraph.GetDataPoints(response, objHcs.fluidInput, 
                                                 objHcs.flowRateInGPMInput, 
                                                 objHcs.cuttingsInput, 
                                                 bhatools, 
                                                 objHcs.annulusInput, 
-                                                objHcs.surfaceEquipmentInput,objHcs.maxflowrate,objHcs.maxflowpressure).ToArray());
-            arrResponse = new List<Array>();
-            arrResponse.Add(lstresponse.ToArray());
-            arrResponse.Add(abc.ToArray());
-
-            return arrResponse;
+                                                objHcs.surfaceEquipmentInput,objHcs.maxflowrate,objHcs.maxflowpressure);
+            
         }
     }
 }

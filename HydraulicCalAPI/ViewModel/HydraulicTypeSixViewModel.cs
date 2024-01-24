@@ -330,7 +330,7 @@ namespace HydraulicCalAPI.ViewModel
             }
         }
 
-        public override List<Array> PlotChart()
+        public override void PlotChart()
         {
             List<Array> objLstTypeSixdatapoints = new List<Array>();
             
@@ -441,12 +441,6 @@ namespace HydraulicCalAPI.ViewModel
             StandpipeVsFlowRateChart.AddBulkValue("HydraproRegionOneLineSeries", standpipePressureListRegion1);
             StandpipeVsFlowRateChart.AddBulkValue("HydraproRegionTwoLineSeries", standpipePressureListRegion2);
             StandpipeVsFlowRateChart.AddBulkValue("HydraproRegionThreeLineSeries", standpipePressureListRegion3);
-
-            objLstTypeSixdatapoints.Add(standpipePressureListRegion1.ToArray());
-            objLstTypeSixdatapoints.Add(standpipePressureListRegion2.ToArray());
-            objLstTypeSixdatapoints.Add(standpipePressureListRegion3.ToArray());
-
-            return objLstTypeSixdatapoints;
         }
 
         private void PlotOperatingPoint(double flowRate, double pressureDrop)
