@@ -15,10 +15,10 @@ namespace HydraulicCalAPI.ViewModel
     public class HydraulicTypeThreeViewModel : HydraulicOutputBHAViewModel
     {
         #region Private
-        private DoubleWithUnitConversionViewModel _hydraulicHorsePower;
-        private DoubleWithUnitConversionViewModel _nozzleVelocityInFeetPerSecond;
-        private DoubleWithUnitConversionViewModel _impactForceInPounds;
-        private DoubleWithUnitConversionViewModel _nozzlePressureDropInPSI;
+        private double _hydraulicHorsePower;
+        private double _nozzleVelocityInFeetPerSecond;
+        private double _impactForceInPounds;
+        private double _nozzlePressureDropInPSI;
         private ControlCutConstants.ColorStrength _nozzleVelocityColor;
         #endregion
 
@@ -30,9 +30,25 @@ namespace HydraulicCalAPI.ViewModel
         private const string nozzleVelocityColorField = "NozzleVelocityColor";
         #endregion
         readonly ViewModelBase objvmb;
-        
+
+        public bool SetProperty<T>(string propertyName, ref T oldValue, ref T newValue)
+        {
+            if (oldValue == null && newValue == null)
+            {
+                return false;
+            }
+            if ((oldValue == null && newValue != null) || !oldValue.Equals((T)newValue))
+            {
+                oldValue = newValue;
+                //objvmb.ValidateStateAndNotify(propertyName);
+                //OnPropertyChanged(propertyName);
+                return true;
+            }
+            return false;
+        }
+
         #region Properties
-        public DoubleWithUnitConversionViewModel HydraulicHorsePower
+        public double HydraulicHorsePower
         {
             get { return _hydraulicHorsePower; }
             set
@@ -84,7 +100,7 @@ namespace HydraulicCalAPI.ViewModel
 
         private void InitializeProperties()
         {
-            HydraulicHorsePower = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Power);
+            HydraulicHorsePower = new (double)Power;
             NozzleVelocityInFeetPerSecond = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.TubularVelocity);
             ImpactForceInPounds = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Force);
             NozzlePressureDropInPSI = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Pressure);
