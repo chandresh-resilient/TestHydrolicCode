@@ -205,13 +205,12 @@ namespace HydraulicCalAPI.Controllers
                     
             ChartAndGraphService objChartnGraph = new ChartAndGraphService();
             //List<Array> abc = new List<Array>();
-              return objChartnGraph.GetDataPoints(response, objHcs.fluidInput, 
+            return objChartnGraph.GetDataPoints(response, objHcs.fluidInput, 
                                                 objHcs.flowRateInGPMInput, 
                                                 objHcs.cuttingsInput, 
                                                 bhatools, 
                                                 objHcs.annulusInput, 
                                                 objHcs.surfaceEquipmentInput,objHcs.maxflowrate,objHcs.maxflowpressure);
-            
         }
     }
 }
