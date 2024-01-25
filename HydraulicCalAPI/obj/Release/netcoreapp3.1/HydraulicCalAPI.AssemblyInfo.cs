@@ -16,7 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyDescriptionAttribute("A wrapper class that calls hydraulic calculations as well as returns all datapoin" +
     "ts")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.7.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.7+66aed552a835344afd7eb9052e550773b30f5e3f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.7+a4fac9bd3e8583795b1248cbe4b88635710cdec0")]
 [assembly: System.Reflection.AssemblyProductAttribute("Hydraulic Calculations API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HydraulicCalAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.7.0")]

@@ -467,7 +467,7 @@ namespace HydraulicCalAPI.Service
                 }
             }
 
-           // HydraulicOutputBHAList.Clear();
+           HydraulicOutputBHAList.Clear();
             if (_hydraulicAnalysisOutput.BHATool != null)
                 foreach (var item in _hydraulicAnalysisOutput.BHATool)
                 {
