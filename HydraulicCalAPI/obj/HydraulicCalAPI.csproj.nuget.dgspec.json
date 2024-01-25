@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "D:\\WebApp\\abcd\\HydraulicCalAPI\\HydraulicCalAPI.csproj": {}
+    "D:\\xcode\\Hyd\\HydraulicCalAPI\\HydraulicCalAPI.csproj": {}
   },
   "projects": {
-    "D:\\WebApp\\abcd\\HydraulicCalAPI\\HydraulicCalAPI.csproj": {
+    "D:\\xcode\\Hyd\\HydraulicCalAPI\\HydraulicCalAPI.csproj": {
       "version": "1.0.7",
       "restore": {
-        "projectUniqueName": "D:\\WebApp\\abcd\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
+        "projectUniqueName": "D:\\xcode\\Hyd\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
         "projectName": "HydraulicCalAPI",
-        "projectPath": "D:\\WebApp\\abcd\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
-        "packagesPath": "C:\\Users\\E270052\\.nuget\\packages\\",
-        "outputPath": "D:\\WebApp\\abcd\\HydraulicCalAPI\\obj\\",
+        "projectPath": "D:\\xcode\\Hyd\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
+        "packagesPath": "C:\\Users\\Chandresh\\.nuget\\packages\\",
+        "outputPath": "D:\\xcode\\Hyd\\HydraulicCalAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\E270052\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Chandresh\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -64,7 +64,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.405\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
         }
       }
     }

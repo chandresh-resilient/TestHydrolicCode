@@ -291,8 +291,8 @@ namespace HydraulicCalAPI.Service
             public string FlowType { get; set; }
             public double ChipRate { get; set; }
             public double AnnulusPressureDrop { get; set; }
-            public ColorStrength AverageVelocityColor { get; set; }
-            public ColorStrength ChipRateColor { get; set; }
+            public String AverageVelocityColor { get; set; }
+            public String ChipRateColor { get; set; }
             public string AnnulusColor { get; set; }
             public  HydraulicOutputAnnulusViewModel(Segment segment, Color? bhaToolColor)
             {
@@ -313,7 +313,7 @@ namespace HydraulicCalAPI.Service
                 SetAverageVelocityColor();
                 SetChipRateColor(segment);
                 if (bhaToolColor.HasValue)
-                    AnnulusColor = bhaToolColor.Value.Name.ToString();
+                    AnnulusColor = bhaToolColor.Value.Name.ToString().ToLower();
                 Length = segment.SegmentLengthInFeet;
                 ToolOuterDiameter = segment.ToolODInInch;
                 InnerDiameter = segment.AnnulusIDInInch;
@@ -324,19 +324,19 @@ namespace HydraulicCalAPI.Service
                 {
                     if (AverageVelocity == 0)
                     {
-                        AverageVelocityColor = ColorStrength.Transparent;
+                        AverageVelocityColor = ColorStrength.Transparent.ToString().ToLower();
                     }
                     else if (AverageVelocity >= 140)
                     {
-                        AverageVelocityColor = ColorStrength.Green;
+                        AverageVelocityColor = ColorStrength.Green.ToString().ToLower();
                     }
                     else if (AverageVelocity >= 120 && AverageVelocity < 140)
                     {
-                        AverageVelocityColor = ColorStrength.Yellow;
+                        AverageVelocityColor = ColorStrength.Yellow.ToString().ToLower();
                     }
                     else if (AverageVelocity < 120)
                     {
-                        AverageVelocityColor = ColorStrength.Red;
+                        AverageVelocityColor = ColorStrength.Red.ToString().ToLower();
                     }
                 }
             }
@@ -347,20 +347,20 @@ namespace HydraulicCalAPI.Service
                 {
                     if (ChipRate == 0)
                     {
-                        ChipRateColor = ColorStrength.Transparent;
+                        ChipRateColor = ColorStrength.Transparent.ToString().ToLower();
                     }
                     else
                     {
-                        ChipRateColor = ColorStrength.Green;
+                        ChipRateColor = ColorStrength.Green.ToString().ToLower();
                     }
                 }
                 else if (segment.SegmentHydraulicsOutput.ChipRateRange == Common.ResultType.Caution)
                 {
-                    ChipRateColor = ColorStrength.Yellow;
+                    ChipRateColor = ColorStrength.Yellow.ToString().ToLower();
                 }
                 else
                 {
-                    ChipRateColor = ColorStrength.Red;
+                    ChipRateColor = ColorStrength.Red.ToString().ToLower();
                 }
             }
         }
@@ -387,6 +387,7 @@ namespace HydraulicCalAPI.Service
 
         public void CalculateHydraulics()
         {
+            ChartNGraphDataPoints.Add("removeLater", _hydraulicAnalysisOutput);
             ColorCodeGenerator colorSelector = new ColorCodeGenerator();
             Color annulusColor = colorSelector.GetColor();
             string annulusToolNameForPieChart = "Annulus";
@@ -447,8 +448,9 @@ namespace HydraulicCalAPI.Service
                 IsTotalPressureInCriticalRegion = false;
                 IsTotalPressureInWarningRegion = false;
             }
+            ChartNGraphDataPoints.Add("TotalPressureDrop", TotalPressureDrop);
 
-           if (!double.IsNaN(flowRateChartedData) && !double.IsNaN(TotalPressureDrop))
+            if (!double.IsNaN(flowRateChartedData) && !double.IsNaN(TotalPressureDrop))
                 PlotOperatingPoint(flowRateChartedData, TotalPressureDrop);
            
             List<HydraulicOutputBHAViewModel> tempListForIsToolDetailsVisible = new List<HydraulicOutputBHAViewModel>();
@@ -465,7 +467,7 @@ namespace HydraulicCalAPI.Service
                 }
             }
 
-            HydraulicOutputBHAList.Clear();
+           // HydraulicOutputBHAList.Clear();
             if (_hydraulicAnalysisOutput.BHATool != null)
                 foreach (var item in _hydraulicAnalysisOutput.BHATool)
                 {
@@ -474,16 +476,12 @@ namespace HydraulicCalAPI.Service
                     var tempPressureValue = (double)item.BHAHydraulicsOutput.PressureDropInPSI;
                     PressureDistributionChartCollection.Add(new PieChartViewModel<double>() { Name = item.toolDescription, Value = tempPressureValue, Color = color.Name.ToString() });
                     HydraulicOutputBHAViewModel bhaObject = HydraulicToolTypeObjectManager.GetToolTypeObject(item, color, _fluidInput, MaxFlowRate, MaxPressure, _bhaInput, inputFlowRate);
-                    //if (_bhaVMList.Exists(o => o.BHAID == bhaObject.ToolID.Value))
-                    //{
-                    //    bhaObject.IsToolInputDetailsVisible = true;
-                    //}
-
                     BhaToolLength += item.LengthInFeet;
                     HydraulicOutputBHAList.Add(bhaObject);
                     if (!double.IsNaN(item.BHAHydraulicsOutput.OutputFlowInGallonsPerMinute))
                         inputFlowRate = item.BHAHydraulicsOutput.OutputFlowInGallonsPerMinute;
-                }DateTime startOfCalculations = DateTime.UtcNow;
+                }
+            DateTime startOfCalculations = DateTime.UtcNow;
             foreach (HydraulicOutputBHAViewModel item in HydraulicOutputBHAList)
             {
                 item.PlotChart();

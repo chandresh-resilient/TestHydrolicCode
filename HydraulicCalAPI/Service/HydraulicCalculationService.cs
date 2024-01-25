@@ -46,14 +46,9 @@ namespace HydraulicCalAPI.Service
             // for tool types with split flow or different states. This need to be set to true
             public bool HasVariableFlow { get; set; }
 
-            /// <summary>
-            /// Input point to get workstring data
-            /// </summary>
-            public int wrkstr_PositionNumber { get; set; }
-            public string wrkstr_SectionName { get; set; }
-            public double wrkstr_OutsideDiameterInInch { get; set; }
-            public double wrkstr_InsideDiameterInInch { get; set; }
-            public double wrkstr_LengthInFeet { get; set; }
+
+            public string SectionName { get; set; }
+
 
             /// <summary>
             /// Input Points for BHAToolType1

@@ -24,7 +24,7 @@ namespace HydraulicCalAPI.ViewModel
         public string _flowType;
         public double _bhaPressureDrop;
         public ChartAndGraphService.ColorStrength _averageVelocityColor;
-        public string _bhaColor;
+
         public bool _isToolDetailsVisible;
         public string _actualToolDescription;
         public string _isPlusMinus;
@@ -51,6 +51,9 @@ namespace HydraulicCalAPI.ViewModel
         public bool _isToolInputDetailsVisible;
         public string _toolType;
         public string _toolSourcePath;
+
+        public string _bhaColor;
+        public string _avgVelocityColour;
         Dictionary<string, List<XYValueModelForLineData<double>>> _bhaChart;
         #endregion
         readonly ViewModelBase objvmb;
@@ -245,6 +248,14 @@ namespace HydraulicCalAPI.ViewModel
             set
             {
                 SetProperty<string>(bhaColorField, ref _bhaColor, ref value);
+            }
+        }
+        public string AvgVelocityColor
+        {
+            get { return _avgVelocityColour; }
+            set
+            {
+               _avgVelocityColour = value;
             }
         }
         public bool IsToolDetailsVisible
@@ -708,18 +719,24 @@ namespace HydraulicCalAPI.ViewModel
                     if (AverageVelocity >= 120)
                     {
                         AverageVelocityColor = ChartAndGraphService.ColorStrength.Red;
+                        AvgVelocityColor= ChartAndGraphService.ColorStrength.Red.ToString().ToLower();
                     }
                     else if (AverageVelocity >= 70 && AverageVelocity < 120)
                     {
                         AverageVelocityColor = ChartAndGraphService.ColorStrength.Yellow;
+                        AvgVelocityColor = ChartAndGraphService.ColorStrength.Yellow.ToString().ToLower();
                     }
                     else if (AverageVelocity < 70)
                     {
                         AverageVelocityColor = ChartAndGraphService.ColorStrength.Green;
+                        AvgVelocityColor = ChartAndGraphService.ColorStrength.Green.ToString().ToLower();
+
                     }
                     else
                     {
                         AverageVelocityColor = ChartAndGraphService.ColorStrength.Transparent;
+                        AvgVelocityColor = ChartAndGraphService.ColorStrength.Green.ToString().ToLower();
+
                     }
                 }
             }

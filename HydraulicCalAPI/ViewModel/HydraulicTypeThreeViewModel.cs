@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WFT.UnitConversion.UI;
+﻿using System.Collections.Generic;
 using HydraulicEngine;
-using WFT.UI.Common.Charts;
 using WFT.UI.Common.Base;
-using WFT.UI.Common.Commands;
-using HydraulicCalAPI.Service;
-using HydraulicCalAPI.ViewModel;
 
 namespace HydraulicCalAPI.ViewModel
 {

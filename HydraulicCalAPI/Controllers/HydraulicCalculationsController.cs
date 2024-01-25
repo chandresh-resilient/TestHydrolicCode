@@ -180,8 +180,8 @@ namespace HydraulicCalAPI.Controllers
                     default:
                         {   //int positionNumber,  string sectionName, double outsideDiameterInInch, double insideDiameterInInch, double lengthInFeet
                             // BHATOOLType1 // int positionNumber, string toolDescription, double outsideDiameterInInch, double lengthInFeet, double insideDiameterInInch, double toolDepth
-                            BHATool convertedResult = ConvertWorkstringToBHAForHydraulic(item.wrkstr_PositionNumber, item.wrkstr_SectionName, item.wrkstr_OutsideDiameterInInch,
-                                                                                         item.wrkstr_InsideDiameterInInch, item.wrkstr_LengthInFeet);
+                            BHATool convertedResult = ConvertWorkstringToBHAForHydraulic(item.PositionNumber, item.SectionName, item.OutsideDiameterInInch,
+                                                                                         item.InsideDiameterInInch, item.LengthInFeet);
 
                             bhatools.Add(new BHAToolType1
                             {
@@ -189,7 +189,7 @@ namespace HydraulicCalAPI.Controllers
                                 toolDescription = convertedResult.toolDescription,
                                 OutsideDiameterInInch = convertedResult.OutsideDiameterInInch,
                                 LengthInFeet = convertedResult.LengthInFeet,
-                                InsideDiameterInInch = item.wrkstr_InsideDiameterInInch,
+                                InsideDiameterInInch = item.InsideDiameterInInch,
                                 Depth = item.Depth
                             });
 
