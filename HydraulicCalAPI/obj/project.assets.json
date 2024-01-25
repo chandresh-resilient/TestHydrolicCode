@@ -9,14 +9,10 @@
           "Newtonsoft.Json": "12.0.2"
         },
         "compile": {
-          "lib/netstandard2.0/Microsoft.AspNetCore.JsonPatch.dll": {
-            "related": ".xml"
-          }
+          "lib/netstandard2.0/Microsoft.AspNetCore.JsonPatch.dll": {}
         },
         "runtime": {
-          "lib/netstandard2.0/Microsoft.AspNetCore.JsonPatch.dll": {
-            "related": ".xml"
-          }
+          "lib/netstandard2.0/Microsoft.AspNetCore.JsonPatch.dll": {}
         }
       },
       "Microsoft.AspNetCore.Mvc.NewtonsoftJson/3.1.20": {
@@ -27,14 +23,10 @@
           "Newtonsoft.Json.Bson": "1.0.2"
         },
         "compile": {
-          "lib/netcoreapp3.1/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll": {
-            "related": ".xml"
-          }
+          "lib/netcoreapp3.1/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll": {}
         },
         "runtime": {
-          "lib/netcoreapp3.1/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll": {
-            "related": ".xml"
-          }
+          "lib/netcoreapp3.1/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll": {}
         },
         "frameworkReferences": [
           "Microsoft.AspNetCore.App"
@@ -52,14 +44,10 @@
       "Newtonsoft.Json/12.0.2": {
         "type": "package",
         "compile": {
-          "lib/netstandard2.0/Newtonsoft.Json.dll": {
-            "related": ".xml"
-          }
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         },
         "runtime": {
-          "lib/netstandard2.0/Newtonsoft.Json.dll": {
-            "related": ".xml"
-          }
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         }
       },
       "Newtonsoft.Json.Bson/1.0.2": {
@@ -68,14 +56,10 @@
           "Newtonsoft.Json": "12.0.1"
         },
         "compile": {
-          "lib/netstandard2.0/Newtonsoft.Json.Bson.dll": {
-            "related": ".pdb;.xml"
-          }
+          "lib/netstandard2.0/Newtonsoft.Json.Bson.dll": {}
         },
         "runtime": {
-          "lib/netstandard2.0/Newtonsoft.Json.Bson.dll": {
-            "related": ".pdb;.xml"
-          }
+          "lib/netstandard2.0/Newtonsoft.Json.Bson.dll": {}
         }
       }
     }
@@ -238,19 +222,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Chandresh\\.nuget\\packages\\": {}
+    "C:\\Users\\E270052\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.7",
     "restore": {
-      "projectUniqueName": "D:\\xcode\\Hyd\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
+      "projectUniqueName": "D:\\WebApp\\TestHydrolicCode\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
       "projectName": "HydraulicCalAPI",
-      "projectPath": "D:\\xcode\\Hyd\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
-      "packagesPath": "C:\\Users\\Chandresh\\.nuget\\packages\\",
-      "outputPath": "D:\\xcode\\Hyd\\HydraulicCalAPI\\obj\\",
+      "projectPath": "D:\\WebApp\\TestHydrolicCode\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
+      "packagesPath": "C:\\Users\\E270052\\.nuget\\packages\\",
+      "outputPath": "D:\\WebApp\\TestHydrolicCode\\HydraulicCalAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\Chandresh\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\E270052\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -300,7 +284,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.101\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.405\\RuntimeIdentifierGraph.json"
       }
     }
   }
