@@ -199,7 +199,7 @@ namespace HydraulicCalAPI.Controllers
             }
            // List<HydraulicAnalysisOutput> lstresponse = new List<HydraulicAnalysisOutput>();
 
-            HydraulicAnalysisOutput response = Main.CompleteHydraulicAnalysis(objHcs.fluidInput, objHcs.flowRateInGPMInput, objHcs.cuttingsInput, bhatools, objHcs.annulusInput, objHcs.surfaceEquipmentInput, objHcs.torqueInFeetPound = 0, objHcs.toolDepthInFeet = double.MinValue, objHcs.blockPostionInFeet = double.MinValue);
+            HydraulicAnalysisOutput response = Main.CompleteHydraulicAnalysis(objHcs.fluidInput, objHcs.flowRateInGPMInput, objHcs.cuttingsInput, bhatools, objHcs.annulusInput, objHcs.surfaceEquipmentInput, objHcs.torqueInFeetPound, objHcs.toolDepthInFeet, objHcs.blockPostionInFeet);
 
             //lstresponse.Add(response);
                     
