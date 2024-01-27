@@ -1,14 +1,21 @@
 {
   "version": 2,
-  "dgSpecHash": "lDyt4raq+6vjDmHO2K5+ILHb1TVaPCmlANHSMQQhuUhDT2sP03oMLMVCJeOhJ3MoWu63BeUMiwgjOVwvaGiUQg==",
+  "dgSpecHash": "O1EPuFDa+q2z5O4bL9Fc1TkXn/YaPFr8JwX5qWONNXEdTHvFx4V6GjrR6VAz15oBz22ZYmDiyGtlCFgzKiEdmQ==",
   "success": true,
   "projectFilePath": "D:\\xcode\\Hyd\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Chandresh\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\3.1.20\\microsoft.aspnetcore.jsonpatch.3.1.20.nupkg.sha512",
     "C:\\Users\\Chandresh\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\3.1.20\\microsoft.aspnetcore.mvc.newtonsoftjson.3.1.20.nupkg.sha512",
     "C:\\Users\\Chandresh\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\Chandresh\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\Chandresh\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
     "C:\\Users\\Chandresh\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
-    "C:\\Users\\Chandresh\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512"
+    "C:\\Users\\Chandresh\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512",
+    "C:\\Users\\Chandresh\\.nuget\\packages\\swashbuckle.aspnetcore\\6.5.0\\swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
+    "C:\\Users\\Chandresh\\.nuget\\packages\\swashbuckle.aspnetcore.newtonsoft\\6.5.0\\swashbuckle.aspnetcore.newtonsoft.6.5.0.nupkg.sha512",
+    "C:\\Users\\Chandresh\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
+    "C:\\Users\\Chandresh\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.5.0\\swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
+    "C:\\Users\\Chandresh\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.5.0\\swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512"
   ],
   "logs": []
 }

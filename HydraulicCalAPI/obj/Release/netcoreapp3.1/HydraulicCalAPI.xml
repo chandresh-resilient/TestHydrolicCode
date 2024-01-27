@@ -1,0 +1,231 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HydraulicCalAPI</name>
+    </assembly>
+    <members>
+        <member name="M:HydraulicCalAPI.Service.ChartAndGraphService.SetProperty``1(System.String,``0@,``0@)">
+            <summary>
+            Sets the property.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="propertyName">Name of the property.</param>
+            <param name="oldValue">The old value.</param>
+            <param name="newValue">The new value.</param>
+            <returns></returns>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.ChartAndGraphService.MinimumFlowRate">
+            <summary>
+            Gets or sets MinimumFlowRate
+            </summary>
+            <value>
+            MinimumFlowRate
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.ChartAndGraphService.MaximumFlowRate">
+            <summary>
+            Gets or sets MaximumFlowRate
+            </summary>
+            <value>
+            MaximumFlowRate
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.ChartAndGraphService.LowerOperatingPoint">
+            <summary>
+            Gets or sets LowerOperatingPoint
+            </summary>
+            <value>
+            LowerOperatingPoint
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.ChartAndGraphService.UpperOperatingPoint">
+            <summary>
+            Gets or sets UpperOperatingPoint
+            </summary>
+            <value>
+            UpperOperatingPoint
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.ChartAndGraphService.LowerCriticalPoint">
+            <summary>
+            Gets or sets LowerCriticalPoint
+            </summary>
+            <value>
+            LowerCriticalPoint
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.ChartAndGraphService.UpperCriticalPoint">
+            <summary>
+            Gets or sets UpperCriticalPoint
+            </summary>
+            <value>
+            UpperCriticalPoint
+            </value>
+        </member>
+        <member name="T:HydraulicCalAPI.Service.ChartAndGraphService.HydraulicOutputAnnulusViewModel">
+            <summary>
+            View Model List for HydraulicOutputAnnulusViewModel properties
+            </summary>
+        </member>
+        <member name="T:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool">
+            <summary>
+            Inputs Points for the BHATool
+            </summary>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.InsideDiameterInInch">
+            <summary>
+            Input Points for BHAToolType1
+            </summary>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.ModelName">
+            <summary>
+            Input Points for BHAToolType2
+            </summary>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.NozzlesInfomation">
+            <summary>
+            Input Points for BHATootType3
+            </summary>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.ValveInsertDiameterInInch">
+            <summary>
+            Input Points for BHAToolType4
+            </summary>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.AnnulusNozzleInformation">
+            <summary>
+            Input Points for BHATootType5
+            </summary>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.LengthBeforeAnnulusOpeningInFeet">
+            <summary>
+            Input Points for BHAToolType6
+            </summary>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.PressureDropInPSI">
+            <summary>
+            Input Points for BHATootType7
+            </summary>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.ObservedFlowRateInGallonsPerMinute">
+            <summary>
+            Input Points for BHAToolType8
+            </summary>
+            <summary>
+            Input Points for BHATootType9
+            </summary>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.ToolAccuset">
+            <summary>
+            Input Points for BHAToolType10
+            </summary>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.bhatooltype">
+            <summary>
+            Point to hold the type value of a tool
+            </summary>
+        </member>
+        <member name="M:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.SetProperty``1(System.String,``0@,``0@)">
+            <summary>
+            Sets the property.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="propertyName">Name of the property.</param>
+            <param name="oldValue">The old value.</param>
+            <param name="newValue">The new value.</param>
+            <returns></returns>
+        </member>
+        <member name="P:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.ShowStandpipeVsFlowRateScaling">
+            <summary>
+            Gets or sets ShowStandpipeVsFlowRateScaling
+            </summary>
+            <value>
+            ShowStandpipeVsFlowRateScaling
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.PressureLowerDisplayValue">
+            <summary>
+            Gets or sets PressureLowerDisplayValue
+            </summary>
+            <value>
+            PressureLowerDisplayValue
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.PressureUpperDisplayValue">
+            <summary>
+            Gets or sets PressureUpperDisplayValue
+            </summary>
+            <value>
+            PressureUpperDisplayValue
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.FlowRateLowerDisplayValue">
+            <summary>
+            Gets or sets FlowRateLowerDisplayValue
+            </summary>
+            <value>
+            FlowRateLowerDisplayValue
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.FlowRateUpperDisplayValue">
+            <summary>
+            Gets or sets FlowRateUpperDisplayValue
+            </summary>
+            <value>
+            FlowRateUpperDisplayValue
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.PressureRangeMinAppliedValue">
+            <summary>
+            Gets or sets PressureRangeMinAppliedValue
+            </summary>
+            <value>
+            PressureRangeMinAppliedValue
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.PressureRangeMaxAppliedValue">
+            <summary>
+            Gets or sets PressureRangeMaxAppliedValue
+            </summary>
+            <value>
+            PressureRangeMaxAppliedValue
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.FlowRateRangeMinAppliedValue">
+            <summary>
+            Gets or sets FlowRateRangeMinAppliedValue
+            </summary>
+            <value>
+            FlowRateRangeMinAppliedValue
+            </value>
+        </member>
+        <member name="P:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.FlowRateRangeMaxAppliedValue">
+            <summary>
+            Gets or sets FlowRateRangeMaxAppliedValue
+            </summary>
+            <value>
+            FlowRateRangeMaxAppliedValue
+            </value>
+        </member>
+        <member name="M:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.DisplaySPVsFRScalingOptions">
+            <summary>
+            Method for DisplaySPVsFRScalingOptionsCommand
+            </summary>
+        </member>
+        <member name="M:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.SetSPVsFRScaling">
+            <summary>
+            Method for SetSPVsFRScalingCommand
+            </summary>
+        </member>
+        <member name="M:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.ResetSPVsFRScaling">
+            <summary>
+            Method for ResetSPVsFRScalingCommand
+            </summary>
+        </member>
+        <member name="M:HydraulicCalAPI.ViewModel.HydraulicOutputBHAViewModel.CancelSPVsFRScaling">
+            <summary>
+            Method for CancelSPVsFRScalingCommand
+            </summary>
+        </member>
+    </members>
+</doc>
