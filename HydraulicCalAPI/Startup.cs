@@ -17,6 +17,7 @@ using System.Reflection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Any;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text.Json.Serialization;
 
 namespace HydraulicCalAPI
 {
@@ -32,16 +33,17 @@ namespace HydraulicCalAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                      .AddJsonOptions(options =>
+                      {
+                          options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                      });
             services.AddSingleton<HydraulicCalculationService>();
             services.AddSwaggerGen(c =>
             {
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
-                // Use Newtonsoft.Json converters for Swagger
-                c.AddSwaggerGenNewtonsoftSupport(); // Explicitly opt in for Newtonsoft.Json support
-
                 // Use StringEnumConverter for enum values
                 c.SchemaFilter<EnumSchemaFilter>();
             });
