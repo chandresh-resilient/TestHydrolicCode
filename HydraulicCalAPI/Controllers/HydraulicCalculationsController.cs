@@ -11,7 +11,6 @@ namespace HydraulicCalAPI.Controllers
     [ApiController]
     public class HydraulicCalculationsController : ControllerBase
     {
-        double tooldepthinfeet;
 
         public static BHATool ConvertWorkstringToBHAForHydraulic(int positionNumber, string sectionName, double outerDiameter, double innerDiameter, double wrkstrLength)
         {
@@ -198,33 +197,19 @@ namespace HydraulicCalAPI.Controllers
                         }
                 }
             }
-
-<<<<<<< HEAD
-            HydraulicAnalysisOutput response = Main.CompleteHydraulicAnalysis(objHcs.fluidInput, objHcs.flowRateInGPMInput, objHcs.cuttingsInput, bhatools, objHcs.annulusInput, objHcs.surfaceEquipmentInput, objHcs.torqueInFeetPound, objHcs.toolDepthInFeet, objHcs.blockPostionInFeet);
-
-            //lstresponse.Add(response);
-=======
-            if (double.IsNaN(objHcs.toolDepthInFeet))
-            {
-                tooldepthinfeet = objHcs.toolDepthInFeet;
-            }
-            else
-            {
+           if (double.IsNaN(objHcs.toolDepthInFeet))
+            { 
                 for (int i=0; i < objHcs.annulusInput.Count; i++)
                 {
->>>>>>> branch 'main' of https://github.com/chandresh-resilient/TestHydrolicCode.git
-                    
-                    tooldepthinfeet += objHcs.annulusInput[i].AnnulusBottomInFeet;
+
+                    objHcs.toolDepthInFeet += objHcs.annulusInput[i].AnnulusBottomInFeet;
                 }
             }
             
-           HydraulicAnalysisOutput response = Main.CompleteHydraulicAnalysis(objHcs.fluidInput, objHcs.flowRateInGPMInput, objHcs.cuttingsInput, bhatools, objHcs.annulusInput, objHcs.surfaceEquipmentInput, objHcs.torqueInFeetPound = 0, objHcs.toolDepthInFeet = tooldepthinfeet, objHcs.blockPostionInFeet = double.MinValue);
+           HydraulicAnalysisOutput response = Main.CompleteHydraulicAnalysis(objHcs.fluidInput, objHcs.flowRateInGPMInput, objHcs.cuttingsInput, bhatools, objHcs.annulusInput, objHcs.surfaceEquipmentInput, objHcs.torqueInFeetPound = 0, objHcs.toolDepthInFeet , objHcs.blockPostionInFeet = double.MinValue);
 
             ChartAndGraphService objChartnGraph = new ChartAndGraphService();
-<<<<<<< HEAD
-            //List<Array> abc = new List<Array>();
-=======
->>>>>>> branch 'main' of https://github.com/chandresh-resilient/TestHydrolicCode.git
+
             return objChartnGraph.GetDataPoints(response, objHcs.fluidInput, 
                                                 objHcs.flowRateInGPMInput, 
                                                 objHcs.cuttingsInput, 
