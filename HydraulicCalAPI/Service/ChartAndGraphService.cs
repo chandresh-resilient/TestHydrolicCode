@@ -31,8 +31,8 @@ namespace HydraulicCalAPI.Service
         public double _toolDepth;
         public double _flowRateOfChartedData;
         public bool IsUnitSystemChangesGettingApplied = false;
-        public double BhaToolLength = 0.00;
-        public double ToolDepth = double.MinValue;
+        public double BhaToolLength;
+        public double ToolDepth;
 
         public enum ColorStrength { Transparent, Green, Yellow, Red }
         public ObservableCollection<HydraulicOutputAnnulusViewModel> _hydraulicOutputAnnulusList = new ObservableCollection<HydraulicOutputAnnulusViewModel>();
@@ -45,8 +45,8 @@ namespace HydraulicCalAPI.Service
         public bool IsTotalPressureInCriticalRegion = false;
         
         public double? _correctionFactorForObserved = 0;
-        public double MaxPressure = 0.00;
-        public double MaxFlowRate = 0.00;
+        public double MaxPressure;
+        public double MaxFlowRate;
         public double flowRateChartedData = double.MinValue;
         public double _minimumFlowRate;
         public double _maximumFlowRate;
@@ -393,7 +393,18 @@ namespace HydraulicCalAPI.Service
             string annulusToolNameForPieChart = "Annulus";
             Nullable<double> totalPressureDrolAtAnnulus = null;
 
-            ToolDepth = _hydraulicAnalysisOutput.ToolDepthInFeet;
+            if (_annulusInput.Count < 0)
+            {
+                ToolDepth = Math.Round(double.MinValue,3);
+            }
+            else
+            {
+                for (int i = 0; i < _annulusInput.Count; i++)
+                {
+
+                    ToolDepth += _annulusInput[i].AnnulusBottomInFeet;
+                }
+            }
 
             if (_hydraulicAnalysisOutput.Segment != null)
                 foreach (var item in _hydraulicAnalysisOutput.Segment)
@@ -503,7 +514,6 @@ namespace HydraulicCalAPI.Service
             ChartNGraphDataPoints.Add("PressureDistributionChartCollection", PressureDistributionChartCollection.ToArray());
 
             //ChartNGraphDataPoints.Add(innStandardVSFlowrateDp.ToArray());
-            ToolDepth += ToolDepth + BhaToolLength;
             PlotChart();
 
             System.Diagnostics.Debug.WriteLine("End of all plot chart : " + (DateTime.UtcNow - startOfCalculations).ToString());

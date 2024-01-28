@@ -22,23 +22,7 @@ namespace HydraulicCalAPI.ViewModel
         private const string nozzleVelocityColorField = "NozzleVelocityColor";
         #endregion
         readonly ViewModelBase objvmb;
-
-        public bool SetProperty<T>(string propertyName, ref T oldValue, ref T newValue)
-        {
-            if (oldValue == null && newValue == null)
-            {
-                return false;
-            }
-            if ((oldValue == null && newValue != null) || !oldValue.Equals((T)newValue))
-            {
-                oldValue = newValue;
-                //objvmb.ValidateStateAndNotify(propertyName);
-                //OnPropertyChanged(propertyName);
-                return true;
-            }
-            return false;
-        }
-
+        
         #region Properties
         public double HydraulicHorsePower
         {
@@ -96,6 +80,14 @@ namespace HydraulicCalAPI.ViewModel
             NozzleVelocityInFeetPerSecond = 0;
             ImpactForceInPounds = 0;
             NozzlePressureDropInPSI = 0;
+            HydraulicHorsePower = Math.Round(double.MinValue,3);
+            NozzleVelocityInFeetPerSecond = Math.Round(double.MinValue, 3);
+            ImpactForceInPounds = Math.Round(double.MinValue, 3);
+            NozzlePressureDropInPSI = Math.Round(double.MinValue, 3);
+            HydraulicHorsePower = Math.Round(double.MinValue,3);
+            NozzleVelocityInFeetPerSecond = Math.Round(double.MinValue, 3);
+            ImpactForceInPounds = Math.Round(double.MinValue, 3);
+            NozzlePressureDropInPSI = Math.Round(double.MinValue, 3);
         }
 
         public override void SetTypeSpecificInfo(BHATool bha)
@@ -108,7 +100,7 @@ namespace HydraulicCalAPI.ViewModel
         }
         private void SetNozzleVelocityColor()
         {
-            if (double.IsNaN(NozzleVelocityInFeetPerSecond))
+            if (!double.IsNaN(NozzleVelocityInFeetPerSecond))
             {
                 if (NozzleVelocityInFeetPerSecond >= 230)
                 {

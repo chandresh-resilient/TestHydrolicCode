@@ -52,6 +52,7 @@ D:\HydraCalWebAPI\HydraulicCalAPI\HydraulicCalAPI\obj\Debug\netcoreapp3.1\Hydrau
 D:\HydraCalWebAPI\HydraulicCalAPI\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.pdb
 D:\HydraCalWebAPI\HydraulicCalAPI\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.genruntimeconfig.cache
 D:\HydraCalWebAPI\HydraulicCalAPI\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.csproj.AssemblyReference.cache
+<<<<<<< HEAD
 D:\WebApp\abcd\HydraulicCalAPI\bin\Debug\netcoreapp3.1\appsettings.Development.json
 D:\WebApp\abcd\HydraulicCalAPI\bin\Debug\netcoreapp3.1\appsettings.json
 D:\WebApp\abcd\HydraulicCalAPI\bin\Debug\netcoreapp3.1\HydraulicCalAPI.exe
@@ -81,3 +82,34 @@ D:\WebApp\abcd\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.csproj.Co
 D:\WebApp\abcd\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.dll
 D:\WebApp\abcd\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.pdb
 D:\WebApp\abcd\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.genruntimeconfig.cache
+=======
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\appsettings.Development.json
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\appsettings.json
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\HydraulicCalAPI.exe
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\HydraulicCalAPI.deps.json
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\HydraulicCalAPI.runtimeconfig.json
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\HydraulicCalAPI.runtimeconfig.dev.json
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\HydraulicCalAPI.dll
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\HydraulicCalAPI.pdb
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.JsonPatch.dll
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\bin\Debug\netcoreapp3.1\Newtonsoft.Json.Bson.dll
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.csproj.AssemblyReference.cache
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.GeneratedMSBuildEditorConfig.editorconfig
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.AssemblyInfoInputs.cache
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.AssemblyInfo.cs
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.csproj.CoreCompileInputs.cache
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.MvcApplicationPartsAssemblyInfo.cache
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\staticwebassets\HydraulicCalAPI.StaticWebAssets.Manifest.cache
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\staticwebassets\HydraulicCalAPI.StaticWebAssets.Pack.cache
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\staticwebassets\msbuild.HydraulicCalAPI.Microsoft.AspNetCore.StaticWebAssets.props
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\staticwebassets\msbuild.build.HydraulicCalAPI.props
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\staticwebassets\msbuild.buildMultiTargeting.HydraulicCalAPI.props
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\staticwebassets\msbuild.buildTransitive.HydraulicCalAPI.props
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.RazorTargetAssemblyInfo.cache
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.csproj.CopyComplete
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.dll
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.pdb
+D:\WebApp\TestHydrolicCode\HydraulicCalAPI\obj\Debug\netcoreapp3.1\HydraulicCalAPI.genruntimeconfig.cache
+>>>>>>> branch 'main' of https://github.com/chandresh-resilient/TestHydrolicCode.git

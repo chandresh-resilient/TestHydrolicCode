@@ -1,5 +1,3 @@
 is_global = true
 build_property.RootNamespace = HydraulicCalAPI
-build_property.ProjectDir = D:\xcode\Hyd\HydraulicCalAPI\
-build_property.EnableComHosting = 
-build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.ProjectDir = D:\WebApp\TestHydrolicCode\HydraulicCalAPI\

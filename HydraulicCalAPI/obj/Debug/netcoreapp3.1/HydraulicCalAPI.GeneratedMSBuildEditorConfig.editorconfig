@@ -1,3 +1,7 @@
 is_global = true
 build_property.RootNamespace = HydraulicCalAPI
+<<<<<<< HEAD
 build_property.ProjectDir = D:\WebApp\abcd\HydraulicCalAPI\
+=======
+build_property.ProjectDir = D:\WebApp\TestHydrolicCode\HydraulicCalAPI\
+>>>>>>> branch 'main' of https://github.com/chandresh-resilient/TestHydrolicCode.git
