@@ -702,7 +702,7 @@ namespace HydraulicCalAPI.Service
 
                 _hydraulicMainSeriesWholeData.Add(new XYValueModelForLineData<double>() { PrimaryAxisValue = valuemodelForLineData.PrimaryAxisValue, SecondaryAxisValue = valuemodelForLineData.SecondaryAxisValue });
             }
-            while (lastRecordedStandpipePressure < 1.2 * this.MaxPressure);
+            while (lastRecordedStandpipePressure < 1.2 * this.MaxPressure && flowrate<1.2 *this.MaxFlowRate);
          
                      
             var firstValueOfYL = (standpipePressureListYL.FirstOrDefault() as XYValueModelForLineData<double>);
@@ -778,7 +778,7 @@ namespace HydraulicCalAPI.Service
             if (flowRateBaseValue > 0.00 && _bhaInput != null && _annulusInput != null)
             {
                 double flowRateInGPMInput = flowRateBaseValue.Value;
-                double toolDepthInFeetInput = depthBaseValue ?? double.MinValue;
+                double toolDepthInFeetInput = depthBaseValue ?? double.MinValue;    
 
                 HydraulicAnalysisOutput hydraulicOutput = Main.CompleteHydraulicAnalysis(_fluidInput, flowRateInGPMInput, _cuttingsInput, _bhaInput, _annulusInput, _surfaceEquipmentInput, toolDepthInFeetInput);
                 if (hydraulicOutput.Segment != null && hydraulicOutput.Segment.Count() > 0)
