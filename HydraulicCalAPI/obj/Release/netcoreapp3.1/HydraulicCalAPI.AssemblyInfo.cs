@@ -16,11 +16,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyDescriptionAttribute("A wrapper class that calls hydraulic calculations as well as returns all datapoin" +
     "ts")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.7.0")]
-<<<<<<< HEAD
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.7+f78b670fb642b2b40cd267681766863c7a8e4032")]
-=======
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.7")]
->>>>>>> branch 'main' of https://github.com/chandresh-resilient/TestHydrolicCode.git
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.7+34c046c5d518be700f0dc753bc9e79a4a970b7dc")]
 [assembly: System.Reflection.AssemblyProductAttribute("Hydraulic Calculations API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HydraulicCalAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.7.0")]

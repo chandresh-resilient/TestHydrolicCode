@@ -5,6 +5,10 @@ using HydraulicEngine;
 
 namespace HydraulicCalAPI.Service
 {
+    public enum ResultType { Good, Caution, Problem };
+    public enum ToolTypes { Type1, Type2, Type3, Type4, Type5, Type6, Type7, Type8, Type9 };
+  //  public enum SurfaceEquipmentCaseType { Case1, Case2, Case3, Case4, TopDrive };
+   // public enum CuttingType { Steel, Rock, CastIron, Granite, Sandstone, Concrete, WetSand };
 
     public class HydraulicCalculationService
     {
@@ -14,9 +18,9 @@ namespace HydraulicCalAPI.Service
         public List<WorkString> _workstringList { get; set; }
         public List<Annulus> annulusInput { get; set; }
         public Cuttings cuttingsInput { get; set; }
-        public Common.CuttingType CuttingsType { get; set; }
+     //   public CuttingType CuttingsType { get; set; }
         public SurfaceEquipment surfaceEquipmentInput { get; set; }
-        public Common.SurfaceEquipmentCaseType CaseType { get; set; }
+     //   public SurfaceEquipmentCaseType CaseType { get; set; }
 
         public double maxflowpressure { get; set; }
         public double maxflowrate { get; set; }
@@ -42,14 +46,16 @@ namespace HydraulicCalAPI.Service
             // for tool types with split flow or different states. This need to be set to true
             public bool HasVariableFlow { get; set; }
 
+            /// <summary>
+            /// Input point to get workstring data
+            /// </summary>
 
             public string SectionName { get; set; }
-
+            public double InsideDiameterInInch { get; set; }
 
             /// <summary>
             /// Input Points for BHAToolType1
             /// </summary>
-            public double InsideDiameterInInch { get; set; }
             public double Depth { get; set; }
 
             /// <summary>

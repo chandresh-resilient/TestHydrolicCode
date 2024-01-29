@@ -72,7 +72,12 @@
             Inputs Points for the BHATool
             </summary>
         </member>
-        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.InsideDiameterInInch">
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.SectionName">
+            <summary>
+            Input point to get workstring data
+            </summary>
+        </member>
+        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.Depth">
             <summary>
             Input Points for BHAToolType1
             </summary>

@@ -1,14 +1,9 @@
 {
   "version": 2,
-<<<<<<< HEAD
-  "dgSpecHash": "O1EPuFDa+q2z5O4bL9Fc1TkXn/YaPFr8JwX5qWONNXEdTHvFx4V6GjrR6VAz15oBz22ZYmDiyGtlCFgzKiEdmQ==",
-=======
-  "dgSpecHash": "A04ennUN8LXL+jvdiKClJye6zA8hHzj8r7NoAWwuLjdy+AVM8HRZ7WpxOoM4Wwh4MJWukPwy5L7WCmdgHPofWg==",
->>>>>>> branch 'main' of https://github.com/chandresh-resilient/TestHydrolicCode.git
+  "dgSpecHash": "OAfSpo7aoRXZNvj+HcFwqmdWSICj/dZTtiG8hSKz67fM/t4fJsT8VLOsybziFhgwQXttXJSNiW5lx5wL18lSrw==",
   "success": true,
-  "projectFilePath": "D:\\WebApp\\TestHydrolicCode\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
+  "projectFilePath": "D:\\xcode\\Hyd\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
   "expectedPackageFiles": [
-<<<<<<< HEAD
     "C:\\Users\\Chandresh\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\3.1.20\\microsoft.aspnetcore.jsonpatch.3.1.20.nupkg.sha512",
     "C:\\Users\\Chandresh\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\3.1.20\\microsoft.aspnetcore.mvc.newtonsoftjson.3.1.20.nupkg.sha512",
     "C:\\Users\\Chandresh\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
@@ -17,17 +12,9 @@
     "C:\\Users\\Chandresh\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
     "C:\\Users\\Chandresh\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512",
     "C:\\Users\\Chandresh\\.nuget\\packages\\swashbuckle.aspnetcore\\6.5.0\\swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
-    "C:\\Users\\Chandresh\\.nuget\\packages\\swashbuckle.aspnetcore.newtonsoft\\6.5.0\\swashbuckle.aspnetcore.newtonsoft.6.5.0.nupkg.sha512",
     "C:\\Users\\Chandresh\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.5.0\\swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
     "C:\\Users\\Chandresh\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.5.0\\swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
     "C:\\Users\\Chandresh\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.5.0\\swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512"
-=======
-    "C:\\Users\\E270052\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\3.1.20\\microsoft.aspnetcore.jsonpatch.3.1.20.nupkg.sha512",
-    "C:\\Users\\E270052\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\3.1.20\\microsoft.aspnetcore.mvc.newtonsoftjson.3.1.20.nupkg.sha512",
-    "C:\\Users\\E270052\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
-    "C:\\Users\\E270052\\.nuget\\packages\\newtonsoft.json\\12.0.2\\newtonsoft.json.12.0.2.nupkg.sha512",
-    "C:\\Users\\E270052\\.nuget\\packages\\newtonsoft.json.bson\\1.0.2\\newtonsoft.json.bson.1.0.2.nupkg.sha512"
->>>>>>> branch 'main' of https://github.com/chandresh-resilient/TestHydrolicCode.git
   ],
   "logs": []
 }

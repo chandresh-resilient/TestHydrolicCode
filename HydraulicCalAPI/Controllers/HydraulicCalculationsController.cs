@@ -11,6 +11,7 @@ namespace HydraulicCalAPI.Controllers
     [ApiController]
     public class HydraulicCalculationsController : ControllerBase
     {
+        double tooldepthinfeet;
 
         public static BHATool ConvertWorkstringToBHAForHydraulic(int positionNumber, string sectionName, double outerDiameter, double innerDiameter, double wrkstrLength)
         {
@@ -27,6 +28,7 @@ namespace HydraulicCalAPI.Controllers
             foreach (var item in objHcs.bhaInput)
             {
                 var toolcasetype = item.bhatooltype;
+                Console.WriteLine(toolcasetype);
                 switch (toolcasetype)
                 {
                     case "type1":
@@ -180,42 +182,47 @@ namespace HydraulicCalAPI.Controllers
                     default:
                         {   //int positionNumber,  string sectionName, double outsideDiameterInInch, double insideDiameterInInch, double lengthInFeet
                             // BHATOOLType1 // int positionNumber, string toolDescription, double outsideDiameterInInch, double lengthInFeet, double insideDiameterInInch, double toolDepth
-                            BHATool convertedResult = ConvertWorkstringToBHAForHydraulic(item.PositionNumber, item.SectionName, item.OutsideDiameterInInch,
-                                                                                         item.InsideDiameterInInch, item.LengthInFeet);
-
+                           // BHATool convertedResult = ConvertWorkstringToBHAForHydraulic(item.PositionNumber, item.SectionName, item.OutsideDiameterInInch,
+                              //                                                           item.InsideDiameterInInch, item.LengthInFeet);
+                            //Console.WriteLine(convertedResult);
                             bhatools.Add(new BHAToolType1
                             {
-                                PositionNumber = convertedResult.PositionNumber,
-                                toolDescription = convertedResult.toolDescription,
-                                OutsideDiameterInInch = convertedResult.OutsideDiameterInInch,
-                                LengthInFeet = convertedResult.LengthInFeet,
+                                PositionNumber = item.PositionNumber,
+                                toolDescription = item.SectionName,
+                                OutsideDiameterInInch = item.OutsideDiameterInInch,
+                                LengthInFeet = item.LengthInFeet,
                                 InsideDiameterInInch = item.InsideDiameterInInch,
-                                Depth = item.Depth
+                                Depth = item.Depth 
                             });
 
                            break;
                         }
                 }
             }
-           if (double.IsNaN(objHcs.toolDepthInFeet))
-            { 
+
+            if (double.IsNaN(objHcs.toolDepthInFeet))
+            {
+                tooldepthinfeet = objHcs.toolDepthInFeet;
+            }
+            else
+            {
                 for (int i=0; i < objHcs.annulusInput.Count; i++)
                 {
-
-                    objHcs.toolDepthInFeet += objHcs.annulusInput[i].AnnulusBottomInFeet;
+                    
+                    tooldepthinfeet += objHcs.annulusInput[i].AnnulusBottomInFeet;
                 }
             }
             
-           HydraulicAnalysisOutput response = Main.CompleteHydraulicAnalysis(objHcs.fluidInput, objHcs.flowRateInGPMInput, objHcs.cuttingsInput, bhatools, objHcs.annulusInput, objHcs.surfaceEquipmentInput, objHcs.torqueInFeetPound = 0, objHcs.toolDepthInFeet , objHcs.blockPostionInFeet = double.MinValue);
+           HydraulicAnalysisOutput response = Main.CompleteHydraulicAnalysis(objHcs.fluidInput, objHcs.flowRateInGPMInput, objHcs.cuttingsInput, bhatools, objHcs.annulusInput, objHcs.surfaceEquipmentInput, objHcs.torqueInFeetPound = 0, objHcs.toolDepthInFeet = tooldepthinfeet, objHcs.blockPostionInFeet = double.MinValue);
 
             ChartAndGraphService objChartnGraph = new ChartAndGraphService();
-
             return objChartnGraph.GetDataPoints(response, objHcs.fluidInput, 
                                                 objHcs.flowRateInGPMInput, 
                                                 objHcs.cuttingsInput, 
                                                 bhatools, 
                                                 objHcs.annulusInput, 
                                                 objHcs.surfaceEquipmentInput,objHcs.maxflowrate,objHcs.maxflowpressure);
+            
         }
     }
 }

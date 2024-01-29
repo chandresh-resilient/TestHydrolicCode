@@ -1,6 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using WFT.UnitConversion.UI;
 using HydraulicEngine;
+using WFT.UI.Common.Charts;
 using WFT.UI.Common.Base;
+using WFT.UI.Common.Commands;
+using HydraulicCalAPI.Service;
+using HydraulicCalAPI.ViewModel;
 
 namespace HydraulicCalAPI.ViewModel
 {
@@ -76,14 +84,6 @@ namespace HydraulicCalAPI.ViewModel
 
         private void InitializeProperties()
         {
-            HydraulicHorsePower = 0;
-            NozzleVelocityInFeetPerSecond = 0;
-            ImpactForceInPounds = 0;
-            NozzlePressureDropInPSI = 0;
-            HydraulicHorsePower = Math.Round(double.MinValue,3);
-            NozzleVelocityInFeetPerSecond = Math.Round(double.MinValue, 3);
-            ImpactForceInPounds = Math.Round(double.MinValue, 3);
-            NozzlePressureDropInPSI = Math.Round(double.MinValue, 3);
             HydraulicHorsePower = Math.Round(double.MinValue,3);
             NozzleVelocityInFeetPerSecond = Math.Round(double.MinValue, 3);
             ImpactForceInPounds = Math.Round(double.MinValue, 3);
