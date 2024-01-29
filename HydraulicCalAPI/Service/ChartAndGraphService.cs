@@ -367,7 +367,8 @@ namespace HydraulicCalAPI.Service
 
         #region "Calculate Hydraulics"
         public Dictionary<string, object> GetDataPoints(HydraulicAnalysisOutput hydraulicOutput, Fluid fluidInput,
-            double __flowRateOfChartedData, Cuttings cuttingInput, List<BHATool> bhaInput, List<Annulus> annulusInput, SurfaceEquipment surfaceEquipment,double maxflow, double maxpres)
+            double __flowRateOfChartedData, Cuttings cuttingInput, List<BHATool> bhaInput, List<Annulus> annulusInput,
+            SurfaceEquipment surfaceEquipment,double maxflow, double maxpres,double toolDepthInFeet=0)
         {
             MaxFlowRate = maxflow;
             MaxPressure = maxpres;
@@ -378,7 +379,7 @@ namespace HydraulicCalAPI.Service
             _annulusInput = annulusInput;
             _surfaceEquipmentInput = surfaceEquipment;
             flowRateChartedData = __flowRateOfChartedData;
-                        
+            ToolDepth = toolDepthInFeet;      
             CalculateHydraulics();
             //PlotChart();
 
@@ -391,20 +392,6 @@ namespace HydraulicCalAPI.Service
             Color annulusColor = colorSelector.GetColor();
             string annulusToolNameForPieChart = "Annulus";
             Nullable<double> totalPressureDrolAtAnnulus = null;
-
-            if (_annulusInput.Count < 0)
-            {
-                ToolDepth = Math.Round(double.MinValue,3);
-            }
-            else
-            {
-                for (int i = 0; i < _annulusInput.Count; i++)
-                {
-
-                    ToolDepth += _annulusInput[i].AnnulusBottomInFeet;
-                }
-            }
-
             if (_hydraulicAnalysisOutput.Segment != null)
                 foreach (var item in _hydraulicAnalysisOutput.Segment)
                 {
@@ -414,6 +401,9 @@ namespace HydraulicCalAPI.Service
                     totalPressureDrolAtAnnulus = totalPressureDrolAtAnnulus + item.SegmentHydraulicsOutput.PressureDropInPSI;
                 }
             // Get the lis and colour code for Annulus Table
+
+            ChartNGraphDataPoints.Add("toolDepthInFeet", ToolDepth);
+ //           ChartNGraphDataPoints.Add("_hydraulicAnalysisOutput", _hydraulicAnalysisOutput);
             ChartNGraphDataPoints.Add("HydraulicOutputAnnulusList",HydraulicOutputAnnulusList.ToArray());
             
             PressureDistributionChartCollection.Clear();
@@ -485,6 +475,7 @@ namespace HydraulicCalAPI.Service
                     var tempPressureValue = (double)item.BHAHydraulicsOutput.PressureDropInPSI;
                     PressureDistributionChartCollection.Add(new PieChartViewModel<double>() { Name = item.toolDescription, Value = tempPressureValue, Color = color.Name.ToString() });
                     HydraulicOutputBHAViewModel bhaObject = HydraulicToolTypeObjectManager.GetToolTypeObject(item, color, _fluidInput, MaxFlowRate, MaxPressure, _bhaInput, inputFlowRate);
+                    bhaObject.ToolID= item.ToolIdentifier;
                     //if (_bhaVMList.Exists(o => o.BHAID == bhaObject.ToolID.Value))
                     //{
                     //    bhaObject.IsToolInputDetailsVisible = true;
