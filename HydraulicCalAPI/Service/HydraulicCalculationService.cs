@@ -15,6 +15,7 @@ namespace HydraulicCalAPI.Service
         public Fluid fluidInput { get; set; }
         public List<BHATool> bhaInput { get; set; }
         public double flowRateInGPMInput { get; set; }
+        public List<WorkString> _workstringList { get; set; }
         public List<Annulus> annulusInput { get; set; }
         public Cuttings cuttingsInput { get; set; }
      //   public CuttingType CuttingsType { get; set; }
@@ -33,6 +34,7 @@ namespace HydraulicCalAPI.Service
         /// </summary>
         public class BHATool
         {
+            public List<HydraulicEngine.BHATool> bhaToolInput = new List<HydraulicEngine.BHATool>();
 
             public Guid? ToolIdentifier { get; set; }
             public int PositionNumber { get; set; }
@@ -88,6 +90,7 @@ namespace HydraulicCalAPI.Service
             /// </summary>
             public double LengthBeforeAnnulusOpeningInFeet { get; set; }
             public double LengthAfterAnnulusOpeningInFeet { get; set; }
+            public List<BHATool> BHATools { get; set; }
             public Common.ToolState BHAOpeningState { get; set; }
 
             /// <summary>
@@ -95,7 +98,13 @@ namespace HydraulicCalAPI.Service
             /// </summary>
             public double PressureDropInPSI { get; set; }
 
+            /// <summary>
+            /// Input Points for BHAToolType8
+            /// </summary>
 
+            /// <summary>
+            /// Input Points for BHATootType9
+            /// </summary>
             public double ObservedFlowRateInGallonsPerMinute { get; set; }
             public double ObservedPressureDropInPSI { get; set; }
 
