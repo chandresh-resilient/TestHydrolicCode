@@ -18,13 +18,10 @@ namespace HydraulicCalAPI.Service
         public List<WorkString> _workstringList { get; set; }
         public List<Annulus> annulusInput { get; set; }
         public Cuttings cuttingsInput { get; set; }
-     //   public CuttingType CuttingsType { get; set; }
         public SurfaceEquipment surfaceEquipmentInput { get; set; }
-     //   public SurfaceEquipmentCaseType CaseType { get; set; }
 
         public double maxflowpressure { get; set; }
         public double maxflowrate { get; set; }
-        public Guid? ToolIdentifier { get; set; }
         public double torqueInFeetPound { get; set; }
         public double toolDepthInFeet { get; set; }
         public double blockPostionInFeet { get; set; }
@@ -67,7 +64,8 @@ namespace HydraulicCalAPI.Service
             /// Input Points for BHATootType3
             /// </summary>
             public List<Nozzles> NozzlesInfomation { get; set; }
-
+           // public int NozzleQuantity { get; set; }
+          //  public double NozzleDiameterInInch { get; set; }
             /// <summary>
             /// Input Points for BHAToolType4
             /// </summary>

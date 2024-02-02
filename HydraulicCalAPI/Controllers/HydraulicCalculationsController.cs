@@ -90,7 +90,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type5":
-                        {   //int positionNumber, string toolDescription, double outsideDiameterInInch, double lengthInFeet, List<Nozzles> annulusNozzles, double insideDiameterInInch = 0
+                        {  
                             bhaToolItem = (new BHAToolType5
                             {
                                 PositionNumber = item.PositionNumber,
@@ -103,9 +103,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type6":
-                        {   //int positionNumber, double toolDepth, string toolDescription, double outsideDiameterInInch, double lengthInFeet, Common.ToolState currentState,
-                            //List<Nozzles> bhaNozzleInfo, List<Nozzles> annulusNozzleInfo, double insideDiameterInInches, double lengthBeforeAnnulusOpeningInFeet,
-                            //double lengthAfterAnnnulusOpeningInFeet, Common.ToolState bhaToolState = Common.ToolState.OpenToAnnulus
+                        {   
                             bhaToolItem = (new BHAToolType6
                             {
                                 PositionNumber = item.PositionNumber,
@@ -124,7 +122,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type7":
-                        {   //int positionNumber, string toolDescription, double outsideDiameterInInch, double lengthInFeet, double pressureDropInPSI
+                        {
                             bhaToolItem = (new BHAToolType7
                             {
                                 PositionNumber = item.PositionNumber,
@@ -136,8 +134,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type8":
-                        {   //int positionNumber, double toolDepth, string toolDescription, double outsideDiameterInInch, double lengthInFeet, double insideDiameterInInch = 0
-                            bhaToolItem = (new BHAToolType8
+                        {   bhaToolItem = (new BHAToolType8
                             {
                                 PositionNumber = item.PositionNumber,
                                 Depth = item.Depth,
@@ -149,8 +146,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type9":
-                        {   //int positionNumber, string toolDescription, double outsideDiameterInInch, double lengthInFeet, double insideDiameterInInch,
-                            //double observedFlowRateInGallonsPerMinute, double observedPressureDropInPSI
+                        {   
                             bhaToolItem = (new BHAToolType9
                             {
                                 PositionNumber = item.PositionNumber,
@@ -164,8 +160,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type10":
-                        {   //int positionNumber, double toolDepth, string toolDescription, double outsideDiameterInInch, double lengthInFeet, List<Nozzles> nozzles,
-                            //double insideDiameterInInch = 0, Accuset toolAccuset=null
+                        {  
                             bhaToolItem = (new BHAToolType10
                             {
                                 PositionNumber = item.PositionNumber,
@@ -180,11 +175,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     default:
-                        {   //int positionNumber,  string sectionName, double outsideDiameterInInch, double insideDiameterInInch, double lengthInFeet
-                            // BHATOOLType1 // int positionNumber, string toolDescription, double outsideDiameterInInch, double lengthInFeet, double insideDiameterInInch, double toolDepth
-                            // BHATool convertedResult = ConvertWorkstringToBHAForHydraulic(item.PositionNumber, item.SectionName, item.OutsideDiameterInInch,
-                            //                                                           item.InsideDiameterInInch, item.LengthInFeet);
-                            //Console.WriteLine(convertedResult);
+                        {   
                             bhaToolItem = (new BHAToolType1
                             {
                                 PositionNumber = item.PositionNumber,
@@ -211,15 +202,15 @@ namespace HydraulicCalAPI.Controllers
 
             HydraulicAnalysisOutput response = Main.CompleteHydraulicAnalysis(objHcs.fluidInput, objHcs.flowRateInGPMInput, objHcs.cuttingsInput, bhatools, objHcs.annulusInput, equipment, objHcs.torqueInFeetPound=0, objHcs.toolDepthInFeet, objHcs.blockPostionInFeet=double.MinValue);
 
-            ChartAndGraphService objChartnGraph = new ChartAndGraphService();
-            return objChartnGraph.GetDataPoints(response, objHcs.fluidInput,
-                                                objHcs.flowRateInGPMInput,
-                                                objHcs.cuttingsInput,
-                                                bhatools,
-                                                objHcs.annulusInput,
-                                                equipment,
-                                                objHcs.maxflowrate,
-                                                objHcs.maxflowpressure, objHcs.toolDepthInFeet);
+                ChartAndGraphService objChartnGraph = new ChartAndGraphService();
+                return objChartnGraph.GetDataPoints(response, objHcs.fluidInput,
+                                                    objHcs.flowRateInGPMInput,
+                                                    objHcs.cuttingsInput,
+                                                    bhatools,
+                                                    objHcs.annulusInput,
+                                                    equipment,
+                                                    objHcs.maxflowrate,
+                                                    objHcs.maxflowpressure, objHcs.toolDepthInFeet);
 
         }
     }

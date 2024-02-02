@@ -21,11 +21,8 @@
     <Reference Include="Ciloci.Flee">
       <HintPath>bin\Debug\netcoreapp3.1\Ciloci.Flee.dll</HintPath>
     </Reference>
-    <Reference Include="HydraproCalculations">
-      <HintPath>bin\Debug\netcoreapp3.1\HydraproCalculations.dll</HintPath>
-    </Reference>
     <Reference Include="HydraulicEngine">
-      <HintPath>bin\Debug\netcoreapp3.1\HydraulicEngine.dll</HintPath>
+      <HintPath>..\HydraulicEngine\bin\Debug\HydraulicEngine.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll</HintPath>
