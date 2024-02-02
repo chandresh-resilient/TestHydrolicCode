@@ -11,9 +11,8 @@ using WFT.UnitConversion.UI;
 using WFT.UI.Common.Validation;
 
 using HydraulicEngine;
-using HydraulicCalAPI.Controllers;
 using HydraulicCalAPI.ViewModel;
-using WFT.UI.Common.SyncfusionLikeControl;
+
 
 
 namespace HydraulicCalAPI.Service
@@ -26,7 +25,7 @@ namespace HydraulicCalAPI.Service
         public Cuttings _cuttingsInput;
         public List<BHATool> _bhaInput;
         public List<Annulus> _annulusInput;
-        public SurfaceEquipment _surfaceEquipmentInput = new SurfaceEquipment(HydraulicEngine.Common.SurfaceEquipmentCaseType.Case3);
+        public SurfaceEquipment _surfaceEquipmentInput;
         public HydraulicAnalysisOutput _hydraulicAnalysisOutput;
         public double _toolDepth;
         public double _flowRateOfChartedData;
@@ -367,7 +366,7 @@ namespace HydraulicCalAPI.Service
 
         #region "Calculate Hydraulics"
         public Dictionary<string, object> GetDataPoints(HydraulicAnalysisOutput hydraulicOutput, Fluid fluidInput,
-            double __flowRateOfChartedData, Cuttings cuttingInput, List<BHATool> bhaInput, List<Annulus> annulusInput, SurfaceEquipment surfaceEquipment,double maxflow, double maxpres)
+            double __flowRateOfChartedData, Cuttings cuttingInput, List<BHATool> bhaInput, List<Annulus> annulusInput, SurfaceEquipment surfaceEquipment,double maxflow, double maxpres,double toolDepthInFeet)
         {
             MaxFlowRate = maxflow;
             MaxPressure = maxpres;
@@ -378,10 +377,21 @@ namespace HydraulicCalAPI.Service
             _annulusInput = annulusInput;
             _surfaceEquipmentInput = surfaceEquipment;
             flowRateChartedData = __flowRateOfChartedData;
-                        
+            ToolDepth = toolDepthInFeet;         
             CalculateHydraulics();
             //PlotChart();
-
+            double totalPressureDrop = 0;
+            if (hydraulicOutput.Segment != null && hydraulicOutput.Segment.Count() > 0)
+            {
+                 totalPressureDrop = hydraulicOutput.Segment.Where(o => o.SegmentHydraulicsOutput != null && !double.IsNaN(o.SegmentHydraulicsOutput.PressureDropInPSI)).Select(o => o.SegmentHydraulicsOutput.PressureDropInPSI).Sum();
+                //double annularVelocityMin = hydraulicOutput.Segment.Where(o => ((ISegmentHydraulicsOutput)o).FlowType != "None" && o.SegmentHydraulicsOutput != null && !double.IsNaN(o.SegmentHydraulicsOutput.AverageVelocityInFeetPerMinute)).Select(o => o.SegmentHydraulicsOutput.AverageVelocityInFeetPerMinute).Min();
+            }
+            if (hydraulicOutput.BHATool != null && hydraulicOutput.BHATool.Count() > 0)
+            {
+                totalPressureDrop += hydraulicOutput.BHATool.Where(o => o.BHAHydraulicsOutput != null && !double.IsNaN(o.BHAHydraulicsOutput.PressureDropInPSI)).Select(o => o.BHAHydraulicsOutput.PressureDropInPSI).Sum();
+            }
+            ChartNGraphDataPoints.Add("hydraulicOutput", hydraulicOutput);
+            ChartNGraphDataPoints.Add("TotalPressureDrop", totalPressureDrop);
             return ChartNGraphDataPoints;
         }
 
@@ -391,20 +401,6 @@ namespace HydraulicCalAPI.Service
             Color annulusColor = colorSelector.GetColor();
             string annulusToolNameForPieChart = "Annulus";
             Nullable<double> totalPressureDrolAtAnnulus = null;
-
-            if (_annulusInput.Count < 0)
-            {
-                ToolDepth = Math.Round(double.MinValue,3);
-            }
-            else
-            {
-                for (int i = 0; i < _annulusInput.Count; i++)
-                {
-
-                    ToolDepth += _annulusInput[i].AnnulusBottomInFeet;
-                }
-            }
-
             if (_hydraulicAnalysisOutput.Segment != null)
                 foreach (var item in _hydraulicAnalysisOutput.Segment)
                 {
@@ -414,7 +410,8 @@ namespace HydraulicCalAPI.Service
                     totalPressureDrolAtAnnulus = totalPressureDrolAtAnnulus + item.SegmentHydraulicsOutput.PressureDropInPSI;
                 }
             // Get the lis and colour code for Annulus Table
-            ChartNGraphDataPoints.Add("HydraulicOutputAnnulusList",HydraulicOutputAnnulusList.ToArray());
+            ChartNGraphDataPoints.Add("HydraulicOutputAnnulusList", HydraulicOutputAnnulusList.ToArray());
+            ChartNGraphDataPoints.Add("ToolDepthInFeet", ToolDepth);
             
             PressureDistributionChartCollection.Clear();
             if (totalPressureDrolAtAnnulus != null)

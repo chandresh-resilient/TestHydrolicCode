@@ -34,9 +34,9 @@ namespace HydraulicCalAPI.Service
         /// </summary>
         public class BHATool
         {
-            public List<HydraulicEngine.BHATool> bhaToolInput = new List<HydraulicEngine.BHATool>();
+           // public List<HydraulicEngine.BHATool> bhaToolInput = new List<HydraulicEngine.BHATool>();
 
-            public Guid? ToolIdentifier { get; set; }
+           // public Guid? ToolIdentifier { get; set; }
             public int PositionNumber { get; set; }
             public string toolDescription { get; set; }
             public double OutsideDiameterInInch { get; set; }
@@ -44,7 +44,7 @@ namespace HydraulicCalAPI.Service
 
             //this property is by default set to false.
             // for tool types with split flow or different states. This need to be set to true
-            public bool HasVariableFlow { get; set; }
+ //           public bool HasVariableFlow { get; set; }
 
             /// <summary>
             /// Input point to get workstring data
@@ -90,7 +90,7 @@ namespace HydraulicCalAPI.Service
             /// </summary>
             public double LengthBeforeAnnulusOpeningInFeet { get; set; }
             public double LengthAfterAnnulusOpeningInFeet { get; set; }
-            public List<BHATool> BHATools { get; set; }
+ //           public List<BHATool> BHATools { get; set; }
             public Common.ToolState BHAOpeningState { get; set; }
 
             /// <summary>
