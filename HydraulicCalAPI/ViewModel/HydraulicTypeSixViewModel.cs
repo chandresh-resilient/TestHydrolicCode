@@ -2,30 +2,27 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using WFT.UI.Common.Charts;
 using WFT.UnitConversion.UI;
 using WFT.UI.Common.Base;
-using HydraulicCalAPI.Service;
-using HydraulicCalAPI.ViewModel;
 
 namespace HydraulicCalAPI.ViewModel
 {
     public class HydraulicTypeSixViewModel : HydraulicOutputBHAViewModel
     {
         #region Private
-        private DoubleWithUnitConversionViewModel _internalPressureDrop;
-        private DoubleWithUnitConversionViewModel _regionOnePressureDrop;
-        private DoubleWithUnitConversionViewModel _regionOneFlowRate;
-        private DoubleWithUnitConversionViewModel _regionTwoPressureDrop;
-        private DoubleWithUnitConversionViewModel _regionTwoFlowRate;
-        private DoubleWithUnitConversionViewModel _regionThreePressureDrop;
-        private DoubleWithUnitConversionViewModel _regionThreeFlowRate;
+        private  double _internalPressureDrop;
+        private double _regionOnePressureDrop;
+        private double _regionOneFlowRate;
+        private double _regionTwoPressureDrop;
+        private double _regionTwoFlowRate;
+        private double _regionThreePressureDrop;
+        private double _regionThreeFlowRate;
         private ChartViewModel<double> _standpipeVsFlowRateChartRegionOne = new ChartViewModel<double>();
         private ChartViewModel<double> _standpipeVsFlowRateChartRegionTwo = new ChartViewModel<double>();
         private ChartViewModel<double> _standpipeVsFlowRateChartRegionThree = new ChartViewModel<double>();
-        private DoubleWithUnitConversionViewModel _annulusNozzleVelocity;
-        private DoubleWithUnitConversionViewModel _bhaNozzleVelocity;
+        private double _annulusNozzleVelocity;
+        private double _bhaNozzleVelocity;
         private ControlCutConstants.ColorStrength _annulusNozzleVelocityColor;
         private ControlCutConstants.ColorStrength _bhaNozzleVelocityColor;
         private string _displayImage;
@@ -78,7 +75,7 @@ namespace HydraulicCalAPI.ViewModel
                 SetProperty<ChartViewModel<double>>(standpipeVsFlowRateChartRegionOneField, ref _standpipeVsFlowRateChartRegionThree, ref value);
             }
         }
-        public DoubleWithUnitConversionViewModel RegionOnePressureDrop
+        public double RegionOnePressureDrop
         {
             get { return _regionOnePressureDrop; }
             set
@@ -86,7 +83,7 @@ namespace HydraulicCalAPI.ViewModel
                 SetProperty(regionOnePressureDropField, ref _regionOnePressureDrop, ref value);
             }
         }
-        public DoubleWithUnitConversionViewModel InternalPressureDrop
+        public double InternalPressureDrop
         {
             get { return _internalPressureDrop; }
             set
@@ -95,7 +92,7 @@ namespace HydraulicCalAPI.ViewModel
             }
         }
 
-        public DoubleWithUnitConversionViewModel RegionOneFlowRate
+        public double RegionOneFlowRate
         {
             get { return _regionOneFlowRate; }
             set
@@ -104,7 +101,7 @@ namespace HydraulicCalAPI.ViewModel
             }
         }
 
-        public DoubleWithUnitConversionViewModel RegionTwoPressureDrop
+        public double RegionTwoPressureDrop
         {
             get { return _regionTwoPressureDrop; }
             set
@@ -112,7 +109,7 @@ namespace HydraulicCalAPI.ViewModel
                 SetProperty(regionTwoPressureDropField, ref _regionTwoPressureDrop, ref value);
             }
         }
-        public DoubleWithUnitConversionViewModel RegionTwoFlowRate
+        public double RegionTwoFlowRate
         {
             get { return _regionTwoFlowRate; }
             set
@@ -121,7 +118,7 @@ namespace HydraulicCalAPI.ViewModel
             }
         }
 
-        public DoubleWithUnitConversionViewModel RegionThreePressureDrop
+        public double RegionThreePressureDrop
         {
             get { return _regionThreePressureDrop; }
             set
@@ -129,7 +126,7 @@ namespace HydraulicCalAPI.ViewModel
                 SetProperty(regionThreePressureDropField, ref _regionThreePressureDrop, ref value);
             }
         }
-        public DoubleWithUnitConversionViewModel RegionThreeFlowRate
+        public double RegionThreeFlowRate
         {
             get { return _regionThreeFlowRate; }
             set
@@ -138,7 +135,7 @@ namespace HydraulicCalAPI.ViewModel
             }
         }
 
-        public DoubleWithUnitConversionViewModel AnnulusNozzleVelocity
+        public double AnnulusNozzleVelocity
         {
             get { return _annulusNozzleVelocity; }
             set
@@ -156,7 +153,7 @@ namespace HydraulicCalAPI.ViewModel
             }
         }
 
-        public DoubleWithUnitConversionViewModel BHANozzleVelocity
+        public double BHANozzleVelocity
         {
             get { return _bhaNozzleVelocity; }
             set
@@ -193,28 +190,28 @@ namespace HydraulicCalAPI.ViewModel
 
         private void InitializeProperties()
         {
-            InternalPressureDrop = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Pressure);
-            RegionOnePressureDrop = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Pressure);
-            RegionOneFlowRate = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.FlowRate);
-            RegionTwoPressureDrop = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Pressure);
-            RegionTwoFlowRate = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.FlowRate);
-            RegionThreePressureDrop = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Pressure);
-            RegionThreeFlowRate = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.FlowRate);
-            AnnulusNozzleVelocity = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.TubularVelocity);
-            BHANozzleVelocity = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.TubularVelocity);
+            InternalPressureDrop = Math.Round(double.MinValue, 3);
+            RegionOnePressureDrop = Math.Round(double.MinValue, 3);
+            RegionOneFlowRate = Math.Round(double.MinValue, 3);
+            RegionTwoPressureDrop = Math.Round(double.MinValue, 3);
+            RegionTwoFlowRate =  Math.Round(double.MinValue, 3);
+            RegionThreePressureDrop = Math.Round(double.MinValue, 3);
+            RegionThreeFlowRate = Math.Round(double.MinValue, 3);
+            AnnulusNozzleVelocity = Math.Round(double.MinValue, 3);
+            BHANozzleVelocity = Math.Round(double.MinValue, 3);
         }
 
         public override void SetTypeSpecificInfo(BHATool bha)
         {
-            InternalPressureDrop.BaseValue = (bha as BHAToolType6).BHAHydraulicsOutput.TotalPressureDropInPSI;
-            RegionOnePressureDrop.BaseValue = (bha as BHAToolType6).BHAHydraulicsOutput.ToolPressureDropInPSI;
-            RegionOneFlowRate.BaseValue = InputFlowRate;
-            RegionTwoPressureDrop.BaseValue = (bha as BHAToolType6).BHAHydraulicsOutput.AnnulusOpeningPressureDropInPSI;
-            RegionTwoFlowRate.BaseValue = (bha as BHAToolType6).BHAHydraulicsOutput.AnnulusOpeningFlowrateInGPM;
-            RegionThreePressureDrop.BaseValue = (bha as BHAToolType6).BHAHydraulicsOutput.BHAOpeningPressureDropInPSI;
-            RegionThreeFlowRate.BaseValue = (bha as BHAToolType6).BHAHydraulicsOutput.BHAOpeningFlowrateInGPM;
-            AnnulusNozzleVelocity.BaseValue = (bha as BHAToolType6).BHAHydraulicsOutput.AnnulusNozzleVelocityInFeetPerSecond;
-            BHANozzleVelocity.BaseValue = (bha as BHAToolType6).BHAHydraulicsOutput.BHANozzleVelocityInFeetPerSecond;
+            InternalPressureDrop = (bha as BHAToolType6).BHAHydraulicsOutput.TotalPressureDropInPSI;
+            RegionOnePressureDrop = (bha as BHAToolType6).BHAHydraulicsOutput.ToolPressureDropInPSI;
+            RegionOneFlowRate = InputFlowRate;
+            RegionTwoPressureDrop = (bha as BHAToolType6).BHAHydraulicsOutput.AnnulusOpeningPressureDropInPSI;
+            RegionTwoFlowRate = (bha as BHAToolType6).BHAHydraulicsOutput.AnnulusOpeningFlowrateInGPM;
+            RegionThreePressureDrop = (bha as BHAToolType6).BHAHydraulicsOutput.BHAOpeningPressureDropInPSI;
+            RegionThreeFlowRate = (bha as BHAToolType6).BHAHydraulicsOutput.BHAOpeningFlowrateInGPM;
+            AnnulusNozzleVelocity = (bha as BHAToolType6).BHAHydraulicsOutput.AnnulusNozzleVelocityInFeetPerSecond;
+            BHANozzleVelocity = (bha as BHAToolType6).BHAHydraulicsOutput.BHANozzleVelocityInFeetPerSecond;
             SetNozzleVelocityColor();
             //SetImagePath(bha);
         }
@@ -290,17 +287,17 @@ namespace HydraulicCalAPI.ViewModel
         }
         private void SetNozzleVelocityColor()
         {
-            if (AnnulusNozzleVelocity.BaseValue.HasValue)
+            if (AnnulusNozzleVelocity>0)
             {
-                if (AnnulusNozzleVelocity.BaseValue >= 230)
+                if (AnnulusNozzleVelocity >= 230)
                 {
                     AnnulusNozzleVelocityColor = ControlCutConstants.ColorStrength.Red;
                 }
-                else if (AnnulusNozzleVelocity.BaseValue >= 190 && AnnulusNozzleVelocity.BaseValue < 230)
+                else if (AnnulusNozzleVelocity >= 190 && AnnulusNozzleVelocity < 230)
                 {
                     AnnulusNozzleVelocityColor = ControlCutConstants.ColorStrength.Yellow;
                 }
-                else if (AnnulusNozzleVelocity.BaseValue < 190)
+                else if (AnnulusNozzleVelocity < 190)
                 {
                     AnnulusNozzleVelocityColor = ControlCutConstants.ColorStrength.Green;
                 }
@@ -309,17 +306,17 @@ namespace HydraulicCalAPI.ViewModel
                     AnnulusNozzleVelocityColor = ControlCutConstants.ColorStrength.Transparent;
                 }
             }
-            if (BHANozzleVelocity.BaseValue.HasValue)
+            if (BHANozzleVelocity > 0)
             {
-                if (BHANozzleVelocity.BaseValue >= 230)
+                if (BHANozzleVelocity >= 230)
                 {
                     BHANozzleVelocityColor = ControlCutConstants.ColorStrength.Red;
                 }
-                else if (BHANozzleVelocity.BaseValue >= 190 && BHANozzleVelocity.BaseValue < 230)
+                else if (BHANozzleVelocity >= 190 && BHANozzleVelocity < 230)
                 {
                     BHANozzleVelocityColor = ControlCutConstants.ColorStrength.Yellow;
                 }
-                else if (BHANozzleVelocity.BaseValue < 190)
+                else if (BHANozzleVelocity < 190)
                 {
                     BHANozzleVelocityColor = ControlCutConstants.ColorStrength.Green;
                 }
@@ -411,27 +408,27 @@ namespace HydraulicCalAPI.ViewModel
 
             //TODO: check plotting operating point logic...
             this.StandpipeVsFlowRateChart.ClearAnnotation("OperatingPoint");
-            if (standpipePressureListRegion1.Count > 0 && !string.IsNullOrWhiteSpace(RegionOneFlowRate.DisplayValue))
+            if (standpipePressureListRegion1.Count > 0 && !string.IsNullOrWhiteSpace(RegionOneFlowRate+""))
             {
-                var operatingPointFlowRate1 = Convert.ToDouble(RegionOneFlowRate.DisplayValue);
+                var operatingPointFlowRate1 = Convert.ToDouble(RegionOneFlowRate);
                 var operatingPoint1 = standpipePressureListRegion1.Where(o => o.PrimaryAxisValue < operatingPointFlowRate1).LastOrDefault();
                 if (operatingPoint1 != null)
                 {
                     this.PlotOperatingPoint(operatingPoint1.PrimaryAxisValue, ((XYValueModelForLineData<double>)operatingPoint1).SecondaryAxisValue);
                 }
             }
-            if (standpipePressureListRegion2.Count > 0 && !string.IsNullOrWhiteSpace(RegionTwoFlowRate.DisplayValue))
+            if (standpipePressureListRegion2.Count > 0 && !string.IsNullOrWhiteSpace(RegionTwoFlowRate+""))
             {
-                var operatingPointFlowRate2 = Convert.ToDouble(RegionTwoFlowRate.DisplayValue);
+                var operatingPointFlowRate2 = Convert.ToDouble(RegionTwoFlowRate);
                 var operatingPoint2 = standpipePressureListRegion2.Where(o => o.PrimaryAxisValue < operatingPointFlowRate2).LastOrDefault();
                 if (operatingPoint2 != null)
                 {
                     this.PlotOperatingPoint(operatingPoint2.PrimaryAxisValue, ((XYValueModelForLineData<double>)operatingPoint2).SecondaryAxisValue);
                 }
             }
-            if (standpipePressureListRegion3.Count > 0 && !string.IsNullOrWhiteSpace(RegionThreeFlowRate.DisplayValue))
+            if (standpipePressureListRegion3.Count > 0 && !string.IsNullOrWhiteSpace(RegionThreeFlowRate + ""))
             {
-                var operatingPointFlowRate3 = Convert.ToDouble(RegionThreeFlowRate.DisplayValue);
+                var operatingPointFlowRate3 = Convert.ToDouble(RegionThreeFlowRate);
                 var operatingPoint3 = standpipePressureListRegion3.Where(o => o.PrimaryAxisValue < operatingPointFlowRate3).LastOrDefault();
                 if (operatingPoint3 != null)
                 {

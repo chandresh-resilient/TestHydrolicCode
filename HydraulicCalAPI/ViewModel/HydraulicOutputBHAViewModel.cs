@@ -51,6 +51,7 @@ namespace HydraulicCalAPI.ViewModel
         public bool _isToolInputDetailsVisible;
         public string _toolType;
         public string _toolSourcePath;
+        public int positionNo;
         Dictionary<string, List<XYValueModelForLineData<double>>> _bhaChart;
         #endregion
         readonly ViewModelBase objvmb;
@@ -165,6 +166,14 @@ namespace HydraulicCalAPI.ViewModel
             set
             {
                 SetProperty<string>(workstringField, ref _workistring, ref value);
+            }
+        }
+        public int PositionNo
+        {
+            get { return positionNo; }
+            set
+            {
+                positionNo = value;
             }
         }
         public double LengthBHA

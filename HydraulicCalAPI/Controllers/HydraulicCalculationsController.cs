@@ -32,7 +32,7 @@ namespace HydraulicCalAPI.Controllers
                 switch (toolcasetype)
                 {
                     case "type1":
-                        {   // int positionNumber, string toolDescription, double outsideDiameterInInch, double lengthInFeet, double insideDiameterInInch, double toolDepth
+                        {  
                             bhaToolItem = new BHAToolType1
                             {
                                 PositionNumber = item.PositionNumber,
@@ -45,7 +45,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type2":
-                        {   //int positionNumber, string toolDescription, Common.BHAType2ModelName modelName,double length,double outerDiameter
+                        {   
                             bhaToolItem = new BHAToolType2
                             {
                                 PositionNumber = item.PositionNumber,
@@ -57,7 +57,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type3":
-                        {   //int positionNumber, double toolDepth, string toolDescription, double outsideDiameterInInch, double lengthInFeet, List<Nozzles> nozzles, double insideDiameterInInch = 0
+                        {  
                             bhaToolItem = (new BHAToolType3
                             {
                                 PositionNumber = item.PositionNumber,
@@ -71,8 +71,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type4":
-                        {   //int positionNumber, string toolDescription, double outsideDiameterInInch, double lengthInFeet, Common.ToolState currentState, double actuationFlowrateInGPA,
-                            //double valveInsideDiameterinInch, double minimumSidePortAreaInInch2, double maximumPortAreaInInch2, double gapNutInsideDiameterInInch, double gapWidthInInch
+                        {   
                             bhaToolItem = (new BHAToolType4
                             {
                                 PositionNumber = item.PositionNumber,

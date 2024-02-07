@@ -12,11 +12,11 @@ namespace HydraulicCalAPI.ViewModel
     public class HydraulicTypeTenViewModel : HydraulicOutputBHAViewModel
     {
         #region Private
-        private DoubleWithUnitConversionViewModel _hydraulicHorsePower;
-        private DoubleWithUnitConversionViewModel _nozzleVelocityInFeetPerSecond;
-        private DoubleWithUnitConversionViewModel _impactForceInPounds;
-        private DoubleWithUnitConversionViewModel _nozzlePressureDropInPSI;
-        private DoubleWithUnitConversionViewModel _accusetPressureDropInPSI;
+        private double _hydraulicHorsePower;
+        private double _nozzleVelocityInFeetPerSecond;
+        private double _impactForceInPounds;
+        private double _nozzlePressureDropInPSI;
+        private double _accusetPressureDropInPSI;
         private bool _hasAccuSet = false;
         private bool _hasNozzles = false;
         private bool _hasNothing = false;
@@ -36,7 +36,7 @@ namespace HydraulicCalAPI.ViewModel
         #endregion
 
         #region Properties
-        public DoubleWithUnitConversionViewModel HydraulicHorsePower
+        public double HydraulicHorsePower
         {
             get { return _hydraulicHorsePower; }
             set
@@ -44,7 +44,7 @@ namespace HydraulicCalAPI.ViewModel
                 SetProperty(hydraulicHorsePowerField, ref _hydraulicHorsePower, ref value);
             }
         }
-        public DoubleWithUnitConversionViewModel NozzleVelocityInFeetPerSecond
+        public double NozzleVelocityInFeetPerSecond
         {
             get { return _nozzleVelocityInFeetPerSecond; }
             set
@@ -53,7 +53,7 @@ namespace HydraulicCalAPI.ViewModel
             }
         }
 
-        public DoubleWithUnitConversionViewModel ImpactForceInPounds
+        public double ImpactForceInPounds
         {
             get { return _impactForceInPounds; }
             set
@@ -61,7 +61,7 @@ namespace HydraulicCalAPI.ViewModel
                 SetProperty(impactForceInPoundsField, ref _impactForceInPounds, ref value);
             }
         }
-        public DoubleWithUnitConversionViewModel NozzlePressureDropInPSI
+        public double NozzlePressureDropInPSI
         {
             get { return _nozzlePressureDropInPSI; }
             set
@@ -69,7 +69,7 @@ namespace HydraulicCalAPI.ViewModel
                 SetProperty(nozzlePressureDropInPSIField, ref _nozzlePressureDropInPSI, ref value);
             }
         }
-        public DoubleWithUnitConversionViewModel AccusetPressureDropInPSI
+        public double AccusetPressureDropInPSI
         {
             get { return _accusetPressureDropInPSI; }
             set
@@ -123,20 +123,20 @@ namespace HydraulicCalAPI.ViewModel
 
         private void InitializeProperties()
         {
-            HydraulicHorsePower = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Power);
-            NozzleVelocityInFeetPerSecond = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.TubularVelocity);
-            ImpactForceInPounds = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Force);
-            NozzlePressureDropInPSI = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Pressure);
-            AccusetPressureDropInPSI = new DoubleWithUnitConversionViewModel(ControlCutConstants.UnitSystemAttributes.Pressure);
+            HydraulicHorsePower = Math.Round(double.MinValue, 3);
+            NozzleVelocityInFeetPerSecond = Math.Round(double.MinValue, 3);
+            ImpactForceInPounds = Math.Round(double.MinValue, 3);
+            NozzlePressureDropInPSI = Math.Round(double.MinValue, 3);
+            AccusetPressureDropInPSI = Math.Round(double.MinValue, 3);
         }
 
         public override void SetTypeSpecificInfo(BHATool bha)
         {
-            HydraulicHorsePower.BaseValue = (bha as BHAToolType10).BHAHydraulicsOutput.HydraulicHorsePower;
-            NozzleVelocityInFeetPerSecond.BaseValue = (bha as BHAToolType10).BHAHydraulicsOutput.NozzleVelocityInFeetPerSecond;
-            ImpactForceInPounds.BaseValue = (bha as BHAToolType10).BHAHydraulicsOutput.ImpactForceInPounds;
-            NozzlePressureDropInPSI.BaseValue = (bha as BHAToolType10).BHAHydraulicsOutput.NozzlePressureDropInPSI;
-            AccusetPressureDropInPSI.BaseValue = (bha as BHAToolType10).BHAHydraulicsOutput.AccusetPressureDropInPSI;
+            HydraulicHorsePower = (bha as BHAToolType10).BHAHydraulicsOutput.HydraulicHorsePower;
+            NozzleVelocityInFeetPerSecond = (bha as BHAToolType10).BHAHydraulicsOutput.NozzleVelocityInFeetPerSecond;
+            ImpactForceInPounds = (bha as BHAToolType10).BHAHydraulicsOutput.ImpactForceInPounds;
+            NozzlePressureDropInPSI = (bha as BHAToolType10).BHAHydraulicsOutput.NozzlePressureDropInPSI;
+            AccusetPressureDropInPSI = (bha as BHAToolType10).BHAHydraulicsOutput.AccusetPressureDropInPSI;
             HasAccuSet = (bha as BHAToolType10).ToolAccuset != null ? true : false;
             HasNozzles = (bha as BHAToolType10).NozzlesInfomation != null && (bha as BHAToolType10).NozzlesInfomation.Count > 0 ? true : false;
             HasNothing = HasAccuSet == false && HasNozzles == false ? true : false;
@@ -144,17 +144,17 @@ namespace HydraulicCalAPI.ViewModel
         }
         private void SetNozzleVelocityColor()
         {
-            if (NozzleVelocityInFeetPerSecond.BaseValue.HasValue)
+            if (NozzleVelocityInFeetPerSecond>0)
             {
-                if (NozzleVelocityInFeetPerSecond.BaseValue >= 230)
+                if (NozzleVelocityInFeetPerSecond >= 230)
                 {
                     NozzleVelocityColor = ControlCutConstants.ColorStrength.Red;
                 }
-                else if (NozzleVelocityInFeetPerSecond.BaseValue >= 190 && NozzleVelocityInFeetPerSecond.BaseValue < 230)
+                else if (NozzleVelocityInFeetPerSecond >= 190 && NozzleVelocityInFeetPerSecond < 230)
                 {
                     NozzleVelocityColor = ControlCutConstants.ColorStrength.Yellow;
                 }
-                else if (NozzleVelocityInFeetPerSecond.BaseValue < 190)
+                else if (NozzleVelocityInFeetPerSecond < 190)
                 {
                     NozzleVelocityColor = ControlCutConstants.ColorStrength.Green;
                 }

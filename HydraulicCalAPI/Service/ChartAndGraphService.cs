@@ -482,6 +482,7 @@ namespace HydraulicCalAPI.Service
                     var tempPressureValue = (double)item.BHAHydraulicsOutput.PressureDropInPSI;
                     PressureDistributionChartCollection.Add(new PieChartViewModel<double>() { Name = item.toolDescription, Value = tempPressureValue, Color = color.Name.ToString() });
                     HydraulicOutputBHAViewModel bhaObject = HydraulicToolTypeObjectManager.GetToolTypeObject(item, color, _fluidInput, MaxFlowRate, MaxPressure, _bhaInput, inputFlowRate);
+                    bhaObject.positionNo = item.PositionNumber;
                     //if (_bhaVMList.Exists(o => o.BHAID == bhaObject.ToolID.Value))
                     //{
                     //    bhaObject.IsToolInputDetailsVisible = true;
