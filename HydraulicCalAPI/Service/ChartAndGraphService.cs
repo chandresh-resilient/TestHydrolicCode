@@ -12,6 +12,7 @@ using WFT.UI.Common.Validation;
 
 using HydraulicEngine;
 using HydraulicCalAPI.ViewModel;
+using static HydraulicCalAPI.Service.HydraulicCalculationService;
 
 
 
@@ -20,10 +21,10 @@ namespace HydraulicCalAPI.Service
     public class ChartAndGraphService
     {
         public Dictionary<string, object> ChartNGraphDataPoints = new Dictionary<string, object>();
-       
+
         public Fluid _fluidInput;
         public Cuttings _cuttingsInput;
-        public List<BHATool> _bhaInput;
+        public List<HydraulicEngine.BHATool> _bhaInput;
         public List<Annulus> _annulusInput;
         public SurfaceEquipment _surfaceEquipmentInput;
         public HydraulicAnalysisOutput _hydraulicAnalysisOutput;
@@ -42,7 +43,7 @@ namespace HydraulicCalAPI.Service
 
         public bool IsTotalPressureInWarningRegion = false;
         public bool IsTotalPressureInCriticalRegion = false;
-        
+
         public double? _correctionFactorForObserved = 0;
         public double MaxPressure;
         public double MaxFlowRate;
@@ -58,7 +59,7 @@ namespace HydraulicCalAPI.Service
         public double _observedPressure;
         public double _calculatedFlowRate;
         public double _calculatedPressure;
-        
+
         public bool _isObjectDisposedOrNotInUse;
         public bool _isDataInitializationHappening = false;
         private bool _isCalculationForCalculatedFieldInProgress = false;
@@ -107,8 +108,8 @@ namespace HydraulicCalAPI.Service
 
         public double ObservedFlowRate
         {
-            get {return _observedFlowRate;}
-            set{ SetProperty(observedFlowRateField, ref _observedFlowRate, ref value);}
+            get { return _observedFlowRate; }
+            set { SetProperty(observedFlowRateField, ref _observedFlowRate, ref value); }
         }
         public double ObservedPressure
         {
@@ -164,7 +165,7 @@ namespace HydraulicCalAPI.Service
         {
             get { return _pressureDistributionChartCollection; }
         }
-       
+
         public ObservableCollection<HydraulicOutputAnnulusViewModel> HydraulicOutputAnnulusList
         {
             get { return _hydraulicOutputAnnulusList; }
@@ -174,7 +175,7 @@ namespace HydraulicCalAPI.Service
             get { return _standpipeVsFlowRateChart; }
             set
             {
-               SetProperty<ChartViewModel<double>>(standpipeVsFlowRateChartField, ref _standpipeVsFlowRateChart, ref value);
+                SetProperty<ChartViewModel<double>>(standpipeVsFlowRateChartField, ref _standpipeVsFlowRateChart, ref value);
             }
         }
         public ErrorMessageDictionary _errorMessages = new ErrorMessageDictionary();
@@ -272,7 +273,7 @@ namespace HydraulicCalAPI.Service
                 SetProperty<double>(upperCriticalPointField, ref _upperCriticalPoint, ref value);
             }
         }
-       
+
         /// <summary>
         /// View Model List for HydraulicOutputAnnulusViewModel properties
         /// </summary>
@@ -293,7 +294,7 @@ namespace HydraulicCalAPI.Service
             public ColorStrength AverageVelocityColor { get; set; }
             public ColorStrength ChipRateColor { get; set; }
             public string AnnulusColor { get; set; }
-            public  HydraulicOutputAnnulusViewModel(Segment segment, Color? bhaToolColor)
+            public HydraulicOutputAnnulusViewModel(Segment segment, Color? bhaToolColor)
             {
                 SetHydraulicAnnulusOutput(segment, bhaToolColor);
             }
@@ -365,38 +366,34 @@ namespace HydraulicCalAPI.Service
         }
 
         #region "Calculate Hydraulics"
-        public Dictionary<string, object> GetDataPoints(HydraulicAnalysisOutput hydraulicOutput, Fluid fluidInput,
-            double __flowRateOfChartedData, Cuttings cuttingInput, List<BHATool> bhaInput, List<Annulus> annulusInput, SurfaceEquipment surfaceEquipment,double maxflow, double maxpres,double toolDepthInFeet)
+        public Dictionary<string, object> GetDataPoints(Fluid fluidInput,
+            double __flowRateOfChartedData, Cuttings cuttingInput, List<HydraulicEngine.BHATool> bhaInput, List<Annulus> annulusInput, SurfaceEquipment surfaceEquipment, double maxflow, double maxpres, double toolDepthInFeet)
         {
             MaxFlowRate = maxflow;
             MaxPressure = maxpres;
-            _hydraulicAnalysisOutput = hydraulicOutput;
+            int torqueInFeetPound;
             _fluidInput = fluidInput;
             _bhaInput = bhaInput;
             _cuttingsInput = cuttingInput;
             _annulusInput = annulusInput;
             _surfaceEquipmentInput = surfaceEquipment;
             flowRateChartedData = __flowRateOfChartedData;
-            ToolDepth = toolDepthInFeet;         
+            ToolDepth = toolDepthInFeet;
+            double blockPostionInFeet;
+            _hydraulicAnalysisOutput = Main.CompleteHydraulicAnalysis(fluidInput, flowRateChartedData, cuttingInput, _bhaInput, annulusInput, surfaceEquipment, torqueInFeetPound = 0, toolDepthInFeet, blockPostionInFeet = double.MinValue);
+           // PlotChart();
+            double totalPressureDrop = CalculateTotalPressureDropFROMHydraulicAnalysisOutput(_hydraulicAnalysisOutput);
             CalculateHydraulics();
-            //PlotChart();
-            double totalPressureDrop = 0;
-            if (hydraulicOutput.Segment != null && hydraulicOutput.Segment.Count() > 0)
-            {
-                 totalPressureDrop = hydraulicOutput.Segment.Where(o => o.SegmentHydraulicsOutput != null && !double.IsNaN(o.SegmentHydraulicsOutput.PressureDropInPSI)).Select(o => o.SegmentHydraulicsOutput.PressureDropInPSI).Sum();
-                //double annularVelocityMin = hydraulicOutput.Segment.Where(o => ((ISegmentHydraulicsOutput)o).FlowType != "None" && o.SegmentHydraulicsOutput != null && !double.IsNaN(o.SegmentHydraulicsOutput.AverageVelocityInFeetPerMinute)).Select(o => o.SegmentHydraulicsOutput.AverageVelocityInFeetPerMinute).Min();
-            }
-            if (hydraulicOutput.BHATool != null && hydraulicOutput.BHATool.Count() > 0)
-            {
-                totalPressureDrop += hydraulicOutput.BHATool.Where(o => o.BHAHydraulicsOutput != null && !double.IsNaN(o.BHAHydraulicsOutput.PressureDropInPSI)).Select(o => o.BHAHydraulicsOutput.PressureDropInPSI).Sum();
-            }
-            ChartNGraphDataPoints.Add("hydraulicOutput", hydraulicOutput);
+
+            ChartNGraphDataPoints.Add("hydraulicOutput", _hydraulicAnalysisOutput);
             ChartNGraphDataPoints.Add("TotalPressureDrop", totalPressureDrop);
+
             return ChartNGraphDataPoints;
         }
 
         public void CalculateHydraulics()
         {
+           
             ColorCodeGenerator colorSelector = new ColorCodeGenerator();
             Color annulusColor = colorSelector.GetColor();
             string annulusToolNameForPieChart = "Annulus";
@@ -412,7 +409,7 @@ namespace HydraulicCalAPI.Service
             // Get the lis and colour code for Annulus Table
             ChartNGraphDataPoints.Add("HydraulicOutputAnnulusList", HydraulicOutputAnnulusList.ToArray());
             ChartNGraphDataPoints.Add("ToolDepthInFeet", ToolDepth);
-            
+
             PressureDistributionChartCollection.Clear();
             if (totalPressureDrolAtAnnulus != null)
             {
@@ -420,19 +417,19 @@ namespace HydraulicCalAPI.Service
                 PressureDistributionChartCollection.Add(new PieChartViewModel<double>() { Name = annulusToolNameForPieChart, Value = tempPressureField, Color = annulusColor.Name.ToString() });
             }
 
-           TotalPressureDrop = 0.00;
-            
+            TotalPressureDrop = 0.00;
+
             if (_hydraulicAnalysisOutput.Segment != null)
                 TotalPressureDrop = _hydraulicAnalysisOutput.Segment.Where(o => o.SegmentHydraulicsOutput != null && !double.IsNaN(o.SegmentHydraulicsOutput.PressureDropInPSI)).Select(o => o.SegmentHydraulicsOutput.PressureDropInPSI).Sum();
             if (_hydraulicAnalysisOutput.BHATool != null)
                 TotalPressureDrop += _hydraulicAnalysisOutput.BHATool.Where(o => o.BHAHydraulicsOutput != null && !double.IsNaN(o.BHAHydraulicsOutput.PressureDropInPSI)).Select(o => o.BHAHydraulicsOutput.PressureDropInPSI).Sum();
-            
+
             if (double.IsNaN(((ISurfaceEquipmentHydraulicsOutput)_hydraulicAnalysisOutput.surfaceEquipment).PressureDropInPSI))
             {
                 TotalPressureDrop = TotalPressureDrop + ((ISurfaceEquipmentHydraulicsOutput)_hydraulicAnalysisOutput.surfaceEquipment).PressureDropInPSI;
             }
 
-            if (TotalPressureDrop >= 0.00 && MaxPressure >= 0.00 )
+            if (TotalPressureDrop >= 0.00 && MaxPressure >= 0.00)
             {
                 if (TotalPressureDrop > MaxPressure)
                 {
@@ -456,12 +453,9 @@ namespace HydraulicCalAPI.Service
                 IsTotalPressureInWarningRegion = false;
             }
 
-           if (!double.IsNaN(flowRateChartedData) && !double.IsNaN(TotalPressureDrop))
-                PlotOperatingPoint(flowRateChartedData, TotalPressureDrop);
-           
             List<HydraulicOutputBHAViewModel> tempListForIsToolDetailsVisible = new List<HydraulicOutputBHAViewModel>();
             tempListForIsToolDetailsVisible = HydraulicOutputBHAList.Where(x => x.IsToolDetailsVisible).ToList();
-            
+
             double? inputFlowRate = flowRateChartedData;
             Dictionary<Guid, Tuple<double?, double?, double?, double?>> scalingCache = new Dictionary<Guid, Tuple<double?, double?, double?, double?>>();
             foreach (var item in HydraulicOutputBHAList)
@@ -497,9 +491,9 @@ namespace HydraulicCalAPI.Service
             foreach (HydraulicOutputBHAViewModel item in HydraulicOutputBHAList)
             {
                 item.PlotChart();
-                item.BHAchart=item.GetSPvsFRChartData();
-                
-   
+                item.BHAchart = item.GetSPvsFRChartData();
+
+
                 if (item.ToolID.HasValue && scalingCache.ContainsKey(item.ToolID.Value))
                 {
                     var scalingValues = scalingCache[item.ToolID.Value];
@@ -511,58 +505,24 @@ namespace HydraulicCalAPI.Service
                 }
             }
             //ChartNGraphDataPoints.Add("B".ToArray());
-            ChartNGraphDataPoints.Add("HydraulicOutputBHAList",HydraulicOutputBHAList.ToArray());
+            ChartNGraphDataPoints.Add("HydraulicOutputBHAList", HydraulicOutputBHAList.ToArray());
             ChartNGraphDataPoints.Add("PressureDistributionChartCollection", PressureDistributionChartCollection.ToArray());
 
             //ChartNGraphDataPoints.Add(innStandardVSFlowrateDp.ToArray());
-            PlotChart();
+
 
             System.Diagnostics.Debug.WriteLine("End of all plot chart : " + (DateTime.UtcNow - startOfCalculations).ToString());
             startOfCalculations = DateTime.UtcNow;
-
-          #endregion "Calculate Hydraulics"
-        }
-
-        public void PlotOperatingPoint(double flowRate, double pressureDrop)
-        {
-            this.StandpipeVsFlowRateChart.ClearAnnotation("OperatingPoint");
-            AnnotationModel<double> annotationForOperatingPoint = new AnnotationModel<double>();
-            annotationForOperatingPoint.AnnotationText = "+";
-            annotationForOperatingPoint.PrimaryAxisValue = flowRate;
-            annotationForOperatingPoint.SecondaryAxisValue = pressureDrop;
-            this.StandpipeVsFlowRateChart.AddAnnoation("OperatingPoint", annotationForOperatingPoint);
-        }
-
-        private void PlotCalculatedPoint()
-        {
-            this.StandpipeVsFlowRateChart.ClearAnnotation("CalculatedPoint");
-            if (CalculatedFlowRate >= 0 && CalculatedPressure >= 0)
-            {
-                AnnotationModel<double> annotationForCalculatedPoint = new AnnotationModel<double>();
-                annotationForCalculatedPoint.PrimaryAxisValue = Convert.ToDouble(CalculatedFlowRate);
-                annotationForCalculatedPoint.SecondaryAxisValue = Convert.ToDouble(CalculatedPressure);
-                this.StandpipeVsFlowRateChart.AddAnnoation("CalculatedPoint", annotationForCalculatedPoint);
-            }
-        }
-
-        private void PlotObservedPoint()
-        {
-            this.StandpipeVsFlowRateChart.ClearAnnotation("ObservedPoint");
-            if (ObservedFlowRate >= 0 && ObservedPressure >= 0)
-            {
-                AnnotationModel<double> annotationForObservedPoint = new AnnotationModel<double>();
-                annotationForObservedPoint.PrimaryAxisValue = Convert.ToDouble(ObservedFlowRate);
-                annotationForObservedPoint.SecondaryAxisValue = Convert.ToDouble(ObservedPressure);
-                this.StandpipeVsFlowRateChart.AddAnnoation("ObservedPoint", annotationForObservedPoint);
-            }
+            PlotChart();
+            #endregion "Calculate Hydraulics"
         }
 
         private void PlotChart()
         {
             double flowrate = 0;
             double lastRecordedStandpipePressure = 0.00;
-           
-            List <XYValueModelForLineData<double>> standpipePressureListRL = new List<XYValueModelForLineData<double>>();
+
+            List<XYValueModelForLineData<double>> standpipePressureListRL = new List<XYValueModelForLineData<double>>();
             List<XYValueModelForLineData<double>> standpipePressureListYL = new List<XYValueModelForLineData<double>>();
             List<XYValueModelForLineData<double>> standpipePressureListG = new List<XYValueModelForLineData<double>>();
             List<XYValueModelForLineData<double>> standpipePressureListYH = new List<XYValueModelForLineData<double>>();
@@ -621,7 +581,7 @@ namespace HydraulicCalAPI.Service
                 SeriesName = "HydraproLineSeriesRedHigher",
 
             });
-           
+
 
             StandpipeVsFlowRateChart.RemoveSeries("EstimatedStandpipeLineSeries");
             estimatedStandpipeSeries.SeriesType = "Line";
@@ -670,7 +630,7 @@ namespace HydraulicCalAPI.Service
                         valueModelForRangeData.LowerBoundValue = currentSecondaryAxisValue;
                         valueModelForRangeData.UpperBoundValue = Convert.ToDouble(pressureValueMax);
                         valueModelForRangeData.PrimaryAxisValue = Convert.ToDouble(flowrate);
-                      //  standpipePressureRangeData.Add(valueModelForRangeData);
+                        //  standpipePressureRangeData.Add(valueModelForRangeData);
                     }
                 }
 
@@ -714,8 +674,8 @@ namespace HydraulicCalAPI.Service
                 _hydraulicMainSeriesWholeData.Add(new XYValueModelForLineData<double>() { PrimaryAxisValue = valuemodelForLineData.PrimaryAxisValue, SecondaryAxisValue = valuemodelForLineData.SecondaryAxisValue });
             }
             while (lastRecordedStandpipePressure < 1.2 * this.MaxPressure);
-         
-                     
+
+
             var firstValueOfYL = (standpipePressureListYL.FirstOrDefault() as XYValueModelForLineData<double>);
             var firstValueOfG = (standpipePressureListG.FirstOrDefault() as XYValueModelForLineData<double>);
             var firstValueOfYH = (standpipePressureListYH.FirstOrDefault() as XYValueModelForLineData<double>);
@@ -771,13 +731,13 @@ namespace HydraulicCalAPI.Service
             UpperOperatingPoint = standpipePressureListG.LastOrDefault() == null ? LowerOperatingPoint : standpipePressureListG.LastOrDefault().PrimaryAxisValue;
             UpperCriticalPoint = standpipePressureListYH.LastOrDefault() == null ? UpperOperatingPoint : standpipePressureListYH.LastOrDefault().PrimaryAxisValue;
 
-            ChartNGraphDataPoints.Add("standpipePressureRangeData",standpipePressureRangeData);
+            ChartNGraphDataPoints.Add("standpipePressureRangeData", standpipePressureRangeData);
 
-           ChartNGraphDataPoints.Add("standpipePressureListRL",standpipePressureListRL.ToArray());
-            ChartNGraphDataPoints.Add("standpipePressureListYL",standpipePressureListYL.ToArray());
-            ChartNGraphDataPoints.Add("standpipePressureListG",standpipePressureListG.ToArray());
-            ChartNGraphDataPoints.Add("standpipePressureListYH",standpipePressureListYH.ToArray());
-            ChartNGraphDataPoints.Add("standpipePressureListRH",standpipePressureListRH.ToArray());
+            ChartNGraphDataPoints.Add("standpipePressureListRL", standpipePressureListRL.ToArray());
+            ChartNGraphDataPoints.Add("standpipePressureListYL", standpipePressureListYL.ToArray());
+            ChartNGraphDataPoints.Add("standpipePressureListG", standpipePressureListG.ToArray());
+            ChartNGraphDataPoints.Add("standpipePressureListYH", standpipePressureListYH.ToArray());
+            ChartNGraphDataPoints.Add("standpipePressureListRH", standpipePressureListRH.ToArray());
 
         }
 
@@ -790,112 +750,98 @@ namespace HydraulicCalAPI.Service
             {
                 double flowRateInGPMInput = flowRateBaseValue.Value;
                 double toolDepthInFeetInput = depthBaseValue ?? double.MinValue;
-
-                HydraulicAnalysisOutput hydraulicOutput = Main.CompleteHydraulicAnalysis(_fluidInput, flowRateInGPMInput, _cuttingsInput, _bhaInput, _annulusInput, _surfaceEquipmentInput, toolDepthInFeetInput);
+                Console.WriteLine(toolDepthInFeetInput);
+                Console.WriteLine(flowRateInGPMInput);
+                int torqueInFeetPound;
+                double blockPostionInFeet;
+                HydraulicAnalysisOutput hydraulicOutput = Main.CompleteHydraulicAnalysis(_fluidInput, flowRateInGPMInput, _cuttingsInput, _bhaInput, _annulusInput, _surfaceEquipmentInput, torqueInFeetPound = 0, toolDepthInFeetInput, blockPostionInFeet = double.MinValue);
+                
+               // ChartNGraphDataPoints.TryAdd("hydraulicOutput" + flowRateBaseValue, hydraulicOutput);
+                double totalPressureDrop1 = CalculateTotalPressureDropFROMHydraulicAnalysisOutput(hydraulicOutput);
+                Console.WriteLine("totalPressureDrop1       " + totalPressureDrop1);
                 if (hydraulicOutput.Segment != null && hydraulicOutput.Segment.Count() > 0)
                 {
-                    totalPressureDrop = hydraulicOutput.Segment.Where(o => o.SegmentHydraulicsOutput != null && !double.IsNaN(o.SegmentHydraulicsOutput.PressureDropInPSI)).Select(o => o.SegmentHydraulicsOutput.PressureDropInPSI).Sum();
-                    annularVelocityMin = hydraulicOutput.Segment.Where(o => ((ISegmentHydraulicsOutput)o).FlowType != "None" && o.SegmentHydraulicsOutput != null && !double.IsNaN(o.SegmentHydraulicsOutput.AverageVelocityInFeetPerMinute)).Select(o => o.SegmentHydraulicsOutput.AverageVelocityInFeetPerMinute).Min();
+                    foreach (var segment in hydraulicOutput.Segment)
+                    {
+                        var segmentHydraulicsOutput = segment as ISegmentHydraulicsOutput;
+                        if (segmentHydraulicsOutput != null && !double.IsNaN(segmentHydraulicsOutput.PressureDropInPSI))
+                        {
+                            Console.WriteLine(segment.ToolDescription + "       " + segmentHydraulicsOutput.PressureDropInPSI);
+                            totalPressureDrop += segmentHydraulicsOutput.PressureDropInPSI;
+                        }
+
+                        if (segmentHydraulicsOutput != null && segmentHydraulicsOutput.FlowType != "None" && !double.IsNaN(segmentHydraulicsOutput.AverageVelocityInFeetPerMinute))
+                        {
+                            if (annularVelocityMin == 0.00 || segmentHydraulicsOutput.AverageVelocityInFeetPerMinute < annularVelocityMin)
+                            {
+                                annularVelocityMin = segmentHydraulicsOutput.AverageVelocityInFeetPerMinute;
+                            }
+                        }
+                    }
                 }
+
                 if (hydraulicOutput.BHATool != null && hydraulicOutput.BHATool.Count() > 0)
                 {
-                    totalPressureDrop += hydraulicOutput.BHATool.Where(o => o.BHAHydraulicsOutput != null && !double.IsNaN(o.BHAHydraulicsOutput.PressureDropInPSI)).Select(o => o.BHAHydraulicsOutput.PressureDropInPSI).Sum();
+                    foreach (var tool in hydraulicOutput.BHATool)
+                    {
+                        if (tool.BHAHydraulicsOutput != null && !double.IsNaN(tool.BHAHydraulicsOutput.PressureDropInPSI))
+                        {
+                            Console.WriteLine(tool.toolDescription + "       " + tool.BHAHydraulicsOutput.PressureDropInPSI);
+                            totalPressureDrop += tool.BHAHydraulicsOutput.PressureDropInPSI;
+                        }
+                    }
+                }
+            }
+            Console.WriteLine("totalPressureDrop       " + totalPressureDrop);
+
+            return totalPressureDrop;
+
+        }
+        public double CalculateTotalPressureDropFROMHydraulicAnalysisOutput(HydraulicAnalysisOutput hydraulicOutput)
+        {
+            double totalPressureDrop = 0.00;
+            double annularVelocityMin = 0.00;  // If this value is used outside this method, it should be returned or handled differently.
+
+            if (hydraulicOutput != null)
+            {
+                if (hydraulicOutput.Segment != null && hydraulicOutput.Segment.Count() > 0)
+                {
+                    foreach (var segment in hydraulicOutput.Segment)
+                    {
+                        var segmentHydraulicsOutput = segment as ISegmentHydraulicsOutput;
+                        if (segmentHydraulicsOutput != null && !double.IsNaN(segmentHydraulicsOutput.PressureDropInPSI))
+                        {
+                            totalPressureDrop += segmentHydraulicsOutput.PressureDropInPSI;
+
+                        }
+
+                        if (segmentHydraulicsOutput != null && segmentHydraulicsOutput.FlowType != "None" && !double.IsNaN(segmentHydraulicsOutput.AverageVelocityInFeetPerMinute))
+                        {
+                            if (annularVelocityMin == 0.00 || segmentHydraulicsOutput.AverageVelocityInFeetPerMinute < annularVelocityMin)
+                            {
+                                annularVelocityMin = segmentHydraulicsOutput.AverageVelocityInFeetPerMinute;
+                            }
+                        }
+                    }
+                }
+
+                if (hydraulicOutput.BHATool != null && hydraulicOutput.BHATool.Count() > 0)
+                {
+                    for (int j = 0; j < hydraulicOutput.BHATool.Count(); j++)
+                    {
+                        var tool = hydraulicOutput.BHATool.ElementAt(j);
+                        if (tool.BHAHydraulicsOutput != null && !double.IsNaN(tool.BHAHydraulicsOutput.PressureDropInPSI))
+                        {
+                            totalPressureDrop += tool.BHAHydraulicsOutput.PressureDropInPSI;
+                        }
+                    }
                 }
             }
 
             return totalPressureDrop;
         }
 
-        //public void Calculate(string propertyName)
-        //{
-        //    if (_isObjectDisposedOrNotInUse)
-        //        return;
 
-        //    if (!IsUnitSystemChangesGettingApplied)
-        //    {
-        //        if (!_isDataInitializationHappening && (propertyName == flowRateField || propertyName == toolDepthField))
-        //        {
-        //            //if (ToolDepth.ErrorMessages.Count == 0 && FlowRateOfChartedData.ErrorMessages.Count == 0)
-        //            CalculateHydraulics();
-        //        }
+    }
 
-        //        if (propertyName == toolDepthField && !_isDataInitializationHappening)
-        //        {
-        //            PlotChart();
-        //        }
-        //        if (!_isDataInitializationHappening && (propertyName == observedPressureField || propertyName == observedFlowRateField)
-        //            && ObservedFlowRate == 0 && ObservedPressure == 0)
-        //        {
-        //            PlotObservedPoint();
-        //            CalculateCorrectionFactorAndPlotChart();
-        //        }
-
-        //        if (!_isDataInitializationHappening && !_isCalculationForCalculatedFieldInProgress
-        //            && (propertyName == calculatedFlowRateField || propertyName == calculatedPressureField))
-        //        {
-        //            _isCalculationForCalculatedFieldInProgress = true;
-        //            if (propertyName == calculatedFlowRateField)
-        //            {
-        //                double? annularVelocityMinimum;
-        //                _calculatedPressure = (double)CalculateStandPipePressure(this.CalculatedFlowRate, ToolDepth, out annularVelocityMinimum);
-        //            }
-        //            else if (CalculatedPressure >= 0)
-        //            {
-        //                double calculatedPressureDisplayValue = Convert.ToDouble(CalculatedPressure);
-        //                if (_hydraulicMainSeriesWholeData.Count > 0 && _hydraulicMainSeriesWholeData.Select(o => o.SecondaryAxisValue).Max() >= calculatedPressureDisplayValue
-        //                    && _hydraulicMainSeriesWholeData.Select(o => o.SecondaryAxisValue).Min() <= calculatedPressureDisplayValue)
-        //                {
-        //                    var calculatedPointValue = _hydraulicMainSeriesWholeData.LastOrDefault(o => o.SecondaryAxisValue <= calculatedPressureDisplayValue);
-        //                    if (calculatedPointValue != null)
-        //                    {
-        //                        _calculatedFlowRate = (double)calculatedPointValue.PrimaryAxisValue;
-        //                    }
-        //                }
-        //            }
-        //            PlotCalculatedPoint();
-        //            _isCalculationForCalculatedFieldInProgress = false;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        UnitConversionContext.CurrentInstance.UnitSystemChangesCompletedEvent -= CurrentInstance_UnitSystemChangesCompletedEvent;
-        //        UnitConversionContext.CurrentInstance.UnitSystemChangesCompletedEvent += CurrentInstance_UnitSystemChangesCompletedEvent;
-        //    }
-        //}
-
-        private void CurrentInstance_UnitSystemChangesCompletedEvent(object sender, EventArgs e)
-        {
-            UnitConversionContext.CurrentInstance.UnitSystemChangesCompletedEvent -= CurrentInstance_UnitSystemChangesCompletedEvent;
-            DateTime startOfCalculations = DateTime.UtcNow;
-            CalculateHydraulics();
-            System.Diagnostics.Debug.WriteLine("CalculateHydraulics : " + (DateTime.UtcNow - startOfCalculations).ToString());
-            startOfCalculations = DateTime.UtcNow;
-            PlotObservedPoint();
-            CalculateCorrectionFactorAndPlotChart();
-            System.Diagnostics.Debug.WriteLine("CalculateCorrectionFactorAndPlotChart :" + (DateTime.UtcNow - startOfCalculations).ToString());
-            startOfCalculations = DateTime.UtcNow;
-            PlotCalculatedPoint();
-
-        }
-        public void CalculateCorrectionFactorAndPlotChart()
-        {
-            
-            DateTime startOfCalculations = DateTime.UtcNow;
-
-            double? annularVelocityMinimum;
-            double? standpipePressure = (double)CalculateStandPipePressure(this.ObservedFlowRate, ToolDepth, out annularVelocityMinimum);
-            if (standpipePressure >= 0 && ObservedPressure >=0)
-            {
-                CorrectionFactorForObserved = 1 + ((ObservedPressure - standpipePressure.Value) / standpipePressure.Value);
-            }
-            else
-            {
-                CorrectionFactorForObserved = null;
-            }
-            System.Diagnostics.Debug.WriteLine("CalculateStandPipePressure from calculate correction factor : " + (DateTime.UtcNow - startOfCalculations).ToString());
-            startOfCalculations = DateTime.UtcNow;
-            PlotChart();
-            System.Diagnostics.Debug.WriteLine("Final Chartplot : " + (DateTime.UtcNow - startOfCalculations).ToString());
-        }
-   }
 }

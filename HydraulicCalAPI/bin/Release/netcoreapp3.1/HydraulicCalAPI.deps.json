@@ -34,7 +34,6 @@
           "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "3.1.20",
           "Swashbuckle.AspNetCore": "6.5.0",
           "Ciloci.Flee": "0.9.26.0",
-          "HydraproCalculations": "1.0.0.0",
           "HydraulicEngine": "1.0.0.0",
           "WFT.SciChartHelper": "1.0.0.0",
           "WFT.UI.Common": "1.0.0.0",
@@ -458,17 +457,6 @@
         },
         "compile": {
           "Ciloci.Flee.dll": {}
-        }
-      },
-      "HydraproCalculations/1.0.0.0": {
-        "runtime": {
-          "HydraproCalculations.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        },
-        "compile": {
-          "HydraproCalculations.dll": {}
         }
       },
       "HydraulicEngine/1.0.0.0": {
@@ -2337,11 +2325,6 @@
       "hashPath": "swashbuckle.aspnetcore.swaggerui.6.5.0.nupkg.sha512"
     },
     "Ciloci.Flee/0.9.26.0": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "HydraproCalculations/1.0.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

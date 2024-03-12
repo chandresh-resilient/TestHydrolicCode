@@ -22,8 +22,33 @@ namespace HydraulicCalAPI.Controllers
         [HttpPost("getHydraulicCalculations")]
         public Dictionary<String, Object> getHydraulicCalculations([FromBody] HydraulicCalAPI.Service.HydraulicCalculationService objHcs)
         {
-            List<HydraulicEngine.BHATool> bhatools = new List<HydraulicEngine.BHATool>();
             SurfaceEquipment equipment = new SurfaceEquipment(objHcs.surfaceEquipmentInput.CaseType);
+            List<BHATool> bhatools = NewMethod(objHcs);
+
+            if ((double.IsNaN(objHcs.toolDepthInFeet) || objHcs.toolDepthInFeet == 0))
+            {
+                for (int i = 0; i < objHcs.annulusInput.Count; i++)
+                {
+                    objHcs.toolDepthInFeet += objHcs.annulusInput[i].AnnulusBottomInFeet;
+                }
+            }
+
+           
+            ChartAndGraphService objChartnGraph = new ChartAndGraphService();
+            return objChartnGraph.GetDataPoints(objHcs.fluidInput,
+                                                objHcs.flowRateInGPMInput,
+                                                objHcs.cuttingsInput,
+                                                bhatools,
+                                                objHcs.annulusInput,
+                                                equipment,
+                                                objHcs.maxflowrate,
+                                                objHcs.maxflowpressure, objHcs.toolDepthInFeet);
+
+        }
+
+        public static List<BHATool> NewMethod(HydraulicCalculationService objHcs)
+        {
+            List<HydraulicEngine.BHATool> bhatools = new List<HydraulicEngine.BHATool>();
             foreach (var item in objHcs.bhaInput)
             {
                 var toolcasetype = item.bhatooltype;
@@ -32,7 +57,7 @@ namespace HydraulicCalAPI.Controllers
                 switch (toolcasetype)
                 {
                     case "type1":
-                        {  
+                        {
                             bhaToolItem = new BHAToolType1
                             {
                                 PositionNumber = item.PositionNumber,
@@ -45,7 +70,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type2":
-                        {   
+                        {
                             bhaToolItem = new BHAToolType2
                             {
                                 PositionNumber = item.PositionNumber,
@@ -57,7 +82,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type3":
-                        {  
+                        {
                             bhaToolItem = (new BHAToolType3
                             {
                                 PositionNumber = item.PositionNumber,
@@ -71,7 +96,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type4":
-                        {   
+                        {
                             bhaToolItem = (new BHAToolType4
                             {
                                 PositionNumber = item.PositionNumber,
@@ -89,7 +114,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type5":
-                        {  
+                        {
                             bhaToolItem = (new BHAToolType5
                             {
                                 PositionNumber = item.PositionNumber,
@@ -102,7 +127,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type6":
-                        {   
+                        {
                             bhaToolItem = (new BHAToolType6
                             {
                                 PositionNumber = item.PositionNumber,
@@ -133,7 +158,8 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type8":
-                        {   bhaToolItem = (new BHAToolType8
+                        {
+                            bhaToolItem = (new BHAToolType8
                             {
                                 PositionNumber = item.PositionNumber,
                                 Depth = item.Depth,
@@ -145,7 +171,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type9":
-                        {   
+                        {
                             bhaToolItem = (new BHAToolType9
                             {
                                 PositionNumber = item.PositionNumber,
@@ -159,7 +185,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     case "type10":
-                        {  
+                        {
                             bhaToolItem = (new BHAToolType10
                             {
                                 PositionNumber = item.PositionNumber,
@@ -174,7 +200,7 @@ namespace HydraulicCalAPI.Controllers
                             break;
                         }
                     default:
-                        {   
+                        {
                             bhaToolItem = (new BHAToolType1
                             {
                                 PositionNumber = item.PositionNumber,
@@ -191,26 +217,7 @@ namespace HydraulicCalAPI.Controllers
                 bhatools.Add(bhaToolItem);
             }
 
-            if ((double.IsNaN(objHcs.toolDepthInFeet) || objHcs.toolDepthInFeet == 0))
-            {
-                for (int i = 0; i < objHcs.annulusInput.Count; i++)
-                {
-                    objHcs.toolDepthInFeet += objHcs.annulusInput[i].AnnulusBottomInFeet;
-                }
-            }
-
-            HydraulicAnalysisOutput response = Main.CompleteHydraulicAnalysis(objHcs.fluidInput, objHcs.flowRateInGPMInput, objHcs.cuttingsInput, bhatools, objHcs.annulusInput, equipment, objHcs.torqueInFeetPound=0, objHcs.toolDepthInFeet, objHcs.blockPostionInFeet=double.MinValue);
-
-                ChartAndGraphService objChartnGraph = new ChartAndGraphService();
-                return objChartnGraph.GetDataPoints(response, objHcs.fluidInput,
-                                                    objHcs.flowRateInGPMInput,
-                                                    objHcs.cuttingsInput,
-                                                    bhatools,
-                                                    objHcs.annulusInput,
-                                                    equipment,
-                                                    objHcs.maxflowrate,
-                                                    objHcs.maxflowpressure, objHcs.toolDepthInFeet);
-
+            return bhatools;
         }
     }
 }
