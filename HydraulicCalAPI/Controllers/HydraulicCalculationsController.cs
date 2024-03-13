@@ -1,15 +1,24 @@
 ﻿using System;
-using System.Linq;
+
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using HydraulicEngine;
 using HydraulicCalAPI.Service;
-using static System.Net.Mime.MediaTypeNames;
-using System.Drawing;
+//using static System.Net.Mime.MediaTypeNames;
 using System.IO;
-using System.Reflection.Emit;
-using System.Reflection.Metadata;
-using System.Reflection;
+//using System.Reflection.Metadata;
+using HydraulicCalAPI.ViewModel;
+using iText.IO.Image;
+using iText.Kernel.Colors;
+using iText.Kernel.Pdf;
+using iText.Kernel.Geom;
+using iText.Kernel.Pdf.Canvas.Draw;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Kernel.Events;
+using iText.Layout.Properties;
+using iText.Layout.Borders;
+using SkiaSharp;
 
 namespace HydraulicCalAPI.Controllers
 {
@@ -17,6 +26,12 @@ namespace HydraulicCalAPI.Controllers
     [ApiController]
     public class HydraulicCalculationsController : ControllerBase
     {
+        Color accuColor;
+        PdfDocument pdf;
+        Document document;
+        Dictionary<string, string> pdfAuthor;
+        List<PdfReportService> pdfFooter;
+        List<PdfReportService> pdfCasingData;
         [HttpPost("getHydraulicCalculations")]
         public Dictionary<String, Object> getHydraulicCalculations([FromBody] HydraulicCalAPI.Service.HydraulicCalculationService objHcs)
         {
@@ -31,7 +46,7 @@ namespace HydraulicCalAPI.Controllers
                 }
             }
 
-           
+
             ChartAndGraphService objChartnGraph = new ChartAndGraphService();
             return objChartnGraph.GetDataPoints(objHcs.fluidInput,
                                                 objHcs.flowRateInGPMInput,
@@ -951,5 +966,4 @@ namespace HydraulicCalAPI.Controllers
     }
 
 }
-    }
-}
+    

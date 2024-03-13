@@ -22,3 +22,9 @@ D:\xcode\Hyd\HydraulicEngine\obj\Debug\HydraulicEngine.csproj.AssemblyReference.
 D:\xcode\Hyd\HydraulicEngine\obj\Debug\HydraulicEngine.csproj.CoreCompileInputs.cache
 D:\xcode\Hyd\HydraulicEngine\obj\Debug\HydraulicEngine.dll
 D:\xcode\Hyd\HydraulicEngine\obj\Debug\HydraulicEngine.pdb
+D:\API_Dev\TestHydrolicCode\HydraulicEngine\bin\Debug\HydraulicEngine.dll
+D:\API_Dev\TestHydrolicCode\HydraulicEngine\bin\Debug\HydraulicEngine.pdb
+D:\API_Dev\TestHydrolicCode\HydraulicEngine\obj\Debug\HydraulicEngine.csproj.AssemblyReference.cache
+D:\API_Dev\TestHydrolicCode\HydraulicEngine\obj\Debug\HydraulicEngine.csproj.CoreCompileInputs.cache
+D:\API_Dev\TestHydrolicCode\HydraulicEngine\obj\Debug\HydraulicEngine.dll
+D:\API_Dev\TestHydrolicCode\HydraulicEngine\obj\Debug\HydraulicEngine.pdb
