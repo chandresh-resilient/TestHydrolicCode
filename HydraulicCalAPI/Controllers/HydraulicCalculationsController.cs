@@ -49,6 +49,7 @@ namespace HydraulicCalAPI.Controllers
         [HttpPost("getHydraulicReportGenerator")]
         public void getHydraulicReportGenerator([FromBody] HydraulicCalAPI.Service.PdfReportService objRptGeneratorService)
         {
+            Dictionary<string, object> someData = getHydraulicCalculations(objRptGeneratorService.HydraulicCalculationService);
             generatePDF(objRptGeneratorService);
         }
 

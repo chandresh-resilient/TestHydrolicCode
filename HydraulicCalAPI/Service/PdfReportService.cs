@@ -179,6 +179,7 @@ namespace HydraulicCalAPI.Service
         public List<PressureDistributionChartCollection> PressureDistributionChartCollection { get; set; }
 
         public List<HydraulicOutputBHAList> HydraulicOutputBHAList { get; set; }
+        public HydraulicCalculationService HydraulicCalculationService {  get; set; }
 
     }
 }
