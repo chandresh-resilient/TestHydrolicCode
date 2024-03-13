@@ -40,7 +40,15 @@ namespace HydraulicCalAPI.Service
         public ObservableCollection<PieChartViewModel<double>> _pressureDistributionChartCollection = new ObservableCollection<PieChartViewModel<double>>();
         public ObservableCollection<HydraulicOutputBHAViewModel> _hydraulicOutputBHAList = new ObservableCollection<HydraulicOutputBHAViewModel>();
         public List<XYValueModelForLineData<double>> _hydraulicMainSeriesWholeData = new List<XYValueModelForLineData<double>>();
-
+        public List<XYValueModelForLineData<double>> standpipePressureListRL = new List<XYValueModelForLineData<double>>();
+        public List<XYValueModelForLineData<double>> standpipePressureListYL = new List<XYValueModelForLineData<double>>();
+        public List<XYValueModelForLineData<double>> standpipePressureListG = new List<XYValueModelForLineData<double>>();
+        public List<XYValueModelForLineData<double>> standpipePressureListYH = new List<XYValueModelForLineData<double>>();
+        public List<XYValueModelForLineData<double>> standpipePressureListRH = new List<XYValueModelForLineData<double>>();
+        public List<XYValueModelForLineData<double>> estimatedStandpipePressureList = new List<XYValueModelForLineData<double>>();
+        public List<XYValueModelForLineData<double>> standpipePressureRangeData = new List<XYValueModelForLineData<double>>();
+        public SeriesModel<XYValueModel<double>, double> estimatedStandpipeSeries = new SeriesModel<XYValueModel<double>, double>();
+        public SeriesModel<XYValueModel<double>, double> hydraproRangeSeries = new SeriesModel<XYValueModel<double>, double>();
         public bool IsTotalPressureInWarningRegion = false;
         public bool IsTotalPressureInCriticalRegion = false;
 
@@ -522,15 +530,7 @@ namespace HydraulicCalAPI.Service
             double flowrate = 0;
             double lastRecordedStandpipePressure = 0.00;
 
-            List<XYValueModelForLineData<double>> standpipePressureListRL = new List<XYValueModelForLineData<double>>();
-            List<XYValueModelForLineData<double>> standpipePressureListYL = new List<XYValueModelForLineData<double>>();
-            List<XYValueModelForLineData<double>> standpipePressureListG = new List<XYValueModelForLineData<double>>();
-            List<XYValueModelForLineData<double>> standpipePressureListYH = new List<XYValueModelForLineData<double>>();
-            List<XYValueModelForLineData<double>> standpipePressureListRH = new List<XYValueModelForLineData<double>>();
-            List<XYValueModelForLineData<double>> estimatedStandpipePressureList = new List<XYValueModelForLineData<double>>();
-            List<XYValueModelForLineData<double>> standpipePressureRangeData = new List<XYValueModelForLineData<double>>();
-            SeriesModel<XYValueModel<double>, double> estimatedStandpipeSeries = new SeriesModel<XYValueModel<double>, double>();
-            SeriesModel<XYValueModel<double>, double> hydraproRangeSeries = new SeriesModel<XYValueModel<double>, double>();
+            
             int exitLoopCounter = 0;
             double currentSecondaryAxisValue = 0;
             double lastFlowRate = 0;

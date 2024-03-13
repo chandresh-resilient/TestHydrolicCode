@@ -35,6 +35,12 @@ namespace HydraulicCalAPI.Controllers
         [HttpPost("getHydraulicCalculations")]
         public Dictionary<String, Object> getHydraulicCalculations([FromBody] HydraulicCalAPI.Service.HydraulicCalculationService objHcs)
         {
+            return executeHydraulicCalulations(objHcs).ChartNGraphDataPoints;
+
+        }
+
+        private static ChartAndGraphService executeHydraulicCalulations(HydraulicCalculationService objHcs)
+        {
             SurfaceEquipment equipment = new SurfaceEquipment(objHcs.surfaceEquipmentInput.CaseType);
             List<BHATool> bhatools = HydraulicCalculationsControllerHelpers.getBHATools(objHcs);
 
@@ -48,7 +54,7 @@ namespace HydraulicCalAPI.Controllers
 
 
             ChartAndGraphService objChartnGraph = new ChartAndGraphService();
-            return objChartnGraph.GetDataPoints(objHcs.fluidInput,
+            objChartnGraph.GetDataPoints(objHcs.fluidInput,
                                                 objHcs.flowRateInGPMInput,
                                                 objHcs.cuttingsInput,
                                                 bhatools,
@@ -56,15 +62,14 @@ namespace HydraulicCalAPI.Controllers
                                                 equipment,
                                                 objHcs.maxflowrate,
                                                 objHcs.maxflowpressure, objHcs.toolDepthInFeet);
-
+            return objChartnGraph;
         }
-
-
 
         [HttpPost("getHydraulicReportGenerator")]
         public void getHydraulicReportGenerator([FromBody] HydraulicCalAPI.Service.PdfReportService objRptGeneratorService)
         {
-            Dictionary<string, object> someData = getHydraulicCalculations(objRptGeneratorService.HydraulicCalculationService);
+            ChartAndGraphService someData = executeHydraulicCalulations(objRptGeneratorService.HydraulicCalculationService);
+           
             new PDFReportGen().generatePDF(objRptGeneratorService);
         }
 
