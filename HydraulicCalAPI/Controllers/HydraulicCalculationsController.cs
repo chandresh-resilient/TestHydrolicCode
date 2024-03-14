@@ -8,6 +8,7 @@ using HydraulicCalAPI.Service;
 using System.IO;
 //using System.Reflection.Metadata;
 using HydraulicCalAPI.ViewModel;
+using SkiaSharp;
 
 namespace HydraulicCalAPI.Controllers
 {
@@ -49,10 +50,14 @@ namespace HydraulicCalAPI.Controllers
         }
 
         [HttpPost("getHydraulicReportGenerator")]
-        public void getHydraulicReportGenerator([FromBody] HydraulicCalAPI.Service.PdfReportService objRptGeneratorService)
+        public FileContentResult getHydraulicReportGenerator([FromBody] HydraulicCalAPI.Service.PdfReportService objRptGeneratorService)
         {    
             ChartAndGraphService someData = executeHydraulicCalulations(objRptGeneratorService.HydraCalcService);
-            new PDFReportGen().generatePDF(objRptGeneratorService,someData, objRptGeneratorService.HydraCalcService);
+            byte[] memoryPdf = new PDFReportGen().generatePDF(objRptGeneratorService, someData, objRptGeneratorService.HydraCalcService);
+            string fileDownloadName = objRptGeneratorService.JobID + "-HYD report.pdf";
+
+            Response.Headers.Add("Content-Disposition", $"attachment; filename={fileDownloadName}");
+            return base.File(memoryPdf, "application/pdf", fileDownloadName);
         }
 
     }
