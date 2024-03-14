@@ -6,6 +6,13 @@ using System.Threading.Tasks;
 
 namespace HydraulicCalAPI.Service
 {
+    public class FluidData
+    {
+        public double Solids { get; set; }
+        public string DrillingFluidType { get; set; }
+        public double BuoyancyFactor { get; set; }
+        public string CuttingType { get; set; }
+    }
     public class BhaTopToBottom
     {
         public string SerialNumber { get; set; }
@@ -16,7 +23,6 @@ namespace HydraulicCalAPI.Service
         public string FishNeckOD { get; set; }
         public string FishNeckLength { get; set; }
      }
-
     public class WorkStringData
     {
         public string wrkToolDescription { get; set; }
@@ -94,16 +100,12 @@ namespace HydraulicCalAPI.Service
         public string SubmittedDate { get; set; }
         public string ApprovedBy { get; set; }
         public string ApprovedDate { get; set; }
-
-        public double TotalLength { get; set; }
-
         public string Comments { get; set; }
-        public double BuoyancyFactorl { get; set; }
-
+       
         public HydraulicCalculationService HydraCalcService { get; set; }
         public List<CaseLinerTube> CasingLinerTubeData { get; set; }
         public List<WorkStringData> WorkStringItems { get; set; }
         public List<BhaTopToBottom> BHAToolItemData { get; set; }
-
+        public List<FluidData> FluidItemData { get; set; }
     }
 }
