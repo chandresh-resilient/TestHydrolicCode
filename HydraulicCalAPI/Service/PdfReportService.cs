@@ -79,7 +79,7 @@ namespace HydraulicCalAPI.Service
         public string WaterDepth { get; set; }
         public string RigType { get; set; }
         public string WellClassification { get; set; }
-        public string WorkString { get; set; }
+        public string WorkString { get; set; }    
         public string Inclination { get; set; }
         public string CustomerType { get; set; }
         public string H2SPresent { get; set; }
@@ -94,22 +94,12 @@ namespace HydraulicCalAPI.Service
         public string SubmittedDate { get; set; }
         public string ApprovedBy { get; set; }
         public string ApprovedDate { get; set; }
-        public string AnnulusLength { get; set; }
-        public string BHALength { get; set; }
-        public string ToolDepth { get; set; }
-        public string SurfaceEquipment { get; set; }
+
         public double TotalLength { get; set; }
-        public string MaximumAllowablePressure { get; set; }
-        public string MaximumAllowableFlowrate { get; set; }
+
         public string Comments { get; set; }
-        public double Solids { get; set; }
-        public string DrillingFluidType { get; set; }
-        public double DrillingFluidWeight { get; set; }
         public double BuoyancyFactorl { get; set; }
-        public double PlasticViscosity { get; set; }
-        public double YieldPoint { get; set; }
-        public double CuttingAverageSize { get; set; }
-        public string CuttingType { get; set; }
+
         public HydraulicCalculationService HydraCalcService { get; set; }
         public List<CaseLinerTube> CasingLinerTubeData { get; set; }
         public List<WorkStringData> WorkStringItems { get; set; }
