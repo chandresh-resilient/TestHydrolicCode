@@ -102,7 +102,7 @@ namespace HydraulicCalAPI.Service
         public string ApprovedDate { get; set; }
         public string Comments { get; set; }
        
-        //public HydraulicCalculationService HydraCalcService { get; set; }
+        public HydraulicCalculationService HydraCalcService { get; set; }
         public List<CaseLinerTube> CasingLinerTubeData { get; set; }
         public List<WorkStringData> WorkStringItems { get; set; }
         public List<BhaTopToBottom> BHAToolItemData { get; set; }

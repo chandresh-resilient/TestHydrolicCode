@@ -15,11 +15,11 @@ namespace HydraulicCalAPI.Controllers
     [ApiController]
     public class HydraulicCalculationsController : ControllerBase
     {
-       static Object InputForHydraulics;
+       
         [HttpPost("getHydraulicCalculations")]
         public Dictionary<String, Object> getHydraulicCalculations([FromBody] HydraulicCalAPI.Service.HydraulicCalculationService objHcs)
         {
-            InputForHydraulics = objHcs;
+            
             return executeHydraulicCalulations(objHcs).ChartNGraphDataPoints;
         }
 
@@ -50,11 +50,9 @@ namespace HydraulicCalAPI.Controllers
 
         [HttpPost("getHydraulicReportGenerator")]
         public void getHydraulicReportGenerator([FromBody] HydraulicCalAPI.Service.PdfReportService objRptGeneratorService)
-        {
-                 
-            ChartAndGraphService someData = executeHydraulicCalulations((HydraulicCalculationService)InputForHydraulics);
-           
-            new PDFReportGen().generatePDF(objRptGeneratorService,someData, (HydraulicCalculationService)InputForHydraulics);
+        {    
+            ChartAndGraphService someData = executeHydraulicCalulations(objRptGeneratorService.HydraCalcService);
+            new PDFReportGen().generatePDF(objRptGeneratorService,someData, objRptGeneratorService.HydraCalcService);
         }
 
     }
