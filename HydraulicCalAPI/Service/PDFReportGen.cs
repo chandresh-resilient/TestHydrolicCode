@@ -426,14 +426,14 @@ namespace HydraulicCalAPI.Service
                 {
                     using (PdfDocument pdf = new PdfDocument(writer))
                     {
-                        /* Document document = new Document(pdf, PageSize.A4);
-                         NewMethod(img, newline, legend, ls, header, tableAuthor, comment, footer, _headerinfo, tblSegment, tblJobInformation, tblWellInformation, tblOriginator, tblCustomerContacts, tblWeatherfordContacts, tblGenInfo, tblApproval, _casingLinerTubingInfo, tblDepthAnalysis, tblCasingLinerTube, tblBhaData, tblSurfaceEquipment, tblFluidEnvelope, tblFluid, _chartheader, imgPie, document);
-                         memoryStream.Position = 0;
-                         byte[] bytes = memoryStream.ToArray();
-                         return bytes;*/
-                        return GetPdfBytesFromFile("D:\\abc.pdf");
+                        Document document = new Document(pdf, PageSize.A4);
+                        NewMethod(img, newline, legend, ls, header, tableAuthor, comment, footer, _headerinfo, tblSegment, tblJobInformation, tblWellInformation, tblOriginator, tblCustomerContacts, tblWeatherfordContacts, tblGenInfo, tblApproval, _casingLinerTubingInfo, tblDepthAnalysis, tblCasingLinerTube, tblBhaData, tblSurfaceEquipment, tblFluidEnvelope, tblFluid, _chartheader, imgPie, document);
+                        document.Close();
+                       
+                        
                     }
                 }
+                return GetPdfBytesFromFile(tempFileName);
             }
             finally
             {
