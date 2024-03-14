@@ -6,93 +6,30 @@ using System.Threading.Tasks;
 
 namespace HydraulicCalAPI.Service
 {
-    #region Chart and Graph Section
-    public class PressureDistributionChartCollection
-    {
-        public string name { get; set; }
-        public string value { get; set; }
-        public string color { get; set; }
-    }
-
-    public class HydraproLineSeries
-    {
-        public double secondaryAxisValue { get; set; }
-        public int primaryAxisValue { get; set; }
-    }
-    public class BhAchart
-    {
-        public List<HydraproLineSeries> HydraproLineSeries { get; set; }
-    }
-    public class HydraulicOutputBHAList
-    {
-        public object toolSourcePath { get; set; }
-        public bool isToolInputDetailsVisible { get; set; }
-        public object toolType { get; set; }
-        public BhAchart bhAchart { get; set; }
-        public object toolID { get; set; }
-        public string workstring { get; set; }
-        public int positionNo { get; set; }
-        public int lengthBHA { get; set; }
-        public double outerDiameter { get; set; }
-        public double inputFlowRate { get; set; }
-        public double averageVelocity { get; set; }
-        public double criticalVelocity { get; set; }
-        public string flowType { get; set; }
-        public double bhaPressureDrop { get; set; }
-        public string averageVelocityColor { get; set; }
-        public string isPlusMinus { get; set; }
-        public string bhaColor { get; set; }
-        public bool isToolDetailsVisible { get; set; }
-        public object actualToolDescription { get; set; }
-        public bool showStandpipeVsFlowRateScaling { get; set; }
-        public int pressureLowerDisplayValue { get; set; }
-        public int pressureUpperDisplayValue { get; set; }
-        public int flowRateLowerDisplayValue { get; set; }
-        public int flowRateUpperDisplayValue { get; set; }
-        public object pressureRangeMinAppliedValue { get; set; }
-        public object pressureRangeMaxAppliedValue { get; set; }
-        public object flowRateRangeMinAppliedValue { get; set; }
-        public object flowRateRangeMaxAppliedValue { get; set; }
-    }
-
-    #endregion
     public class BhaTopToBottom
     {
-        public string ID { get; set; }
-        public string ToolDescription { get; set; }
         public string SerialNumber { get; set; }
-        public string MeasuredOD { get; set; }
-        public string InnerDiameter { get; set; }
         public string Weight { get; set; }
         public string Length { get; set; }
         public string UpperConnType { get; set; }
         public string LowerConnType { get; set; }
         public string FishNeckOD { get; set; }
         public string FishNeckLength { get; set; }
-        public string HydraulicOD { get; set; }
-        public string HydraulicID { get; set; }
-    }
-    public class CaseLinerTube
-    {
-        public string CLTID { get; set; }
-        public string WellBoreSection { get; set; }
-        public string OutDiameter { get; set; }
-        public string InnDiameter { get; set; }
-        public string WellBoreWeight { get; set; }
-        public string Grade { get; set; }
-        public string WellTop { get; set; }
-        public string WellBottom { get; set; }
+     }
 
-    }
     public class WorkStringData
     {
-        public string wrkID { get; set; }
         public string wrkToolDescription { get; set; }
-        public string wrkMeasuredOD { get; set; }
-        public string wrkInnerDiameter { get; set; }
         public string wrkWeight { get; set; }
         public string wrkLength { get; set; }
         public string wrkUpperConnType { get; set; }
+    }
+    public class CaseLinerTube
+    {
+        public string WellBoreSection { get; set; }
+        public double WellTop { get; set; }
+        public string WellBoreWeight { get; set; }
+        public string Grade { get; set; }
     }
     public class PdfReportService
     {
@@ -106,8 +43,8 @@ namespace HydraulicCalAPI.Service
         public string JobID { get; set; }
         public string WPTSReportID { get; set; }
         public string AccuViewVersion { get; set; }
-        public string Segment { get; set; }
-        public string ProductService { get; set; }
+        public string ProductLine { get; set; }
+        public string SubProductLine { get; set; }
         public string JobStartDate { get; set; }
         public string WellLocation { get; set; }
         public double WellDepth { get; set; }
@@ -173,13 +110,10 @@ namespace HydraulicCalAPI.Service
         public double YieldPoint { get; set; }
         public double CuttingAverageSize { get; set; }
         public string CuttingType { get; set; }
-        public List<CaseLinerTube> CasingLinerTubing { get; set; }
-        public List<WorkStringData> WorkStringItem { get; set; } 
-        public List<BhaTopToBottom> BhaTopToBottom { get; set; }
-        public List<PressureDistributionChartCollection> PressureDistributionChartCollection { get; set; }
-
-        public List<HydraulicOutputBHAList> HydraulicOutputBHAList { get; set; }
-        public HydraulicCalculationService HydraulicCalculationService {  get; set; }
+        public HydraulicCalculationService HydraCalcService { get; set; }
+        public List<CaseLinerTube> CasingLinerTubeData { get; set; }
+        public List<WorkStringData> WorkStringItems { get; set; }
+        public List<BhaTopToBottom> BHAToolItemData { get; set; }
 
     }
 }

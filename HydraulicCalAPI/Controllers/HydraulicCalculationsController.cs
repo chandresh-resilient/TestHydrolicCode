@@ -8,17 +8,6 @@ using HydraulicCalAPI.Service;
 using System.IO;
 //using System.Reflection.Metadata;
 using HydraulicCalAPI.ViewModel;
-using iText.IO.Image;
-using iText.Kernel.Colors;
-using iText.Kernel.Pdf;
-using iText.Kernel.Geom;
-using iText.Kernel.Pdf.Canvas.Draw;
-using iText.Layout;
-using iText.Layout.Element;
-using iText.Kernel.Events;
-using iText.Layout.Properties;
-using iText.Layout.Borders;
-using SkiaSharp;
 
 namespace HydraulicCalAPI.Controllers
 {
@@ -26,17 +15,11 @@ namespace HydraulicCalAPI.Controllers
     [ApiController]
     public class HydraulicCalculationsController : ControllerBase
     {
-        Color accuColor;
-        PdfDocument pdf;
-        Document document;
-        Dictionary<string, string> pdfAuthor;
-        List<PdfReportService> pdfFooter;
-        List<PdfReportService> pdfCasingData;
+       
         [HttpPost("getHydraulicCalculations")]
         public Dictionary<String, Object> getHydraulicCalculations([FromBody] HydraulicCalAPI.Service.HydraulicCalculationService objHcs)
         {
             return executeHydraulicCalulations(objHcs).ChartNGraphDataPoints;
-
         }
 
         private static ChartAndGraphService executeHydraulicCalulations(HydraulicCalculationService objHcs)
@@ -51,7 +34,6 @@ namespace HydraulicCalAPI.Controllers
                     objHcs.toolDepthInFeet += objHcs.annulusInput[i].AnnulusBottomInFeet;
                 }
             }
-
 
             ChartAndGraphService objChartnGraph = new ChartAndGraphService();
             objChartnGraph.GetDataPoints(objHcs.fluidInput,
@@ -68,9 +50,9 @@ namespace HydraulicCalAPI.Controllers
         [HttpPost("getHydraulicReportGenerator")]
         public void getHydraulicReportGenerator([FromBody] HydraulicCalAPI.Service.PdfReportService objRptGeneratorService)
         {
-            ChartAndGraphService someData = executeHydraulicCalulations(objRptGeneratorService.HydraulicCalculationService);
+            ChartAndGraphService someData = executeHydraulicCalulations(objRptGeneratorService.HydraCalcService);
            
-            new PDFReportGen().generatePDF(objRptGeneratorService);
+            new PDFReportGen().generatePDF(objRptGeneratorService,someData);
         }
 
     }
