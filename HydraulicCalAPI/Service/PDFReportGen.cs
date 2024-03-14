@@ -28,28 +28,29 @@ namespace HydraulicCalAPI.Service
         Dictionary<string, string> pdfAuthor;
         Dictionary<string, string> pdfLstItemData;
         List<PdfReportService> pdfFooter;
-        List<HydraulicCalculationService> pdfCasingData;
-        Dictionary<string, Object> pdfPieChart;
+        
+        Dictionary<string, Object> pdfPieChart = new Dictionary<string, object>();
         string[] _fontfamily = { "Arial", "Helvetica", "sans-serif" };
         int increment = 0;
 
         HydraulicCalculationService objHydCalSrvs = new HydraulicCalculationService();
-        public void generatePDF(HydraulicCalAPI.Service.PdfReportService objInputData, ChartAndGraphService objChartService)
+        public void generatePDF(HydraulicCalAPI.Service.PdfReportService objInputData, ChartAndGraphService objChartService, HydraulicCalculationService inputHydra)
         {
+            objHydCalSrvs = inputHydra;
             string ApplicationFolderName = "Accuview";
             string _tabheader = string.Empty;
             var ControlCutApplicationFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Weatherford\\" + ApplicationFolderName + "\\";
             accuColor = new DeviceRgb(165, 42, 42);
 
-            PdfWriter writer = new PdfWriter("D:\\AccuView_Docs\\demo.pdf");
-
+           PdfWriter writer = new PdfWriter("D:\\AccuView_Docs\\demo.pdf");
+            //PdfWriter writer = new PdfWriter(ControlCutApplicationFolder + "{0}.pdf");
             pdf = new PdfDocument(writer);
             document = new Document(pdf, PageSize.A4);
-            //PdfWriter writer = new PdfWriter(ControlCutApplicationFolder + "{0}.pdf");
+            
 
             // Add image
             Image img = new Image(ImageDataFactory
-               .Create(@"D:\ReportGeneratorAPI\HydraReportGenerator\wft.jpg"))
+               .Create("wft.jpg"))
                .SetTextAlignment(TextAlignment.LEFT).SetWidth(100).SetHeight(40);
 
             // New line
@@ -63,7 +64,7 @@ namespace HydraulicCalAPI.Service
             #region First Page
             Paragraph header = getHeader(objInputData.ReportHeader.ToString());
 
-            Table _pdfHead = new Table(2, false).SetFontFamily(_fontfamily);
+            Table _pdfHead = new Table(2, false);
             Cell _pdfHeadcell = new Cell();
             _pdfHeadcell.Add(img);
             _pdfHead.AddCell(_pdfHeadcell)
@@ -92,7 +93,7 @@ namespace HydraulicCalAPI.Service
 
             Table footer = new Table(1, false)
                 .SetBorder(Border.NO_BORDER)
-                .SetFontFamily(_fontfamily);
+                ;
             footer = FooterSection(pdfFooter);
 
             #endregion
@@ -107,7 +108,7 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Segment", objInputData.ProductLine != null ? objInputData.ProductLine.ToString() : "");
             pdfHederInfoData.Add("Product / Service", objInputData.SubProductLine != null ? objInputData.SubProductLine.ToString() : "");
             Table tblSegment = getHeaderInfoTable(pdfHederInfoData, _tabheader);
-            tblSegment.SetFontFamily(_fontfamily);
+           
             pdfHederInfoData.Clear();
 
             _tabheader = "Job Information";
@@ -118,7 +119,7 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Job End Date", objInputData.JobEndDate != null ? objInputData.JobEndDate.ToString() : "");
             pdfHederInfoData.Add("JDE Delivery Ticket No", objInputData.JDEDeliveryTicketNo != null ? objInputData.JDEDeliveryTicketNo.ToString() : "");
             Table tblJobInformation = getHeaderInfoTable(pdfHederInfoData, _tabheader);
-            tblJobInformation.SetFontFamily(_fontfamily);
+            
             pdfHederInfoData.Clear();
 
             _tabheader = "Well Information";
@@ -133,7 +134,7 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Well Country", objInputData.WellCountry != null ? objInputData.WellCountry.ToString() : "");
             pdfHederInfoData.Add("County/Parish", objInputData.CountyParish != null ? objInputData.CountyParish.ToString() : "");
             Table tblWellInformation = getHeaderInfoTable(pdfHederInfoData, _tabheader);
-            tblWellInformation.SetFontFamily(_fontfamily);
+           
             pdfHederInfoData.Clear();
 
             _tabheader = "Originator / Servicing Location Organization Data";
@@ -143,7 +144,7 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Region", objInputData.Region != null ? objInputData.Region.ToString() : "");
             pdfHederInfoData.Add("SubRegion", objInputData.SubRegion != null ? objInputData.SubRegion.ToString() : "");
             Table tblOriginator = getHeaderInfoTable(pdfHederInfoData, _tabheader);
-            tblOriginator.SetFontFamily(_fontfamily);
+           
             pdfHederInfoData.Clear();
 
             _tabheader = "Customer Contacts";
@@ -154,14 +155,14 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Drilling Engineer", objInputData.DrillingEngineer != null ? objInputData.DrillingEngineer.ToString() : "");
             pdfHederInfoData.Add("Drilling Contractor", objInputData.DrillingContractor != null ? objInputData.DrillingContractor.ToString() : "");
             Table tblCustomerContacts = getHeaderInfoTable(pdfHederInfoData, _tabheader);
-            tblCustomerContacts.SetFontFamily(_fontfamily);
+         
             pdfHederInfoData.Clear();
 
             _tabheader = "Weatherford Contacts";
             pdfHederInfoData.Add("WFRD Salesman", objInputData.WFRDSalesman != null ? objInputData.WFRDSalesman.ToString() : "");
             pdfHederInfoData.Add("WFRD Field Engineer", objInputData.WFRDFieldEngineer != null ? objInputData.WFRDFieldEngineer.ToString() : "");
             Table tblWeatherfordContacts = getHeaderInfoTable(pdfHederInfoData, _tabheader);
-            tblWeatherfordContacts.SetFontFamily(_fontfamily);
+           
             pdfHederInfoData.Clear();
 
             _tabheader = "General Information";
@@ -184,7 +185,7 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Total travel time to/from location", objInputData.TotalTravelTimeTFLlocation != null ? (objInputData.TotalTravelTimeTFLlocation.ToString() + " | hours") : "");
             pdfHederInfoData.Add("Total off-duty hours at location", objInputData.TotalOffDutyHrsAtLocation != null ? (objInputData.TotalOffDutyHrsAtLocation.ToString() + " | hours") : "");
             Table tblGenInfo = getHeaderInfoTable(pdfHederInfoData, _tabheader);
-            tblGenInfo.SetFontFamily(_fontfamily);
+           
             pdfHederInfoData.Clear();
 
             _tabheader = "Approval and General Input Data";
@@ -196,7 +197,7 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Approved By", objInputData.JDEDeliveryTicketNo != null ? objInputData.JDEDeliveryTicketNo.ToString() : "");
             pdfHederInfoData.Add("Approved Date", objInputData.JDEDeliveryTicketNo != null ? objInputData.JDEDeliveryTicketNo.ToString() : "");
             Table tblApproval = getHeaderInfoTable(pdfHederInfoData, _tabheader);
-            tblApproval.SetFontFamily(_fontfamily);
+            
             pdfHederInfoData.Clear();
 
             #endregion
@@ -225,45 +226,50 @@ namespace HydraulicCalAPI.Service
 
             _tabheader = "Depth Analysis";
             Table tblDepthAnalysis = getDepthAnalysis(pdfCasingData, _tabheader);
-            tblDepthAnalysis.SetFontFamily(_fontfamily);
+           
             pdfCasingData.Clear();
 
             _tabheader = "Casing/ Liner/ Tubing Data";
             // preparing Casing, Liner and Tubing Object List
-
+            Dictionary<string, string> objcltdata = new Dictionary<string, string>();
             foreach (var cltItem in objChartService.HydraulicOutputAnnulusList)
             {
+                pdfLstItemData = new Dictionary<string, string>();
                 increment++;
                 pdfLstItemData.Add("CLTID",increment.ToString());
                 pdfLstItemData.Add("WellBoreSection", cltItem.Annulus != null ? cltItem.Annulus.ToString() : "");
                 pdfLstItemData.Add("OutDiameter", cltItem.ToolOuterDiameter > 0 ? cltItem.ToolOuterDiameter.ToString() : "0");
                 pdfLstItemData.Add("InnDiameter", cltItem.InnerDiameter > 0 ? cltItem.InnerDiameter.ToString() : "0");
-                
+
                 // Code to get WellBore weight and WellBore Grade form PdfReportService
-                IEnumerable<string> cltWeight = from x in objInputData.CasingLinerTubeData
-                                             where x.WellBoreSection == cltItem.Annulus && x.WellTop == cltItem.FromAnnulus
-                                             select x.WellBoreWeight;
-                IEnumerable<string> cltGrade = from x in objInputData.CasingLinerTubeData
-                                                where x.WellBoreSection == cltItem.Annulus && x.WellTop == cltItem.FromAnnulus
-                                                select x.WellBoreWeight;
-               
+                //IEnumerable<string> cltWeight = from x in objInputData.CasingLinerTubeData
+                //                             where x.WellBoreSection == cltItem.Annulus && x.WellTop == cltItem.FromAnnulus
+                //                             select x.WellBoreWeight;
+                //IEnumerable<string> cltGrade = from x in objInputData.CasingLinerTubeData
+                //                                where x.WellBoreSection == cltItem.Annulus && x.WellTop == cltItem.FromAnnulus
+                //                                select x.WellBoreWeight;
+                string cltWeight = "23.8";
+                string cltGrade = "F1";
                 pdfLstItemData.Add("WellBoreWeight", cltWeight != null ? cltWeight.ToString() : "0");
                 pdfLstItemData.Add("Grade", cltGrade != null ? cltGrade.ToString() : "");
                 pdfLstItemData.Add("WellTop", cltItem.FromAnnulus >= 0 ? cltItem.FromAnnulus.ToString() : "0");
                 pdfLstItemData.Add("WellBottom", cltItem.ToAnnulus > 0 ? cltItem.ToAnnulus.ToString() : "");
+                objcltdata.Add("clt" + increment,pdfLstItemData.ToString());
             }
 
-            Table tblCasingLinerTube = getCasingLinerTubing(pdfLstItemData, _tabheader);
-            tblCasingLinerTube.SetFontFamily(_fontfamily);
+
+            Table tblCasingLinerTube = new Table(1, false);  // = getCasingLinerTubing(objcltdata, _tabheader);
+           
             pdfLstItemData.Clear();
             increment = 0;
             #endregion
 
             #region BHA Input Data
             _tabheader = "Bottom Hole Assembly (Top Down)";
-            
+            Dictionary<string, string> objbdata = new Dictionary<string, string>();
             foreach (var wrkStrlstitem in objHydCalSrvs.bhaInput)
             {
+                pdfLstItemData = new Dictionary<string, string>();
                 increment++;
                 pdfLstItemData.Add("BhaLstID", increment.ToString());
                 pdfLstItemData.Add("ToolDescription", wrkStrlstitem.SectionName != null ? wrkStrlstitem.SectionName.ToString() : "");
@@ -272,13 +278,14 @@ namespace HydraulicCalAPI.Service
                 pdfLstItemData.Add("InnerDiameter", wrkStrlstitem.InsideDiameterInInch > 0 ? wrkStrlstitem.InsideDiameterInInch.ToString() : "0");
 
                 // code to get Workstring Weight and Upper Connection type
-                IEnumerable<string> wrkStrWeight = from x in objInputData.WorkStringItems
-                                                   where x.wrkToolDescription == wrkStrlstitem.SectionName && x.wrkLength == wrkStrlstitem.LengthInFeet.ToString()
-                                                select x.wrkWeight;
-                IEnumerable<string> wrkStrUpConnTyp = from x in objInputData.WorkStringItems
-                                                      where x.wrkToolDescription == wrkStrlstitem.SectionName && x.wrkLength == wrkStrlstitem.LengthInFeet.ToString()
-                                                      select x.wrkUpperConnType;
-                
+                //IEnumerable<string> wrkStrWeight = from x in objInputData.WorkStringItems
+                //                                   where x.wrkToolDescription == wrkStrlstitem.SectionName && x.wrkLength == wrkStrlstitem.LengthInFeet.ToString()
+                //                                select x.wrkWeight;
+                //IEnumerable<string> wrkStrUpConnTyp = from x in objInputData.WorkStringItems
+                //                                      where x.wrkToolDescription == wrkStrlstitem.SectionName && x.wrkLength == wrkStrlstitem.LengthInFeet.ToString()
+                //                                      select x.wrkUpperConnType;
+                string wrkStrWeight = "23";
+                string wrkStrUpConnTyp = "F1";
                 pdfLstItemData.Add("Weight", wrkStrWeight != null ? wrkStrWeight.ToString() : "0");
                 pdfLstItemData.Add("Length", wrkStrlstitem.LengthInFeet > 0 ? wrkStrlstitem.LengthInFeet.ToString() : "0");
                 pdfLstItemData.Add("UpperConnType", wrkStrUpConnTyp != null ? wrkStrUpConnTyp.ToString() : "");
@@ -287,11 +294,13 @@ namespace HydraulicCalAPI.Service
                 pdfLstItemData.Add("FishNeckLength", "");
                 pdfLstItemData.Add("HydraulicOD", "");
                 pdfLstItemData.Add("HydraulicID", "");
+                objbdata.Add("bd" + increment, pdfLstItemData.ToString());
             }
 
             // loop to get BHA Tool Data
             foreach (var bhalstitem in objHydCalSrvs.bhaInput)
             {
+            pdfLstItemData = new Dictionary<string, string>();
                 increment++;
                 pdfLstItemData.Add("BhaLstID", increment.ToString());
                 pdfLstItemData.Add("ToolDescription", bhalstitem.toolDescription != null ? bhalstitem.toolDescription.ToString() : "");
@@ -300,34 +309,41 @@ namespace HydraulicCalAPI.Service
                 pdfLstItemData.Add("InnerDiameter", bhalstitem.InsideDiameterInInch > 0 ? bhalstitem.InsideDiameterInInch.ToString() : "0");
 
                 // code to get BHA Weight and Upper Connection type
-                IEnumerable<string> bhatoolWeight = from x in objInputData.BHAToolItemData
-                                                   where x.SerialNumber == bhalstitem.PositionNumber.ToString() && x.Length == bhalstitem.LengthInFeet.ToString()
-                                                   select x.Weight;
-                IEnumerable<string> bhatoolUpConnTyp = from x in objInputData.BHAToolItemData
-                                                       where x.SerialNumber == bhalstitem.PositionNumber.ToString() && x.Length == bhalstitem.LengthInFeet.ToString()
-                                                       select x.UpperConnType;
-                IEnumerable<string> bhatoolLowConntyp = from x in objInputData.BHAToolItemData
-                                                        where x.SerialNumber == bhalstitem.PositionNumber.ToString() && x.Length == bhalstitem.LengthInFeet.ToString()
-                                                        select x.LowerConnType;
-                IEnumerable<string> bhatoolFishNeckOD = from x in objInputData.BHAToolItemData
-                                                        where x.SerialNumber == bhalstitem.PositionNumber.ToString() && x.Length == bhalstitem.LengthInFeet.ToString()
-                                                        select x.FishNeckOD;
-                IEnumerable<string> bhatoolFishNeckLen = from x in objInputData.BHAToolItemData
-                                                         where x.SerialNumber == bhalstitem.PositionNumber.ToString() && x.Length == bhalstitem.LengthInFeet.ToString()
-                                                         select x.FishNeckLength;
-               
+                //IEnumerable<string> bhatoolWeight = from x in objInputData.BHAToolItemData
+                //                                   where x.SerialNumber == bhalstitem.PositionNumber.ToString() && x.Length == bhalstitem.LengthInFeet.ToString()
+                //                                   select x.Weight;
+                //IEnumerable<string> bhatoolUpConnTyp = from x in objInputData.BHAToolItemData
+                //                                       where x.SerialNumber == bhalstitem.PositionNumber.ToString() && x.Length == bhalstitem.LengthInFeet.ToString()
+                //                                       select x.UpperConnType;
+                //IEnumerable<string> bhatoolLowConntyp = from x in objInputData.BHAToolItemData
+                //                                        where x.SerialNumber == bhalstitem.PositionNumber.ToString() && x.Length == bhalstitem.LengthInFeet.ToString()
+                //                                        select x.LowerConnType;
+                //IEnumerable<string> bhatoolFishNeckOD = from x in objInputData.BHAToolItemData
+                //                                        where x.SerialNumber == bhalstitem.PositionNumber.ToString() && x.Length == bhalstitem.LengthInFeet.ToString()
+                //                                        select x.FishNeckOD;
+                //IEnumerable<string> bhatoolFishNeckLen = from x in objInputData.BHAToolItemData
+                //                                         where x.SerialNumber == bhalstitem.PositionNumber.ToString() && x.Length == bhalstitem.LengthInFeet.ToString()
+                //                                         select x.FishNeckLength;
+                string bhatoolWeight = "23";
+                string bhatoolUpConnTyp = "F1";
+                string bhatoolLowConntyp = "23";
+                string bhatoolFishNeckOD = "F1";
+                string bhatoolFishNeckLen = "23";
+
+
                 pdfLstItemData.Add("Weight", bhatoolWeight != null ? bhatoolWeight.ToString() : "0");
                 pdfLstItemData.Add("Length", bhalstitem.LengthInFeet > 0 ? bhalstitem.LengthInFeet.ToString() : "0");
                 pdfLstItemData.Add("UpperConnType", bhatoolUpConnTyp != null ? bhatoolUpConnTyp.ToString() : "");
-                pdfLstItemData.Add("LowerConnType", bhatoolUpConnTyp != null ? bhatoolUpConnTyp.ToString() : "");
-                pdfLstItemData.Add("FishNeckOD", bhatoolUpConnTyp != null ? bhatoolUpConnTyp.ToString() : "");
-                pdfLstItemData.Add("FishNeckLength", bhatoolUpConnTyp != null ? bhatoolUpConnTyp.ToString() : "0");
+                pdfLstItemData.Add("LowerConnType", bhatoolLowConntyp != null ? bhatoolLowConntyp.ToString() : "");
+                pdfLstItemData.Add("FishNeckOD", bhatoolFishNeckOD != null ? bhatoolFishNeckOD.ToString() : "");
+                pdfLstItemData.Add("FishNeckLength", bhatoolFishNeckLen != null ? bhatoolFishNeckLen.ToString() : "0");
                 pdfLstItemData.Add("HydraulicOD", bhalstitem.OutsideDiameterInInch > 0 ? bhalstitem.OutsideDiameterInInch.ToString() : "0");
                 pdfLstItemData.Add("HydraulicID", bhalstitem.OutsideDiameterInInch > 0 ? bhalstitem.OutsideDiameterInInch.ToString() : "0");
+                objbdata.Add("bd" + increment, pdfLstItemData.ToString());
             }
             increment = 0;
-            Table tblBhaData = getBha(pdfLstItemData, _tabheader);
-            tblBhaData.SetFontFamily(_fontfamily);
+            Table tblBhaData = new Table(1, false);// = getBha(pdfLstItemData, _tabheader);
+          
             pdfLstItemData.Clear();
 
             #endregion
@@ -340,31 +356,32 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Surface Equipment", _surfaceEquipmentData != null ? _surfaceEquipmentData.ToString() : "");
             pdfHederInfoData.Add("Total Length", _totLength > 0.00 ? (_totLength.ToString() + " | ft") : "0.00");
             Table tblSurfaceEquipment = getHeaderInfoTable(pdfHederInfoData, _tabheader);
-            tblSurfaceEquipment.SetFontFamily(_fontfamily);
+            
             pdfHederInfoData.Clear();
 
             _tabheader = "Fluid Envelope";
+            pdfLstItemData = new Dictionary<string, string>();
             pdfLstItemData.Add("MaximumAllowablePressure", objHydCalSrvs.maxflowpressure > 0 ? objHydCalSrvs.maxflowpressure.ToString() : "0.00");
             pdfLstItemData.Add("MaximumAllowableFlowrate",objHydCalSrvs.maxflowrate > 0 ? objHydCalSrvs.maxflowrate.ToString() : "0.00");
             pdfLstItemData.Add("Comments" , objInputData.Comments != null ? objInputData.Comments.ToString() : "");
             Table tblFluidEnvelope = getFluidEnvelopeInfo(pdfLstItemData, _tabheader);
-            tblFluidEnvelope.SetFontFamily(_fontfamily);
+            
             pdfLstItemData.Clear();
 
             _tabheader = "Fluid";
-            foreach (var fluidlstitem in objInputData.FluidItemData)
-            {
-                pdfHederInfoData.Add("Solids", fluidlstitem.Solids > 0.00 ? (fluidlstitem.Solids.ToString() + " | % ") : "0.00");
-                pdfHederInfoData.Add("Drilling Fluid Type", fluidlstitem.DrillingFluidType != null ? fluidlstitem.DrillingFluidType.ToString() : "");
-                pdfHederInfoData.Add("Drilling Fluid Weight", objHydCalSrvs.fluidInput.DensityInPoundPerGallon > 0.00 ? (objHydCalSrvs.fluidInput.DensityInPoundPerGallon.ToString() + " | lb/gal") : "0.00");
-                pdfHederInfoData.Add("Buoyancy Factor", fluidlstitem.BuoyancyFactor > 0.00 ? (fluidlstitem.BuoyancyFactor.ToString() + " | lb/gal") : "0.00");
-                pdfHederInfoData.Add("Plastic Viscosity", objHydCalSrvs.fluidInput.PlasticViscosityInCentiPoise > 0.00 ? (objHydCalSrvs.fluidInput.PlasticViscosityInCentiPoise.ToString() + " | centipoise") : "0.00");
-                pdfHederInfoData.Add("Yield Point", objHydCalSrvs.fluidInput.YieldPointInPoundPerFeetSquare > 0.00 ? (objHydCalSrvs.fluidInput.YieldPointInPoundPerFeetSquare.ToString() + " | lbf/100ft²") : "0.00");
-                pdfHederInfoData.Add("Cutting Average Size", objHydCalSrvs.cuttingsInput.AverageCuttingSizeInInch > 0 ? (objHydCalSrvs.cuttingsInput.AverageCuttingSizeInInch.ToString() + " | in") : "0.00");
-                pdfHederInfoData.Add("Cutting Type", fluidlstitem.CuttingType != null ? fluidlstitem.CuttingType.ToString() : "");
-            }
-            Table tblFluid = getSurfacePageInfo(pdfHederInfoData, _tabheader);
-            tblFluidEnvelope.SetFontFamily(_fontfamily); 
+            //foreach (var fluidlstitem in objInputData.FluidItemData)
+            //{
+            //    pdfHederInfoData.Add("Solids", fluidlstitem.Solids > 0.00 ? (fluidlstitem.Solids.ToString() + " | % ") : "0.00");
+            //    pdfHederInfoData.Add("Drilling Fluid Type", fluidlstitem.DrillingFluidType != null ? fluidlstitem.DrillingFluidType.ToString() : "");
+            //    pdfHederInfoData.Add("Drilling Fluid Weight", objHydCalSrvs.fluidInput.DensityInPoundPerGallon > 0.00 ? (objHydCalSrvs.fluidInput.DensityInPoundPerGallon.ToString() + " | lb/gal") : "0.00");
+            //    pdfHederInfoData.Add("Buoyancy Factor", fluidlstitem.BuoyancyFactor > 0.00 ? (fluidlstitem.BuoyancyFactor.ToString() + " | lb/gal") : "0.00");
+            //    pdfHederInfoData.Add("Plastic Viscosity", objHydCalSrvs.fluidInput.PlasticViscosityInCentiPoise > 0.00 ? (objHydCalSrvs.fluidInput.PlasticViscosityInCentiPoise.ToString() + " | centipoise") : "0.00");
+            //    pdfHederInfoData.Add("Yield Point", objHydCalSrvs.fluidInput.YieldPointInPoundPerFeetSquare > 0.00 ? (objHydCalSrvs.fluidInput.YieldPointInPoundPerFeetSquare.ToString() + " | lbf/100ft²") : "0.00");
+            //    pdfHederInfoData.Add("Cutting Average Size", objHydCalSrvs.cuttingsInput.AverageCuttingSizeInInch > 0 ? (objHydCalSrvs.cuttingsInput.AverageCuttingSizeInInch.ToString() + " | in") : "0.00");
+            //    pdfHederInfoData.Add("Cutting Type", fluidlstitem.CuttingType != null ? fluidlstitem.CuttingType.ToString() : "");
+            //}
+            Table tblFluid = new Table(1, false); //= getSurfacePageInfo(pdfHederInfoData, _tabheader);
+           
             pdfHederInfoData.Clear();
 
             #endregion
@@ -560,17 +577,20 @@ namespace HydraulicCalAPI.Service
                 float totalValue = 0;
                 foreach (var itemval in objPrsDrop.Keys)
                 {
-                    totalValue += Convert.ToInt32(itemval[.);
+                    //totalValue += Convert.ToInt32(itemval[.);
+                    totalValue = 100;
                 }
 
                 float startAngle = 0;
 
                 foreach (var lstitem in objPrsDrop)
                 {
-                    float sweepAngle = (Convert.ToInt32(lstitem.value) / totalValue) * 360;
+                    float sweepAngle = (Convert.ToInt32(34) / totalValue) * 360;
                     using (var paint = new SKPaint())
                     {
-                        string colourName = lstitem.color;
+                        string colourName = "Red";
+                        
+                        //lstitem.color;
                         string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
 
                         paint.Color = SKColor.Parse(hexString);
