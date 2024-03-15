@@ -15,9 +15,9 @@ namespace HydraulicCalAPI.Service
     }
     public class BhaTopToBottom
     {
-        public string SerialNumber { get; set; }
+        public int SerialNumber { get; set; }
         public string Weight { get; set; }
-        public string Length { get; set; }
+        public double Length { get; set; }
         public string UpperConnType { get; set; }
         public string LowerConnType { get; set; }
         public string FishNeckOD { get; set; }
@@ -25,9 +25,9 @@ namespace HydraulicCalAPI.Service
      }
     public class WorkStringData
     {
-        public string wrkToolDescription { get; set; }
+        public string wrkSectionName { get; set; }
         public string wrkWeight { get; set; }
-        public string wrkLength { get; set; }
+        public double wrkLength { get; set; }
         public string wrkUpperConnType { get; set; }
     }
     public class CaseLinerTube
