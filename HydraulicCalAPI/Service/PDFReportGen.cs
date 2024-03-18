@@ -284,9 +284,9 @@ namespace HydraulicCalAPI.Service
                             dicLstBhaData.Add("MeasuredOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "0");
                             dicLstBhaData.Add("InnerDiameter" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "0");
                             // code to get Workstring Weight and Upper Connection type
-                            var wrkStrWeight = objInputData.WorkStringItems.Where(wks => wks.wrkSectionName.Equals(bhawrkStrlstitem.SectionName.ToString()) && wks.wrkLength.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
-                                                    .Select(wks => wks.wrkWeight);
-                            var wrkStrUpConnTyp = objInputData.WorkStringItems.Where(wks => wks.wrkSectionName.Equals(bhawrkStrlstitem.SectionName.ToString()) && wks.wrkLength.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                            var wrkStrWeight = objInputData.WorkStringItems.Where(wks => increment.Equals(bhawrkStrlstitem.PositionNumber))
+                                                  .Select(wks => wks.wrkWeight);
+                            var wrkStrUpConnTyp = objInputData.WorkStringItems.Where(wks => increment.Equals(bhawrkStrlstitem.PositionNumber))
                                                     .Select(wks => wks.wrkUpperConnType);
                             dicLstBhaData.Add("Weight" + increment, wrkStrWeight != null ? wrkStrWeight.FirstOrDefault() : "0");
                             dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "0");
@@ -306,15 +306,15 @@ namespace HydraulicCalAPI.Service
                             dicLstBhaData.Add("MeasuredOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "0");
                             dicLstBhaData.Add("InnerDiameter" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "0");
                             // code to get BHA Weight and Upper Connection type
-                            var bhatoolWeight = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber.Equals(bhawrkStrlstitem.PositionNumber.ToString()) && bt.Length.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                            var bhatoolWeight = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
                                                 .Select(bt => bt.Weight);
-                            var bhatoolUpConnTyp = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber.Equals(bhawrkStrlstitem.PositionNumber.ToString()) && bt.Length.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                            var bhatoolUpConnTyp = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
                                                 .Select(bt => bt.UpperConnType);
-                            var bhatoolLowConntyp = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber.Equals(bhawrkStrlstitem.PositionNumber.ToString()) && bt.Length.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                            var bhatoolLowConntyp = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
                                                                     .Select(bt => bt.LowerConnType);
-                            var bhatoolFishNeckOD = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber.Equals(bhawrkStrlstitem.PositionNumber.ToString()) && bt.Length.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                            var bhatoolFishNeckOD = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
                                                                     .Select(bt => bt.FishNeckOD);
-                            var bhatoolFishNeckLen = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber.Equals(bhawrkStrlstitem.PositionNumber.ToString()) && bt.Length.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                            var bhatoolFishNeckLen = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
                                                                      .Select(bt => bt.FishNeckLength);
                             dicLstBhaData.Add("Weight" + increment, bhatoolWeight != null ? bhatoolWeight.FirstOrDefault() : "0");
                             dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "0");
@@ -535,16 +535,16 @@ namespace HydraulicCalAPI.Service
 
             }
             
-            for (int i = 0; i < objChartService.HydraulicOutputBHAList.Count; i++)
-            {
-                hyprodatapoints.Add(new DataPoints
-                {
-                    X = (float)objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"][i].PrimaryAxisValue,
-                    Y = (float)objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"][i].SecondaryAxisValue,
-                    LineClr = objChartService.HydraulicOutputBHAList[i].BHAColor
+            //for (int i = 0; i < objChartService.HydraulicOutputBHAList.Count; i++)
+            //{
+            //    hyprodatapoints.Add(new DataPoints
+            //    {
+            //        X = (float)objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"][i].PrimaryAxisValue,
+            //        Y = (float)objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"][i].SecondaryAxisValue,
+            //        LineClr = objChartService.HydraulicOutputBHAList[i].BHAColor
 
-                });
-            }
+            //    });
+            //}
             
             
             byte[] hydraprograph = DrawHydraulicToolsGraph(hyprodatapoints);
@@ -821,7 +821,8 @@ namespace HydraulicCalAPI.Service
                 {
                     if (itemval.Substring(0, 5) == "Value")
                     {
-                        float itmValue = (float)Math.Round(float.Parse(objPrsDrop[itemval].ToString()));
+                        string fltVale = !string.IsNullOrEmpty(objPrsDrop[itemval]) ? objPrsDrop[itemval].ToString() : "0";
+                        float itmValue = (float)Math.Round(float.Parse(fltVale));
                         totalValue += itmValue;
                     }
                 }
@@ -832,7 +833,8 @@ namespace HydraulicCalAPI.Service
                 {
                     if (lstitem.Substring(0, 5) == "Value")
                     {
-                        float itValue = (float)Math.Round(float.Parse(objPrsDrop[lstitem].ToString()));
+                        string fltVal = !string.IsNullOrEmpty(objPrsDrop[lstitem]) ? objPrsDrop[lstitem].ToString() : "0";
+                        float itValue = (float)Math.Round(float.Parse(fltVal));
                         sweepAngle = (itValue / totalValue) * 360;
                     }
                     if (lstitem.Substring(0, 5) == "Color")
@@ -1309,7 +1311,8 @@ namespace HydraulicCalAPI.Service
 
             foreach (var item in objbhaitem.Keys)
             {
-                Cell bhaidv = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(objbhaitem[item].ToString()));
+                string addtocell = string.IsNullOrEmpty(objbhaitem[item]) ? "" : objbhaitem[item].ToString();
+                Cell bhaidv = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(addtocell));
                 _tblBHA.AddCell(bhaidv);
             }
 
