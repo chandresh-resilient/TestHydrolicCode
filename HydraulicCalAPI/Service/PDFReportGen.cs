@@ -18,6 +18,7 @@ using HydraulicCalAPI.Controllers;
 using HydraulicCalAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using iText.Commons.Utils;
 
 
 namespace HydraulicCalAPI.Service
@@ -37,7 +38,7 @@ namespace HydraulicCalAPI.Service
         List<PdfReportService> pdfFooter;
 
         Dictionary<string, string> pdfPieChart = new Dictionary<string, string>();
-        int increment = 0;
+        
 
         HydraulicCalculationService objHydCalSrvs = new HydraulicCalculationService();
 
@@ -215,21 +216,21 @@ namespace HydraulicCalAPI.Service
             _tabheader = "Casing/ Liner/ Tubing Data";
             // preparing Casing, Liner and Tubing Object List
             Dictionary<string, string> dicLstCltData = new Dictionary<string, string>(); ;
+            int increment = 0;
             foreach (var cltItem in objHydCalSrvs.annulusInput)
             {
-                increment++;
+               
                 //Code to get WellBore weight and WellBore Grade form PdfReportService
-                IEnumerable<string> cltWeight = objInputData.CasingLinerTubeData.Where(x => x.WellBoreSection.Equals(cltItem.WellboreSectionName) && x.WellTop.Equals(cltItem.AnnulusTopInFeet))
-                                                    .Select(x => x.WellBoreWeight);
+                string cltWeight = objInputData.CasingLinerTubeData[increment].WellBoreWeight;
 
-                IEnumerable<string> cltGrade = objInputData.CasingLinerTubeData.Where(x => x.WellBoreSection.Equals(cltItem.WellboreSectionName) && x.WellTop.Equals(cltItem.AnnulusTopInFeet))
-                                                    .Select(x => x.Grade);
+                string cltGrade = objInputData.CasingLinerTubeData[increment].Grade;
+                increment++;
                 dicLstCltData.Add("CLTID" + increment, increment.ToString());
                 dicLstCltData.Add("WellBoreSection" + increment, (cltItem.WellboreSectionName != null ? cltItem.WellboreSectionName.ToString() : ""));
                 dicLstCltData.Add("OutDiameter" + increment, (cltItem.AnnulusODInInch > 0 ? cltItem.AnnulusODInInch.ToString() : "0"));
                 dicLstCltData.Add("InnDiameter" + increment, (cltItem.AnnulusIDInInch > 0 ? cltItem.AnnulusIDInInch.ToString() : "0"));
-                dicLstCltData.Add("WellBoreWeight" + increment, (string.IsNullOrEmpty(cltWeight.ToString()) ? "0" : cltWeight.FirstOrDefault()));
-                dicLstCltData.Add("Grade" + increment, (string.IsNullOrEmpty(cltGrade.ToString()) ? "" : cltGrade.FirstOrDefault()));
+                dicLstCltData.Add("WellBoreWeight" + increment, (string.IsNullOrEmpty(cltWeight) ? "0" : cltWeight));
+                dicLstCltData.Add("Grade" + increment, (string.IsNullOrEmpty(cltGrade.ToString()) ? "" : cltGrade));
                 dicLstCltData.Add("WellTop" + increment, (cltItem.AnnulusTopInFeet >= 0 ? cltItem.AnnulusTopInFeet.ToString() : "0"));
                 dicLstCltData.Add("WellBottom" + increment, (cltItem.AnnulusBottomInFeet > 0 ? cltItem.AnnulusBottomInFeet.ToString() : ""));
             }
@@ -999,7 +1000,9 @@ namespace HydraulicCalAPI.Service
 
             foreach (var item in objbhaitem.Keys)
             {
-                Cell bhaidv = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(objbhaitem[item].ToString()));
+                string text = objbhaitem[item];
+                text = text == null  ? "NA" : text;
+                Cell bhaidv = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(text));
                 _tblBHA.AddCell(bhaidv);
             }
 
