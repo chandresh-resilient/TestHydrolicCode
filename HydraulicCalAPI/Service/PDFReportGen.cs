@@ -18,17 +18,38 @@ using HydraulicCalAPI.Controllers;
 using HydraulicCalAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
-using iText.Commons.Utils;
-
 
 namespace HydraulicCalAPI.Service
 {
     public class DataPoints
     {
         public float X { get; set; }
-        public float Y{ get; set; }
+        public float Y { get; set; }
+        public string LineClr { get; set; }
     }
-    
+    public class PieData
+    {
+        public string Label { get; set; }
+        public float Value { get; set; }
+        public string Color { get; set; }
+    }
+
+    public class HydraulicAnalysisAnnulusOutputData
+    {
+        public string Annulus { get; set; }
+        public string WorkString { get; set; }
+        public double From { get; set; }
+        public double To { get; set; }
+        public double AverageVelocity { get; set; }
+        public double CriticalVelocity { get; set; }
+        public string Flow { get; set; }
+        public double ChipRate { get; set; }
+        public double PressureDrop { get; set; }
+        public string AvgVelocityColor { get; set; }
+        public string AnnulusColor { get; set; }
+        public string ChipRateColor { get; set; }
+    }
+
     public class PDFReportGen
     {
         Color accuColor;
@@ -256,12 +277,10 @@ namespace HydraulicCalAPI.Service
                             dicLstBhaData.Add("MeasuredOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "0");
                             dicLstBhaData.Add("InnerDiameter" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "0");
                             // code to get Workstring Weight and Upper Connection type
-                            IEnumerable<string> wrkStrWeight = from xbha in objInputData.WorkStringItems
-                                                               where xbha.wrkSectionName == bhawrkStrlstitem.SectionName.ToString() && xbha.wrkLength == bhawrkStrlstitem.LengthInFeet
-                                                               select xbha.wrkWeight;
-                            IEnumerable<string> wrkStrUpConnTyp = from xbha in objInputData.WorkStringItems
-                                                                  where xbha.wrkSectionName == bhawrkStrlstitem.SectionName.ToString() && xbha.wrkLength == bhawrkStrlstitem.LengthInFeet
-                                                                  select xbha.wrkUpperConnType;
+                            var wrkStrWeight = objInputData.WorkStringItems.Where(wks => wks.wrkSectionName.Equals(bhawrkStrlstitem.SectionName.ToString()) && wks.wrkLength.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                                                    .Select(wks => wks.wrkWeight);
+                            var wrkStrUpConnTyp = objInputData.WorkStringItems.Where(wks => wks.wrkSectionName.Equals(bhawrkStrlstitem.SectionName.ToString()) && wks.wrkLength.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                                                    .Select(wks => wks.wrkUpperConnType);
                             dicLstBhaData.Add("Weight" + increment, wrkStrWeight != null ? wrkStrWeight.FirstOrDefault() : "0");
                             dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "0");
                             dicLstBhaData.Add("UpperConnType" + increment, wrkStrUpConnTyp != null ? wrkStrUpConnTyp.FirstOrDefault() : "N/A");
@@ -280,21 +299,16 @@ namespace HydraulicCalAPI.Service
                             dicLstBhaData.Add("MeasuredOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "0");
                             dicLstBhaData.Add("InnerDiameter" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "0");
                             // code to get BHA Weight and Upper Connection type
-                            IEnumerable<string> bhatoolWeight = from x in objInputData.BHAToolItemData
-                                                                where x.SerialNumber == bhawrkStrlstitem.PositionNumber && x.Length == bhawrkStrlstitem.LengthInFeet
-                                                                select x.Weight;
-                            IEnumerable<string> bhatoolUpConnTyp = from x in objInputData.BHAToolItemData
-                                                                   where x.SerialNumber == bhawrkStrlstitem.PositionNumber && x.Length == bhawrkStrlstitem.LengthInFeet
-                                                                   select x.UpperConnType;
-                            IEnumerable<string> bhatoolLowConntyp = from x in objInputData.BHAToolItemData
-                                                                    where x.SerialNumber == bhawrkStrlstitem.PositionNumber && x.Length == bhawrkStrlstitem.LengthInFeet
-                                                                    select x.LowerConnType;
-                            IEnumerable<string> bhatoolFishNeckOD = from x in objInputData.BHAToolItemData
-                                                                    where x.SerialNumber == bhawrkStrlstitem.PositionNumber && x.Length == bhawrkStrlstitem.LengthInFeet
-                                                                    select x.FishNeckOD;
-                            IEnumerable<string> bhatoolFishNeckLen = from x in objInputData.BHAToolItemData
-                                                                     where x.SerialNumber == bhawrkStrlstitem.PositionNumber && x.Length == bhawrkStrlstitem.LengthInFeet
-                                                                     select x.FishNeckLength;
+                            var bhatoolWeight = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber.Equals(bhawrkStrlstitem.PositionNumber.ToString()) && bt.Length.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                                                .Select(bt => bt.Weight);
+                            var bhatoolUpConnTyp = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber.Equals(bhawrkStrlstitem.PositionNumber.ToString()) && bt.Length.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                                                .Select(bt => bt.UpperConnType);
+                            var bhatoolLowConntyp = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber.Equals(bhawrkStrlstitem.PositionNumber.ToString()) && bt.Length.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                                                                    .Select(bt => bt.LowerConnType);
+                            var bhatoolFishNeckOD = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber.Equals(bhawrkStrlstitem.PositionNumber.ToString()) && bt.Length.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                                                                    .Select(bt => bt.FishNeckOD);
+                            var bhatoolFishNeckLen = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber.Equals(bhawrkStrlstitem.PositionNumber.ToString()) && bt.Length.Equals(bhawrkStrlstitem.LengthInFeet.ToString()))
+                                                                     .Select(bt => bt.FishNeckLength);
                             dicLstBhaData.Add("Weight" + increment, bhatoolWeight != null ? bhatoolWeight.FirstOrDefault() : "0");
                             dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "0");
                             dicLstBhaData.Add("UpperConnType" + increment, bhatoolUpConnTyp != null ? bhatoolUpConnTyp.FirstOrDefault() : "N/A");
@@ -350,10 +364,21 @@ namespace HydraulicCalAPI.Service
             #endregion
 
             #region Chart and Graph Section
-
+            #region Pressure Distribution Chart
             Paragraph _chartheader = new Paragraph("Pressure Distribution Chart")
-             .SetTextAlignment(TextAlignment.CENTER)
-             .SetFontSize(12).SetBold();
+            .SetTextAlignment(TextAlignment.CENTER)
+            .SetFontSize(12).SetBold();
+            List<PieData> pieDataPoints = new List<PieData>();
+
+            foreach (var pieitem in objChartService.PressureDistributionChartCollection)
+            {
+                pieDataPoints.Add(new PieData
+                {
+                    Label = pieitem.Name,
+                    Value = (float)pieitem.Value,
+                    Color = pieitem.Color
+                });
+            }
 
             foreach (var itempiedata in objChartService.PressureDistributionChartCollection)
             {
@@ -363,34 +388,113 @@ namespace HydraulicCalAPI.Service
                 pdfPieChart.Add("Color" + increment, itempiedata.Color != null ? itempiedata.Color.ToString() : "");
             }
             increment = 0;
-            byte[] chartBytes = GeneratePieChart(pdfPieChart);
+            byte[] chartBytes = GeneratePieChart(pdfPieChart, pieDataPoints);
             Image imgPie = new Image(ImageDataFactory.Create(chartBytes));
+            #endregion
 
+            // Code for Drwaing Line Graph
+            #region Standpipe Vs Flowrate Graph
             Paragraph _stdpipeHeader = new Paragraph("StandPipe Vs Flow Rate")
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetFontSize(12).SetBold();
-            Dictionary<String, Object> dicSTDGraphData = new Dictionary<String, Object>();
+
             List<DataPoints> dataPoints = new List<DataPoints>();
-
-            dicSTDGraphData.Add("RedLower", objChartService.standpipePressureListRL);
-            dicSTDGraphData.Add("YellowLower", objChartService.standpipePressureListYL);
-            dicSTDGraphData.Add("Green", objChartService.standpipePressureListG);
-            dicSTDGraphData.Add("YellowHigher", objChartService.standpipePressureListYH);
-            dicSTDGraphData.Add("RedHigher", objChartService.standpipePressureListRH);
-
-            
-            
-            foreach (var item in objChartService.standpipePressureListRL)
+            if (objChartService.standpipePressureListRL.Count > 0)
             {
-                dataPoints.Add(new DataPoints
+                foreach (var item in objChartService.standpipePressureListRL)
                 {
-                    X = (float)item.PrimaryAxisValue,
-                    Y = (float)item.SecondaryAxisValue
+                    dataPoints.Add(new DataPoints
+                    {
+                        X = (float)item.PrimaryAxisValue,
+                        Y = (float)item.SecondaryAxisValue,
+                        LineClr = "Red"
+                    });
+                }
+            }
+            if (objChartService.standpipePressureListYL.Count > 0)
+            {
+                foreach (var item in objChartService.standpipePressureListYL)
+                {
+                    dataPoints.Add(new DataPoints
+                    {
+                        X = (float)item.PrimaryAxisValue,
+                        Y = (float)item.SecondaryAxisValue,
+                        LineClr = "Yellow"
+                    });
+                }
+            }
+            if (objChartService.standpipePressureListG.Count > 0)
+            {
+                foreach (var item in objChartService.standpipePressureListG)
+                {
+                    dataPoints.Add(new DataPoints
+                    {
+                        X = (float)item.PrimaryAxisValue,
+                        Y = (float)item.SecondaryAxisValue,
+                        LineClr = "Green"
+                    });
+                }
+            }
+            if (objChartService.standpipePressureListYH.Count > 0)
+            {
+                foreach (var item in objChartService.standpipePressureListYH)
+                {
+                    dataPoints.Add(new DataPoints
+                    {
+                        X = (float)item.PrimaryAxisValue,
+                        Y = (float)item.SecondaryAxisValue,
+                        LineClr = "Yellow"
+                    });
+                }
+            }
+            if (objChartService.standpipePressureListRH.Count > 0)
+            {
+                foreach (var item in objChartService.standpipePressureListRH)
+                {
+                    dataPoints.Add(new DataPoints
+                    {
+                        X = (float)item.PrimaryAxisValue,
+                        Y = (float)item.SecondaryAxisValue,
+                        LineClr = "Red"
+                    });
+                }
+            }
+
+           // Generate line graph image
+            byte[] graphBytes = DrawLineGraph(objChartService, dataPoints);
+            Image imgStdPvsFlwRate = new Image(ImageDataFactory.Create(graphBytes));
+
+           // Add labels and values to PDF document
+            Paragraph xscale = new Paragraph($"X-axis: Flow Rate (gal/min)");
+            Paragraph yscale = new Paragraph($"Y-axis: Standpipe Pressure (psi)");
+            #endregion
+
+            #region Hydraulic BHA Output
+            List<HydraulicAnalysisAnnulusOutputData> objHyAnlyAnnuOutputData = new List<HydraulicAnalysisAnnulusOutputData>();
+
+            foreach (var itemannulsoutputlst in objChartService.HydraulicOutputAnnulusList)
+            {
+                objHyAnlyAnnuOutputData.Add(new HydraulicAnalysisAnnulusOutputData
+                {
+                    AnnulusColor = Convert.ToString(itemannulsoutputlst.AnnulusColor),
+                    Annulus = itemannulsoutputlst.Annulus,
+                    WorkString = itemannulsoutputlst.Workstring,
+                    From = itemannulsoutputlst.FromAnnulus,
+                    To = itemannulsoutputlst.ToAnnulus,
+                    AverageVelocity = itemannulsoutputlst.AverageVelocity,
+                    AvgVelocityColor = Convert.ToString(itemannulsoutputlst.AverageVelocityColor),
+                    CriticalVelocity = itemannulsoutputlst.CriticalVelocity,
+                    Flow = itemannulsoutputlst.FlowType,
+                    ChipRate = itemannulsoutputlst.ChipRate,
+                    ChipRateColor = Convert.ToString(itemannulsoutputlst.ChipRateColor),
+                    PressureDrop = itemannulsoutputlst.AnnulusPressureDrop
                 });
             }
-            // Generate line graph image
-            byte[] graphBytes = DrawLineGraph(dicSTDGraphData,objChartService,dataPoints);
-            Image imgStdPvsFlwRate = new Image(ImageDataFactory.Create(graphBytes));
+
+            Table tblannulusdata = getAnnulusTableData(objHyAnlyAnnuOutputData);
+           
+
+            #endregion
 
             #endregion
 
@@ -414,7 +518,7 @@ namespace HydraulicCalAPI.Service
                         Document document = new Document(pdf, PageSize.A4);
                         NewMethod(img, newline, legend, ls, header, tableAuthor, comment, footer, _headerinfo, tblSegment, tblJobInformation, tblWellInformation, tblOriginator, tblCustomerContacts,
                             tblWeatherfordContacts, tblGenInfo, tblApproval, _casingLinerTubingInfo, tblDepthAnalysis, tblCasingLinerTube, tblBhaData, tblSurfaceEquipment, tblFluidEnvelope,
-                            tblFluid, _chartheader, imgPie,  _stdpipeHeader, imgStdPvsFlwRate, document);
+                            tblFluid, _chartheader, imgPie, tblannulusdata, _stdpipeHeader, imgStdPvsFlwRate, xscale,yscale, document);
                         document.Close();
                     }
                 }
@@ -478,7 +582,7 @@ namespace HydraulicCalAPI.Service
         private static void NewMethod(Image img, Paragraph newline, Paragraph legend, LineSeparator ls, Paragraph header, Table tableAuthor, Paragraph comment, Table footer, Paragraph _headerinfo,
             Table tblSegment, Table tblJobInformation, Table tblWellInformation, Table tblOriginator, Table tblCustomerContacts, Table tblWeatherfordContacts, Table tblGenInfo, Table tblApproval,
             Paragraph _casingLinerTubingInfo, Table tblDepthAnalysis, Table tblCasingLinerTube, Table tblBhaData, Table tblSurfaceEquipment, Table tblFluidEnvelope, Table tblFluid, Paragraph _chartheader,
-            Image imgPie, Paragraph _stdpipeHeader, Image imgStdPvsFlwRate, Document document)
+            Image imgPie, Table tblannulusdata,Paragraph _stdpipeHeader, Image imgStdPvsFlwRate, Paragraph xscale, Paragraph yscale, Document document)
         {
             document.Add(img);
             document.Add(ls);
@@ -612,8 +716,12 @@ namespace HydraulicCalAPI.Service
             document.Add(newline);
             document.Add(_chartheader);
             document.Add(newline);
-            
+
             document.Add(imgPie);
+            document.Add(newline);
+            document.Add(tblannulusdata);
+            tblannulusdata.Flush();
+            tblannulusdata.Complete();
             document.Add(newline);
             document.Add(ls);
             document.Add(footer);
@@ -625,22 +733,30 @@ namespace HydraulicCalAPI.Service
             document.Add(newline);
             document.Add(_stdpipeHeader);
             document.Add(newline);
-            
+            document.Add(xscale);
+            document.Add(yscale);
             document.Add(imgStdPvsFlwRate);
             document.Add(newline);
             document.Add(ls);
             document.Add(footer);
         }
 
-        #region Methods
+       #region Methods
 
         #region Graph and Chart Generate Method Section
-        public byte[] GeneratePieChart(Dictionary<string, string> objPrsDrop)
+        public byte[] GeneratePieChart(Dictionary<string, string> objPrsDrop, List<PieData> pieData)
         {
-            using (var surfcae = SKSurface.Create(new SKImageInfo(400, 400)))
+            float width = 400;
+            float height = 400;
+            float margin = 15;
+            using (var surfcae = SKSurface.Create(new SKImageInfo((int)width, (int)height)))
             {
                 var canvas = surfcae.Canvas;
                 canvas.Clear(SKColors.White);
+                float centerX = width / 2;
+                float centerY = height / 2;
+                float radius = Math.Min(width, height) / 2 - margin;
+
                 float totalValue = 0;
 
                 foreach (var itemval in objPrsDrop.Keys)
@@ -676,6 +792,24 @@ namespace HydraulicCalAPI.Service
                     }
                 }
 
+                float legendX = width - margin - 50;
+                float legendY = margin;
+                float legendItemHeight = 8;
+                foreach (var data in pieData)
+                {
+                    using (var paint = new SKPaint())
+                    {
+                        string colourName = data.Color;
+                        string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
+
+                        paint.Color = SKColor.Parse(hexString);
+                        canvas.DrawRect(legendX, legendY, legendItemHeight, legendItemHeight, paint);
+                    }
+                    float labelPercentage = (float)Math.Round((data.Value / totalValue) * 100);
+                    canvas.DrawText($"({labelPercentage:F2} %)", legendX + legendItemHeight + 5, legendY + 15, new SKPaint());
+                    legendY += legendItemHeight + 5;
+                }
+
                 using (var image = surfcae.Snapshot())
                 using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
                 {
@@ -688,7 +822,64 @@ namespace HydraulicCalAPI.Service
             }
         }
 
-        public byte[] DrawLineGraph(Dictionary<String, Object> objStdPvsFR,ChartAndGraphService objCags, List<DataPoints> dataPoints)
+        public Table getAnnulusTableData(List<HydraulicAnalysisAnnulusOutputData> objHydrAnnulus)
+        {
+            Table _tblannulusdata = new Table(10, true).SetFontSize(10);
+            Cell tblhead01 = new Cell(1, 1).Add(new Paragraph().SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+            Cell tblhead02 = new Cell(1, 1).Add(new Paragraph("Annulus").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+            Cell tblhead03 = new Cell(1, 1).Add(new Paragraph("WorkString").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+            Cell tblhead04 = new Cell(1, 1).Add(new Paragraph("From (ft)").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+            Cell tblhead05 = new Cell(1, 1).Add(new Paragraph("To (ft)").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+            Cell tblhead06 = new Cell(1, 1).Add(new Paragraph("Average Velocity (ft/min)").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+            Cell tblhead07 = new Cell(1, 1).Add(new Paragraph("Critical Velocity (ft/min)").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+            Cell tblhead08 = new Cell(1, 1).Add(new Paragraph("Flow").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+            Cell tblhead09 = new Cell(1, 1).Add(new Paragraph("Chip Rate (ft/min)").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+            Cell tblhead10 = new Cell(1, 1).Add(new Paragraph("Pressure Drop (psi)").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
+
+            _tblannulusdata.AddCell(tblhead01);
+            _tblannulusdata.AddCell(tblhead02);
+            _tblannulusdata.AddCell(tblhead03);
+            _tblannulusdata.AddCell(tblhead04);
+            _tblannulusdata.AddCell(tblhead05);
+            _tblannulusdata.AddCell(tblhead06);
+            _tblannulusdata.AddCell(tblhead07);
+            _tblannulusdata.AddCell(tblhead08);
+            _tblannulusdata.AddCell(tblhead09);
+            _tblannulusdata.AddCell(tblhead10);
+
+            foreach (var itmAnu in objHydrAnnulus)
+            {
+                if(itmAnu.AnnulusColor.ToUpper() != "GREEN")
+                {
+                    Cell clanColor = new Cell(1, 1).Add(new Paragraph(char.ConvertFromUtf32(0x2191) + "   " + char.ConvertFromUtf32(0x2191)).SetFontColor(ColorConstants.GREEN));
+                    _tblannulusdata.AddCell(clanColor);
+                }
+                Cell clan02 = new Cell(1, 1).Add(new Paragraph(itmAnu.Annulus).SetTextAlignment(TextAlignment.LEFT));
+                Cell clan03 = new Cell(1, 1).Add(new Paragraph(itmAnu.WorkString).SetTextAlignment(TextAlignment.LEFT));
+                Cell clan04 = new Cell(1, 1).Add(new Paragraph(itmAnu.From.ToString()).SetTextAlignment(TextAlignment.LEFT));
+                Cell clan05 = new Cell(1, 1).Add(new Paragraph(itmAnu.To.ToString()).SetTextAlignment(TextAlignment.LEFT));
+                Cell clan06 = new Cell(1, 1).Add(new Paragraph(itmAnu.AverageVelocity.ToString()).SetTextAlignment(TextAlignment.LEFT));
+                Cell clan07 = new Cell(1, 1).Add(new Paragraph(itmAnu.CriticalVelocity.ToString()).SetTextAlignment(TextAlignment.LEFT));
+                Cell clan08 = new Cell(1, 1).Add(new Paragraph(itmAnu.ChipRate.ToString()).SetTextAlignment(TextAlignment.LEFT));
+                Cell clan09 = new Cell(1, 1).Add(new Paragraph(itmAnu.PressureDrop.ToString()).SetTextAlignment(TextAlignment.LEFT));
+                _tblannulusdata.AddCell(clan02);
+                _tblannulusdata.AddCell(clan03);
+                _tblannulusdata.AddCell(clan04);
+                _tblannulusdata.AddCell(clan05);
+                _tblannulusdata.AddCell(clan06);
+                _tblannulusdata.AddCell(clan07);
+                _tblannulusdata.AddCell(clan08);
+                _tblannulusdata.AddCell(clan09);
+
+            }
+            
+           
+
+
+            return _tblannulusdata;
+        }
+
+        public byte[] DrawLineGraph(ChartAndGraphService objCags, List<DataPoints> dataPoints)
         {
             using (var surfcae = SKSurface.Create(new SKImageInfo(400, 300)))
             {
@@ -700,10 +891,36 @@ namespace HydraulicCalAPI.Service
 
                 float graphWidth = width - 2 * margin;
                 float graphHeight = height - 2 * margin;
-                using(var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1 })
+                using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1 })
                 {
                     canvas.DrawLine(margin, margin, margin, height - margin, paint); // Y-axis
                     canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint); // X-axis
+                    
+                    // Default Point for x-axis and y-axis
+                    canvas.DrawText("0", new SKPoint(margin, height + 15 - margin), paint);
+
+                    var xlimit = objCags.MaxFlowRate;
+                    var ylimit = objCags.MaxPressure;
+                    var xfixPoint = objCags.UpperOperatingPoint;
+                    var yfixPoint = objCags.MaxPressure;
+
+                    float xpoint = margin;
+                    for (int i=1; i <= xlimit; i++)
+                    {
+                        int x = i * 100;
+                        string xScale = Convert.ToString(x);
+                        xpoint += xpoint + 50;
+                        canvas.DrawText(xScale, new SKPoint(xpoint, height + 15 - margin), paint);
+                    }
+                    float ypoint = height + 10 - margin;
+                    for(int j = 1; j <= ylimit; j++)
+                    {
+                        ypoint -= 50;
+                        int y = j * 1000;
+                        string yScale = Convert.ToString(y);
+                        canvas.DrawText(yScale,new SKPoint(0,ypoint),paint);
+                    }
+                    canvas.DrawText("X",(float)xfixPoint, (float)yfixPoint, paint);
                 }
 
                 float minX = (float)objCags.MinimumFlowRate;
@@ -718,20 +935,41 @@ namespace HydraulicCalAPI.Service
                     minY = Math.Min(minY, point.Y);
                     maxY = Math.Max(maxY, point.Y);
                 }
-                using(var paint = new SKPaint { Color =SKColors.Red, StrokeWidth=2,IsAntialias = true})
+
+
+                using (var paint = new SKPaint { Color = SKColors.Red, StrokeWidth = 2, IsAntialias = true })
                 {
                     float scaleX = graphWidth / (maxX - minX);
                     float scaleY = graphHeight / (maxY - minY);
-                    for (int i = 0; i < dataPoints.Count -1; i++)
+                    for (int i = 0; i < dataPoints.Count - 1; i++)
                     {
                         float x1 = margin + (dataPoints[i].X - minX) * scaleX;
                         float y1 = height - margin - (dataPoints[i].Y - minY) * scaleY;
                         float x2 = margin + (dataPoints[i + 1].X - minX) * scaleX;
                         float y2 = height - margin - (dataPoints[i + 1].Y - minY) * scaleY;
 
-                        canvas.DrawLine(x1, y1, x2, y2, paint);
+                        if (dataPoints[i].LineClr == "Yellow")
+                        {
+                            string colourName = dataPoints[i].LineClr;
+                            string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
+                            paint.Color = SKColor.Parse(hexString);
+                            canvas.DrawLine(x1, y1, x2, y2, paint);
+                        }
+                        else if (dataPoints[i].LineClr == "Green")
+                        {
+                            string colourName = dataPoints[i].LineClr;
+                            string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
+                            paint.Color = SKColor.Parse(hexString);
+                            canvas.DrawLine(x1, y1, x2, y2, paint);
+                        }
+                        else
+                        {
+                            canvas.DrawLine(x1, y1, x2, y2, paint);
+                        }
+
                     }
                 }
+
                 // Convert bitmap to byte array
                 using (var image = surfcae.Snapshot())
                 using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
@@ -951,8 +1189,8 @@ namespace HydraulicCalAPI.Service
 
             foreach (var item in objclt.Keys)
             {
-                Cell cltidv = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(objclt[item]));
-
+                string addtocell = string.IsNullOrEmpty(objclt[item]) ? "" : objclt[item].ToString();
+                Cell cltidv = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(addtocell));
                 _tabclt.AddCell(cltidv);
             }
             return _tabclt.SetAutoLayout();
@@ -1000,9 +1238,7 @@ namespace HydraulicCalAPI.Service
 
             foreach (var item in objbhaitem.Keys)
             {
-                string text = objbhaitem[item];
-                text = text == null  ? "NA" : text;
-                Cell bhaidv = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(text));
+                Cell bhaidv = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(objbhaitem[item].ToString()));
                 _tblBHA.AddCell(bhaidv);
             }
 
@@ -1057,8 +1293,9 @@ namespace HydraulicCalAPI.Service
 
             foreach (var item in objSegment)
             {
+                string itmvalue = string.IsNullOrEmpty(item.Value) ? "" : item.Value.ToString();
                 _tableSurf.AddCell(new Paragraph(item.Key).SetTextAlignment(TextAlignment.LEFT));
-                _tableSurf.AddCell(new Paragraph(item.Value).SetTextAlignment(TextAlignment.LEFT));
+                _tableSurf.AddCell(new Paragraph(itmvalue).SetTextAlignment(TextAlignment.LEFT));
             }
             return _tableSurf.SetAutoLayout();
         }
@@ -1111,22 +1348,13 @@ namespace HydraulicCalAPI.Service
         }
 
         #endregion
-        public Paragraph getStandPipeFlowRate()
-        {
-            Paragraph _headertext = new Paragraph("Hydraulic Analysis Weatherford Fishing")
-              .SetTextAlignment(TextAlignment.CENTER)
-              .SetFontSize(20).SetBold().SetFontColor(accuColor);
-            return _headertext;
-        }
 
-        public Paragraph getHydraulicOutput()
+        #region GetHdraPro Series graph per tool
+        public void  getHydraulicBHAGraphs()
         {
-            Paragraph _headertext = new Paragraph("Hydraulic Analysis Weatherford Fishing")
-              .SetTextAlignment(TextAlignment.CENTER)
-              .SetFontSize(20).SetBold().SetFontColor(accuColor);
-            return _headertext;
-        }
+        } 
         #endregion
+       #endregion
     }
 
 }
