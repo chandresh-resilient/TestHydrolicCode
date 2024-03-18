@@ -34,13 +34,6 @@ namespace HydraulicCalAPI.Service
         public string Color { get; set; }
     }
 
-    public class HydraProDataPoints
-    {
-        public float hbdX { get; set; }
-        public float hbdY { get; set; }
-        public string hbdLineClr { get; set; }
-    }
-
     public class HydraulicAnalysisAnnulusOutputData
     {
         public string Annulus { get; set; }
@@ -80,7 +73,7 @@ namespace HydraulicCalAPI.Service
 
             // Add image
             Image img = new Image(ImageDataFactory
-               .Create("wft.jpg"))
+               .Create("Images/wft.jpg"))
                .SetTextAlignment(TextAlignment.LEFT).SetWidth(100).SetHeight(40);
 
             // New line
@@ -478,80 +471,55 @@ namespace HydraulicCalAPI.Service
 
             #region Hydraulic Annulus Output
             List<HydraulicAnalysisAnnulusOutputData> objHyAnlyAnnuOutputData = new List<HydraulicAnalysisAnnulusOutputData>();
+            Dictionary<string, string> dicLstAnnulusOutputData = new Dictionary<string, string>();
 
             foreach (var itemannulsoutputlst in objChartService.HydraulicOutputAnnulusList)
             {
-                objHyAnlyAnnuOutputData.Add(new HydraulicAnalysisAnnulusOutputData
-                {
-                    AnnulusColor = Convert.ToString(itemannulsoutputlst.AnnulusColor),
-                    Annulus = itemannulsoutputlst.Annulus,
-                    WorkString = itemannulsoutputlst.Workstring,
-                    From = itemannulsoutputlst.FromAnnulus,
-                    To = itemannulsoutputlst.ToAnnulus,
-                    AverageVelocity = itemannulsoutputlst.AverageVelocity,
-                    AvgVelocityColor = Convert.ToString(itemannulsoutputlst.AverageVelocityColor),
-                    CriticalVelocity = itemannulsoutputlst.CriticalVelocity,
-                    Flow = itemannulsoutputlst.FlowType,
-                    ChipRate = itemannulsoutputlst.ChipRate,
-                    ChipRateColor = Convert.ToString(itemannulsoutputlst.ChipRateColor),
-                    PressureDrop = itemannulsoutputlst.AnnulusPressureDrop
-                });
+                increment++;
+                dicLstAnnulusOutputData.Add("forArrow" + increment, Convert.ToString(itemannulsoutputlst.AnnulusColor));
+                dicLstAnnulusOutputData.Add("Annulus" + increment,itemannulsoutputlst.Annulus != null ? itemannulsoutputlst.Annulus.ToString() : "" );
+                dicLstAnnulusOutputData.Add("Workstring" + increment, itemannulsoutputlst.Workstring != null ? itemannulsoutputlst.Workstring.ToString() : "");
+                dicLstAnnulusOutputData.Add("FromAnnulus" + increment, itemannulsoutputlst.FromAnnulus > 0.00 ? Math.Round(itemannulsoutputlst.FromAnnulus,3).ToString() : "0.00");
+                dicLstAnnulusOutputData.Add("ToAnnulus" + increment, itemannulsoutputlst.ToAnnulus > 0.00 ? Math.Round(itemannulsoutputlst.ToAnnulus, 3).ToString() : "0.00");
+                dicLstAnnulusOutputData.Add("AverageVelocity" + increment, itemannulsoutputlst.AverageVelocity > 0.00 ? Math.Round(itemannulsoutputlst.AverageVelocity, 3).ToString() : "0.00");
+                dicLstAnnulusOutputData.Add("AvgVelColor" + increment, Convert.ToString(itemannulsoutputlst.AverageVelocityColor));
+                dicLstAnnulusOutputData.Add("CriticalVelocity" + increment, itemannulsoutputlst.CriticalVelocity > 0.00 ? Math.Round(itemannulsoutputlst.CriticalVelocity, 3).ToString() : "0.00");
+                dicLstAnnulusOutputData.Add("Flow" + increment, itemannulsoutputlst.FlowType != null ? itemannulsoutputlst.FlowType : "" );
+                dicLstAnnulusOutputData.Add("ChipRate" + increment, itemannulsoutputlst.ChipRate > 0.00 ? Math.Round(itemannulsoutputlst.ChipRate, 3).ToString() : "0.00");
+                dicLstAnnulusOutputData.Add("ChpRtColor" + increment, Convert.ToString(itemannulsoutputlst.ChipRateColor));
+                dicLstAnnulusOutputData.Add("PressureDrop" + increment, itemannulsoutputlst.AnnulusPressureDrop > 0.00 ? Math.Round(itemannulsoutputlst.AnnulusPressureDrop, 3).ToString() : "0.00");
             }
 
-            Table tblannulusdata = getAnnulusTableData(objHyAnlyAnnuOutputData, objChartService);
+            Table tblannulusdata = getAnnulusTableData(dicLstAnnulusOutputData);
+            increment = 0;
             #endregion
 
             #region Hydraulic BHA Tools Graph section
-            Dictionary<string, object> dicBhaChart = new Dictionary<string, object>();
+            Dictionary<string, Array> dicBhaChart = new Dictionary<string,Array>();
+            List<DataPoints> hyprodatapoints;
+            byte[] hydraprograph;
+            List<Image> graph = new List<Image>();
             
-            List<Object> lstBHAChart = new List<Object>();
-
-            List<DataPoints> hyprodatapoints = new List<DataPoints>();
-
-            increment = 0;
-            foreach (var item in objChartService.HydraulicOutputBHAList)
+            for (int i = 0; i < objChartService.HydraulicOutputBHAList.Count; i++)
             {
-                increment++;
-                dicBhaChart.Add(increment.ToString(), item.BHAchart.Values);
+                dicBhaChart.Add("HydraproLineSeries"+i, objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"].ToArray());
             }
-            increment = 0;
-
-            foreach (var item in dicBhaChart.Keys)
-            {
-                lstBHAChart.Add(dicBhaChart[item]);
-                
-                
-                //dataPoints.Add(new DataPoints
-                //{
-                //    X = (float)dicBhaChart[item][0   .PrimaryAxisValue,
-                //    Y = (float)item.SecondaryAxisValue,
-                //    LineClr = "Red"
-                //});
-            }
-
-
+       
             for (int i = 0; i < dicBhaChart.Count; i++)
             {
-
+                hyprodatapoints = new List<DataPoints>();
+                foreach (WFT.UI.Common.Charts.XYValueModelForLineData<double> hyproitem in dicBhaChart["HydraproLineSeries" + i])
+                {
+                    hyprodatapoints.Add(new DataPoints
+                    {
+                        X = (float)hyproitem.PrimaryAxisValue,
+                        Y = (float)hyproitem.SecondaryAxisValue
+                    });
+                }
+                hydraprograph = DrawHydraulicToolsGraph(hyprodatapoints, objChartService.HydraulicOutputBHAList[i]);
+                graph.Add(new Image(ImageDataFactory.Create(hydraprograph)));
+                hyprodatapoints.Clear();
             }
-            
-            //for (int i = 0; i < objChartService.HydraulicOutputBHAList.Count; i++)
-            //{
-            //    hyprodatapoints.Add(new DataPoints
-            //    {
-            //        X = (float)objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"][i].PrimaryAxisValue,
-            //        Y = (float)objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"][i].SecondaryAxisValue,
-            //        LineClr = objChartService.HydraulicOutputBHAList[i].BHAColor
-
-            //    });
-            //}
-            
-            
-            byte[] hydraprograph = DrawHydraulicToolsGraph(hyprodatapoints);
-           
-
-
-
             #endregion
 
             #endregion
@@ -882,10 +850,12 @@ namespace HydraulicCalAPI.Service
             }
         }
 
-        public Table getAnnulusTableData(List<HydraulicAnalysisAnnulusOutputData> objHydrAnnulus, ChartAndGraphService objHydraulicAnnulus)
+        public Table getAnnulusTableData(Dictionary<string,string> objHydrAnnulus)
         {
-            Table _tblannulusdata = new Table(10, true).SetFontSize(10);
-            Cell tblhead01 = new Cell(1, 1).Add(new Paragraph().SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+            Table _tblannulusdata = new Table(10, true)
+                .SetFontSize(9);
+
+            Cell tblhead01 = new Cell(1, 1).Add(new Paragraph("").SetBackgroundColor(ColorConstants.LIGHT_GRAY));
             Cell tblhead02 = new Cell(1, 1).Add(new Paragraph("Annulus").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
             Cell tblhead03 = new Cell(1, 1).Add(new Paragraph("WorkString").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
             Cell tblhead04 = new Cell(1, 1).Add(new Paragraph("From (ft)").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
@@ -907,32 +877,67 @@ namespace HydraulicCalAPI.Service
             _tblannulusdata.AddCell(tblhead09);
             _tblannulusdata.AddCell(tblhead10);
 
-            foreach (var itmAnu in objHydraulicAnnulus.HydraulicOutputAnnulusList)
+            foreach (var item in objHydrAnnulus.Keys)
             {
-                if(itmAnu.AnnulusColor.ToUpper() != "GREEN")
+                string addtocell = string.Empty;
+                Cell _annuluslst = new Cell(1, 1);
+                if (item.Substring(0,4).ToUpper() == "FORA") 
                 {
-                    Cell clanColor = new Cell(1, 1).Add(new Paragraph(char.ConvertFromUtf32(0x2191) + "   " + char.ConvertFromUtf32(0x2191)).SetFontColor(ColorConstants.GREEN));
-                    _tblannulusdata.AddCell(clanColor);
+                    addtocell = string.IsNullOrEmpty(objHydrAnnulus[item]) ? "" : objHydrAnnulus[item].ToString();
+                    if(addtocell.ToUpper() == "RED")
+                    {
+                        _annuluslst = new Cell(1, 1).SetBackgroundColor(ColorConstants.RED).Add(new Paragraph(" "));
+                    }
+                    else if(addtocell.ToUpper() == "YELLOW")
+                    {
+                        _annuluslst = new Cell(1, 1).SetBackgroundColor(ColorConstants.YELLOW).Add(new Paragraph(" "));
+                    }
+                    else
+                    {
+                        _annuluslst = new Cell(1, 1).SetBackgroundColor(ColorConstants.GREEN).Add(new Paragraph(" "));
+                    }
+                   _tblannulusdata.AddCell(_annuluslst);
                 }
-                Cell clan02 = new Cell(1, 1).Add(new Paragraph(itmAnu.Annulus).SetTextAlignment(TextAlignment.LEFT));
-                Cell clan03 = new Cell(1, 1).Add(new Paragraph(itmAnu.Workstring).SetTextAlignment(TextAlignment.LEFT));
-                Cell clan04 = new Cell(1, 1).Add(new Paragraph(itmAnu.FromAnnulus.ToString()).SetTextAlignment(TextAlignment.LEFT));
-                Cell clan05 = new Cell(1, 1).Add(new Paragraph(itmAnu.ToAnnulus.ToString()).SetTextAlignment(TextAlignment.LEFT));
-                Cell clan06 = new Cell(1, 1).Add(new Paragraph(itmAnu.AverageVelocity.ToString()).SetTextAlignment(TextAlignment.LEFT));
-                Cell clan07 = new Cell(1, 1).Add(new Paragraph(itmAnu.CriticalVelocity.ToString()).SetTextAlignment(TextAlignment.LEFT));
-                Cell clan08 = new Cell(1, 1).Add(new Paragraph(itmAnu.ChipRate.ToString()).SetTextAlignment(TextAlignment.LEFT));
-                Cell clan09 = new Cell(1, 1).Add(new Paragraph(itmAnu.AnnulusPressureDrop.ToString()).SetTextAlignment(TextAlignment.LEFT));
-                _tblannulusdata.AddCell(clan02);
-                _tblannulusdata.AddCell(clan03);
-                _tblannulusdata.AddCell(clan04);
-                _tblannulusdata.AddCell(clan05);
-                _tblannulusdata.AddCell(clan06);
-                _tblannulusdata.AddCell(clan07);
-                _tblannulusdata.AddCell(clan08);
-                _tblannulusdata.AddCell(clan09);
-
+                else if (item.Substring(0, 4).ToUpper() == "AVGV") 
+                {
+                    addtocell = string.IsNullOrEmpty(objHydrAnnulus[item]) ? "" : objHydrAnnulus[item].ToString();
+                    if (addtocell.ToUpper() == "RED")
+                    {
+                        _annuluslst.SetBackgroundColor(ColorConstants.RED);
+                    }
+                    else if (addtocell.ToUpper() == "YELLOW")
+                    {
+                        _annuluslst.SetBackgroundColor(ColorConstants.YELLOW);
+                    }
+                    else
+                    {
+                        _annuluslst.SetBackgroundColor(ColorConstants.GREEN);
+                    }
+                }
+                else if (item.Substring(0, 4).ToUpper() == "CHPR") 
+                {
+                    addtocell = string.IsNullOrEmpty(objHydrAnnulus[item]) ? "" : objHydrAnnulus[item].ToString();
+                    if (addtocell.ToUpper() == "RED")
+                    {
+                        _annuluslst.SetBackgroundColor(ColorConstants.RED);
+                    }
+                    else if (addtocell.ToUpper() == "YELLOW")
+                    {
+                        _annuluslst.SetBackgroundColor(ColorConstants.YELLOW);
+                    }
+                    else
+                    {
+                        _annuluslst.SetBackgroundColor(ColorConstants.GREEN);
+                    }
+                }
+                else
+                {
+                    addtocell = string.IsNullOrEmpty(objHydrAnnulus[item]) ? "" : objHydrAnnulus[item].ToString();
+                    _annuluslst = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(addtocell));
+                    _tblannulusdata.AddCell(_annuluslst);
+                }
             }
-           return _tblannulusdata;
+            return _tblannulusdata;
         }
 
         public byte[] DrawLineGraph(ChartAndGraphService objCags, List<DataPoints> dataPoints)
@@ -1039,10 +1044,97 @@ namespace HydraulicCalAPI.Service
             }
         }
 
-        public byte[] DrawHydraulicToolsGraph(List<DataPoints> hyprobhadataPoints)
+        public byte[] DrawHydraulicToolsGraph(List<DataPoints> hyprobhadataPoints,ViewModel.HydraulicOutputBHAViewModel service)
         {
             using (var surfcae = SKSurface.Create(new SKImageInfo(400, 300)))
             {
+                var canvas = surfcae.Canvas;
+                canvas.Clear(SKColors.White);
+                float width = 400;
+                float height = 300;
+                float margin = 30;
+
+                float graphWidth = width - 2 * margin;
+                float graphHeight = height - 2 * margin;
+                using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1 })
+                {
+                    canvas.DrawLine(margin, margin, margin, height - margin, paint); // Y-axis
+                    canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint); // X-axis
+
+                    // Default Point for x-axis and y-axis
+                    canvas.DrawText("0", new SKPoint(margin, height + 15 - margin), paint);
+
+                    var xlimit = service.CriticalVelocity;
+                    var ylimit = service.FlowRateRangeMaxAppliedValue;
+                    var xfixPoint = service.CriticalVelocity;
+                    var yfixPoint = service.CriticalVelocity;
+
+                    float xpoint = margin;
+                    for (int i = 1; i <= xlimit; i++)
+                    {
+                        int x = i * 100;
+                        string xScale = Convert.ToString(x);
+                        xpoint += xpoint + 50;
+                        canvas.DrawText(xScale, new SKPoint(xpoint, height + 15 - margin), paint);
+                    }
+                    float ypoint = height + 10 - margin;
+                    for (int j = 1; j <= ylimit; j++)
+                    {
+                        ypoint -= 50;
+                        int y = j * 1000;
+                        string yScale = Convert.ToString(y);
+                        canvas.DrawText(yScale, new SKPoint(0, ypoint), paint);
+                    }
+                    canvas.DrawText("X", (float)xfixPoint, (float)yfixPoint, paint);
+                }
+
+                float minX = (float)service.CriticalVelocity;
+                float maxX = (float)service.CriticalVelocity;
+                float minY = 0;
+                float maxY = (float)service.CriticalVelocity;
+
+                foreach (var point in hyprobhadataPoints)
+                {
+                    minX = Math.Min(minX, point.X);
+                    maxX = Math.Max(maxX, point.X);
+                    minY = Math.Min(minY, point.Y);
+                    maxY = Math.Max(maxY, point.Y);
+                }
+
+
+                using (var paint = new SKPaint { Color = SKColors.Red, StrokeWidth = 2, IsAntialias = true })
+                {
+                    float scaleX = graphWidth / (maxX - minX);
+                    float scaleY = graphHeight / (maxY - minY);
+                    for (int i = 0; i < hyprobhadataPoints.Count - 1; i++)
+                    {
+                        float x1 = margin + (hyprobhadataPoints[i].X - minX) * scaleX;
+                        float y1 = height - margin - (hyprobhadataPoints[i].Y - minY) * scaleY;
+                        float x2 = margin + (hyprobhadataPoints[i + 1].X - minX) * scaleX;
+                        float y2 = height - margin - (hyprobhadataPoints[i + 1].Y - minY) * scaleY;
+
+                        if (hyprobhadataPoints[i].LineClr == "Yellow")
+                        {
+                            string colourName = hyprobhadataPoints[i].LineClr;
+                            string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
+                            paint.Color = SKColor.Parse(hexString);
+                            canvas.DrawLine(x1, y1, x2, y2, paint);
+                        }
+                        else if (hyprobhadataPoints[i].LineClr == "Green")
+                        {
+                            string colourName = hyprobhadataPoints[i].LineClr;
+                            string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
+                            paint.Color = SKColor.Parse(hexString);
+                            canvas.DrawLine(x1, y1, x2, y2, paint);
+                        }
+                        else
+                        {
+                            canvas.DrawLine(x1, y1, x2, y2, paint);
+                        }
+
+                    }
+                }
+
                 // Convert bitmap to byte array
                 using (var image = surfcae.Snapshot())
                 using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
