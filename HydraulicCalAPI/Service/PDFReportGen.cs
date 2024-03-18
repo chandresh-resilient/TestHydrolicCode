@@ -35,6 +35,13 @@ namespace HydraulicCalAPI.Service
         public string Color { get; set; }
     }
 
+    public class HydraProDataPoints
+    {
+        public float hbdX { get; set; }
+        public float hbdY { get; set; }
+        public string hbdLineClr { get; set; }
+    }
+
     public class HydraulicAnalysisAnnulusOutputData
     {
         public string Annulus { get; set; }
@@ -470,7 +477,7 @@ namespace HydraulicCalAPI.Service
             Paragraph yscale = new Paragraph($"Y-axis: Standpipe Pressure (psi)");
             #endregion
 
-            #region Hydraulic BHA Output
+            #region Hydraulic Annulus Output
             List<HydraulicAnalysisAnnulusOutputData> objHyAnlyAnnuOutputData = new List<HydraulicAnalysisAnnulusOutputData>();
 
             foreach (var itemannulsoutputlst in objChartService.HydraulicOutputAnnulusList)
@@ -492,8 +499,59 @@ namespace HydraulicCalAPI.Service
                 });
             }
 
-            Table tblannulusdata = getAnnulusTableData(objHyAnlyAnnuOutputData);
+            Table tblannulusdata = getAnnulusTableData(objHyAnlyAnnuOutputData, objChartService);
+            #endregion
+
+            #region Hydraulic BHA Tools Graph section
+            Dictionary<string, object> dicBhaChart = new Dictionary<string, object>();
+            
+            List<Object> lstBHAChart = new List<Object>();
+
+            List<DataPoints> hyprodatapoints = new List<DataPoints>();
+
+            increment = 0;
+            foreach (var item in objChartService.HydraulicOutputBHAList)
+            {
+                increment++;
+                dicBhaChart.Add(increment.ToString(), item.BHAchart.Values);
+            }
+            increment = 0;
+
+            foreach (var item in dicBhaChart.Keys)
+            {
+                lstBHAChart.Add(dicBhaChart[item]);
+                
+                
+                //dataPoints.Add(new DataPoints
+                //{
+                //    X = (float)dicBhaChart[item][0   .PrimaryAxisValue,
+                //    Y = (float)item.SecondaryAxisValue,
+                //    LineClr = "Red"
+                //});
+            }
+
+
+            for (int i = 0; i < dicBhaChart.Count; i++)
+            {
+
+            }
+            
+            for (int i = 0; i < objChartService.HydraulicOutputBHAList.Count; i++)
+            {
+                hyprodatapoints.Add(new DataPoints
+                {
+                    X = (float)objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"][i].PrimaryAxisValue,
+                    Y = (float)objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"][i].SecondaryAxisValue,
+                    LineClr = objChartService.HydraulicOutputBHAList[i].BHAColor
+
+                });
+            }
+            
+            
+            byte[] hydraprograph = DrawHydraulicToolsGraph(hyprodatapoints);
            
+
+
 
             #endregion
 
@@ -823,7 +881,7 @@ namespace HydraulicCalAPI.Service
             }
         }
 
-        public Table getAnnulusTableData(List<HydraulicAnalysisAnnulusOutputData> objHydrAnnulus)
+        public Table getAnnulusTableData(List<HydraulicAnalysisAnnulusOutputData> objHydrAnnulus, ChartAndGraphService objHydraulicAnnulus)
         {
             Table _tblannulusdata = new Table(10, true).SetFontSize(10);
             Cell tblhead01 = new Cell(1, 1).Add(new Paragraph().SetBackgroundColor(ColorConstants.LIGHT_GRAY));
@@ -848,7 +906,7 @@ namespace HydraulicCalAPI.Service
             _tblannulusdata.AddCell(tblhead09);
             _tblannulusdata.AddCell(tblhead10);
 
-            foreach (var itmAnu in objHydrAnnulus)
+            foreach (var itmAnu in objHydraulicAnnulus.HydraulicOutputAnnulusList)
             {
                 if(itmAnu.AnnulusColor.ToUpper() != "GREEN")
                 {
@@ -856,13 +914,13 @@ namespace HydraulicCalAPI.Service
                     _tblannulusdata.AddCell(clanColor);
                 }
                 Cell clan02 = new Cell(1, 1).Add(new Paragraph(itmAnu.Annulus).SetTextAlignment(TextAlignment.LEFT));
-                Cell clan03 = new Cell(1, 1).Add(new Paragraph(itmAnu.WorkString).SetTextAlignment(TextAlignment.LEFT));
-                Cell clan04 = new Cell(1, 1).Add(new Paragraph(itmAnu.From.ToString()).SetTextAlignment(TextAlignment.LEFT));
-                Cell clan05 = new Cell(1, 1).Add(new Paragraph(itmAnu.To.ToString()).SetTextAlignment(TextAlignment.LEFT));
+                Cell clan03 = new Cell(1, 1).Add(new Paragraph(itmAnu.Workstring).SetTextAlignment(TextAlignment.LEFT));
+                Cell clan04 = new Cell(1, 1).Add(new Paragraph(itmAnu.FromAnnulus.ToString()).SetTextAlignment(TextAlignment.LEFT));
+                Cell clan05 = new Cell(1, 1).Add(new Paragraph(itmAnu.ToAnnulus.ToString()).SetTextAlignment(TextAlignment.LEFT));
                 Cell clan06 = new Cell(1, 1).Add(new Paragraph(itmAnu.AverageVelocity.ToString()).SetTextAlignment(TextAlignment.LEFT));
                 Cell clan07 = new Cell(1, 1).Add(new Paragraph(itmAnu.CriticalVelocity.ToString()).SetTextAlignment(TextAlignment.LEFT));
                 Cell clan08 = new Cell(1, 1).Add(new Paragraph(itmAnu.ChipRate.ToString()).SetTextAlignment(TextAlignment.LEFT));
-                Cell clan09 = new Cell(1, 1).Add(new Paragraph(itmAnu.PressureDrop.ToString()).SetTextAlignment(TextAlignment.LEFT));
+                Cell clan09 = new Cell(1, 1).Add(new Paragraph(itmAnu.AnnulusPressureDrop.ToString()).SetTextAlignment(TextAlignment.LEFT));
                 _tblannulusdata.AddCell(clan02);
                 _tblannulusdata.AddCell(clan03);
                 _tblannulusdata.AddCell(clan04);
@@ -873,11 +931,7 @@ namespace HydraulicCalAPI.Service
                 _tblannulusdata.AddCell(clan09);
 
             }
-            
-           
-
-
-            return _tblannulusdata;
+           return _tblannulusdata;
         }
 
         public byte[] DrawLineGraph(ChartAndGraphService objCags, List<DataPoints> dataPoints)
@@ -971,6 +1025,23 @@ namespace HydraulicCalAPI.Service
                     }
                 }
 
+                // Convert bitmap to byte array
+                using (var image = surfcae.Snapshot())
+                using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
+                {
+                    using (MemoryStream stream = new MemoryStream())
+                    {
+                        data.SaveTo(stream);
+                        return stream.ToArray();
+                    }
+                }
+            }
+        }
+
+        public byte[] DrawHydraulicToolsGraph(List<DataPoints> hyprobhadataPoints)
+        {
+            using (var surfcae = SKSurface.Create(new SKImageInfo(400, 300)))
+            {
                 // Convert bitmap to byte array
                 using (var image = surfcae.Snapshot())
                 using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
