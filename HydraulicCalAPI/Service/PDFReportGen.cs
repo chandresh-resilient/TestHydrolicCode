@@ -56,25 +56,23 @@ namespace HydraulicCalAPI.Service
 
         Dictionary<string, string> pdfAuthor;
         Dictionary<string, string> pdfLstItemData;
-        List<PdfReportService> pdfFooter;
+
 
         Dictionary<string, string> pdfPieChart = new Dictionary<string, string>();
-        
+
 
         HydraulicCalculationService objHydCalSrvs = new HydraulicCalculationService();
 
         public byte[] generatePDF(HydraulicCalAPI.Service.PdfReportService objInputData, ChartAndGraphService objChartService, HydraulicCalculationService inputHydra)
         {
             objHydCalSrvs = inputHydra;
-            string ApplicationFolderName = "Accuview";
             string _tabheader = string.Empty;
-            var ControlCutApplicationFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\Weatherford\\" + ApplicationFolderName + "\\";
             accuColor = new DeviceRgb(165, 42, 42);
 
             // Add image
             Image img = new Image(ImageDataFactory
                .Create("Images/wft.jpg"))
-               .SetTextAlignment(TextAlignment.LEFT).SetWidth(100).SetHeight(40);
+               .SetTextAlignment(TextAlignment.LEFT).SetWidth(80).SetHeight(30).SetMarginBottom(3);
 
             // New line
             Paragraph newline = new Paragraph(new Text("\n"));
@@ -102,23 +100,6 @@ namespace HydraulicCalAPI.Service
             Table tableAuthor = getTableContent(pdfAuthor);
 
             Paragraph comment = new Paragraph("Comment:").SetTextAlignment(TextAlignment.LEFT).SetFontSize(10);
-            #endregion
-
-            #region Footer Section
-            // List for footer Table
-            pdfFooter = new List<PdfReportService>();
-            pdfFooter.Add(new PdfReportService
-            {
-                JobID = (objInputData.JobID != null ? objInputData.JobID.ToString() : ""),
-                WPTSReportID = (objInputData.WPTSReportID != null ? objInputData.WPTSReportID.ToString() : ""),
-                AccuViewVersion = (objInputData.AccuViewVersion != null ? objInputData.AccuViewVersion.ToString() : "")
-            });
-
-            Table footer = new Table(1, false)
-                .SetBorder(Border.NO_BORDER)
-                ;
-            footer = FooterSection(pdfFooter);
-
             #endregion
 
             #region HeaderInformation
@@ -240,7 +221,7 @@ namespace HydraulicCalAPI.Service
             int increment = 0;
             foreach (var cltItem in objHydCalSrvs.annulusInput)
             {
-               
+
                 //Code to get WellBore weight and WellBore Grade form PdfReportService
                 string cltWeight = objInputData.CasingLinerTubeData[increment].WellBoreWeight;
 
@@ -460,11 +441,11 @@ namespace HydraulicCalAPI.Service
                 }
             }
 
-           // Generate line graph image
+            // Generate line graph image
             byte[] graphBytes = DrawLineGraph(objChartService, dataPoints);
             Image imgStdPvsFlwRate = new Image(ImageDataFactory.Create(graphBytes));
 
-           // Add labels and values to PDF document
+            // Add labels and values to PDF document
             Paragraph xscale = new Paragraph($"X-axis: Flow Rate (gal/min)");
             Paragraph yscale = new Paragraph($"Y-axis: Standpipe Pressure (psi)");
             #endregion
@@ -477,14 +458,14 @@ namespace HydraulicCalAPI.Service
             {
                 increment++;
                 dicLstAnnulusOutputData.Add("forArrow" + increment, Convert.ToString(itemannulsoutputlst.AnnulusColor));
-                dicLstAnnulusOutputData.Add("Annulus" + increment,itemannulsoutputlst.Annulus != null ? itemannulsoutputlst.Annulus.ToString() : "" );
+                dicLstAnnulusOutputData.Add("Annulus" + increment, itemannulsoutputlst.Annulus != null ? itemannulsoutputlst.Annulus.ToString() : "");
                 dicLstAnnulusOutputData.Add("Workstring" + increment, itemannulsoutputlst.Workstring != null ? itemannulsoutputlst.Workstring.ToString() : "");
-                dicLstAnnulusOutputData.Add("FromAnnulus" + increment, itemannulsoutputlst.FromAnnulus > 0.00 ? Math.Round(itemannulsoutputlst.FromAnnulus,3).ToString() : "0.00");
+                dicLstAnnulusOutputData.Add("FromAnnulus" + increment, itemannulsoutputlst.FromAnnulus > 0.00 ? Math.Round(itemannulsoutputlst.FromAnnulus, 3).ToString() : "0.00");
                 dicLstAnnulusOutputData.Add("ToAnnulus" + increment, itemannulsoutputlst.ToAnnulus > 0.00 ? Math.Round(itemannulsoutputlst.ToAnnulus, 3).ToString() : "0.00");
                 dicLstAnnulusOutputData.Add("AverageVelocity" + increment, itemannulsoutputlst.AverageVelocity > 0.00 ? Math.Round(itemannulsoutputlst.AverageVelocity, 3).ToString() : "0.00");
                 dicLstAnnulusOutputData.Add("AvgVelColor" + increment, Convert.ToString(itemannulsoutputlst.AverageVelocityColor));
                 dicLstAnnulusOutputData.Add("CriticalVelocity" + increment, itemannulsoutputlst.CriticalVelocity > 0.00 ? Math.Round(itemannulsoutputlst.CriticalVelocity, 3).ToString() : "0.00");
-                dicLstAnnulusOutputData.Add("Flow" + increment, itemannulsoutputlst.FlowType != null ? itemannulsoutputlst.FlowType : "" );
+                dicLstAnnulusOutputData.Add("Flow" + increment, itemannulsoutputlst.FlowType != null ? itemannulsoutputlst.FlowType : "");
                 dicLstAnnulusOutputData.Add("ChipRate" + increment, itemannulsoutputlst.ChipRate > 0.00 ? Math.Round(itemannulsoutputlst.ChipRate, 3).ToString() : "0.00");
                 dicLstAnnulusOutputData.Add("ChpRtColor" + increment, Convert.ToString(itemannulsoutputlst.ChipRateColor));
                 dicLstAnnulusOutputData.Add("PressureDrop" + increment, itemannulsoutputlst.AnnulusPressureDrop > 0.00 ? Math.Round(itemannulsoutputlst.AnnulusPressureDrop, 3).ToString() : "0.00");
@@ -495,16 +476,16 @@ namespace HydraulicCalAPI.Service
             #endregion
 
             #region Hydraulic BHA Tools Graph section
-            Dictionary<string, Array> dicBhaChart = new Dictionary<string,Array>();
+            Dictionary<string, Array> dicBhaChart = new Dictionary<string, Array>();
             List<DataPoints> hyprodatapoints;
             byte[] hydraprograph;
             List<Image> graph = new List<Image>();
-            
+
             for (int i = 0; i < objChartService.HydraulicOutputBHAList.Count; i++)
             {
-                dicBhaChart.Add("HydraproLineSeries"+i, objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"].ToArray());
+                dicBhaChart.Add("HydraproLineSeries" + i, objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"].ToArray());
             }
-       
+
             for (int i = 0; i < dicBhaChart.Count; i++)
             {
                 hyprodatapoints = new List<DataPoints>();
@@ -541,10 +522,12 @@ namespace HydraulicCalAPI.Service
                 {
                     using (PdfDocument pdf = new PdfDocument(writer))
                     {
-                        Document document = new Document(pdf, PageSize.A4);
-                        NewMethod(img, newline, legend, ls, header, tableAuthor, comment, footer, _headerinfo, tblSegment, tblJobInformation, tblWellInformation, tblOriginator, tblCustomerContacts,
+                        Document document = new Document(pdf, PageSize.A4, immediateFlush: false);
+                        NewMethod(img, newline, legend, ls, header, tableAuthor, comment, _headerinfo, tblSegment, tblJobInformation, tblWellInformation, tblOriginator, tblCustomerContacts,
                             tblWeatherfordContacts, tblGenInfo, tblApproval, _casingLinerTubingInfo, tblDepthAnalysis, tblCasingLinerTube, tblBhaData, tblSurfaceEquipment, tblFluidEnvelope,
-                            tblFluid, _chartheader, imgPie, tblannulusdata, _stdpipeHeader, imgStdPvsFlwRate, xscale,yscale, document);
+                            tblFluid, _chartheader, imgPie, tblannulusdata, _stdpipeHeader, imgStdPvsFlwRate, xscale, yscale, graph, document);
+
+                        AddFooter(pdf, document, objInputData);
                         document.Close();
                     }
                 }
@@ -605,42 +588,62 @@ namespace HydraulicCalAPI.Service
             byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
             return fileBytes;
         }
-        private static void NewMethod(Image img, Paragraph newline, Paragraph legend, LineSeparator ls, Paragraph header, Table tableAuthor, Paragraph comment, Table footer, Paragraph _headerinfo,
+        private static void NewMethod(Image img, Paragraph newline, Paragraph legend, LineSeparator ls, Paragraph header, Table tableAuthor, Paragraph comment, Paragraph _headerinfo,
             Table tblSegment, Table tblJobInformation, Table tblWellInformation, Table tblOriginator, Table tblCustomerContacts, Table tblWeatherfordContacts, Table tblGenInfo, Table tblApproval,
             Paragraph _casingLinerTubingInfo, Table tblDepthAnalysis, Table tblCasingLinerTube, Table tblBhaData, Table tblSurfaceEquipment, Table tblFluidEnvelope, Table tblFluid, Paragraph _chartheader,
-            Image imgPie, Table tblannulusdata,Paragraph _stdpipeHeader, Image imgStdPvsFlwRate, Paragraph xscale, Paragraph yscale, Document document)
+            Image imgPie, Table tblannulusdata, Paragraph _stdpipeHeader, Image imgStdPvsFlwRate, Paragraph xscale, Paragraph yscale, List<Image> bhaToolGraphsLst, Document document)
         {
+            #region Content First Page
             document.Add(img);
             document.Add(ls);
             document.Add(newline);
             document.Add(newline);
-
             document.Add(header);
             document.Add(newline);
             document.Add(newline);
-
-
             document.Add(tableAuthor);
             tableAuthor.Flush();
             tableAuthor.Complete();
-
             document.Add(newline);
             document.Add(newline);
             document.Add(comment);
+            #endregion
 
-            document.Add(newline);
-            document.Add(newline);
-            document.Add(newline);
-            document.Add(newline);
-
-            document.Add(ls);
-            document.Add(footer);
             document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 
-            document.Add(img);
-            document.Add(_headerinfo);
-            document.Add(ls);
+            
+            #region Header for all Pages
+            Table head1 = new Table(2, false)
+                .SetBorder(Border.NO_BORDER);
+            Cell headcell1 = new Cell(1,1).SetBorder(Border.NO_BORDER);
+             headcell1.Add(img).SetWidth(40);
+            Cell headcell2 = new Cell(1, 1).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.CENTER);
+                headcell2.Add(_headerinfo).SetWidth(500); ;
+            Cell headcell3 = new Cell(1, 2).SetBorder(Border.NO_BORDER);
+                headcell3.Add(ls).SetWidth(500);            
+            head1.AddCell(headcell1);
+            head1.AddCell(headcell2);
+            head1.AddCell(headcell3);
 
+            Table head2 = new Table(2, false)
+                .SetBorder(Border.NO_BORDER);
+            Cell head2cell1 = new Cell(1, 1).SetBorder(Border.NO_BORDER);
+            head2cell1.Add(img).SetWidth(40);
+            Cell head2cell2 = new Cell(1, 1).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.CENTER);
+            headcell2.Add(_casingLinerTubingInfo).SetWidth(500);
+            Cell head2cell3 = new Cell(1, 2).SetBorder(Border.NO_BORDER);
+            head2cell3.Add(ls).SetWidth(500); ;
+
+            head2.AddCell(head2cell1);
+            head2.AddCell(head2cell2);
+            head2.AddCell(head2cell3);
+            #endregion
+
+            #region Content Header Information
+            #endregion
+
+            document.Add(head1);
+            
             document.Add(tblSegment);
             tblSegment.Flush();
             tblSegment.Complete();
@@ -673,14 +676,10 @@ namespace HydraulicCalAPI.Service
             tblApproval.Flush();
             tblApproval.Complete();
 
-            document.Add(ls);
-            document.Add(footer);
             document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 
-            document.Add(img);
-            document.Add(_casingLinerTubingInfo);
-            document.Add(ls);
-
+            document.Add(head2);
+            
             document.Add(newline);
             document.Add(tblDepthAnalysis);
             document.Add(newline);
@@ -689,18 +688,11 @@ namespace HydraulicCalAPI.Service
             tblCasingLinerTube.Complete();
 
 
-            document.Add(newline);
-            document.Add(newline);
-            document.Add(newline);
-            document.Add(ls);
-            document.Add(footer);
-
             document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 
 
-            document.Add(img);
-            document.Add(_casingLinerTubingInfo);
-            document.Add(ls);
+            document.Add(head2);
+           
             document.Add(newline);
             document.Add(tblBhaData);
             tblBhaData.Flush();
@@ -708,15 +700,12 @@ namespace HydraulicCalAPI.Service
             document.Add(newline);
             document.Add(newline);
             document.Add(newline);
-            document.Add(ls);
-            document.Add(footer);
 
 
             document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 
-            document.Add(img);
-            document.Add(_casingLinerTubingInfo);
-            document.Add(ls);
+            document.Add(head2);
+            
             document.Add(newline);
 
             document.Add(tblSurfaceEquipment);
@@ -732,13 +721,10 @@ namespace HydraulicCalAPI.Service
             document.Add(newline);
             document.Add(newline);
             document.Add(newline);
-            document.Add(ls);
-            document.Add(footer);
 
             document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-            document.Add(img);
-            document.Add(_casingLinerTubingInfo);
-            document.Add(ls);
+            document.Add(head2);
+           
             document.Add(newline);
             document.Add(_chartheader);
             document.Add(newline);
@@ -749,13 +735,10 @@ namespace HydraulicCalAPI.Service
             tblannulusdata.Flush();
             tblannulusdata.Complete();
             document.Add(newline);
-            document.Add(ls);
-            document.Add(footer);
 
             document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-            document.Add(img);
-            document.Add(_casingLinerTubingInfo);
-            document.Add(ls);
+            document.Add(head2);
+            
             document.Add(newline);
             document.Add(_stdpipeHeader);
             document.Add(newline);
@@ -763,11 +746,97 @@ namespace HydraulicCalAPI.Service
             document.Add(yscale);
             document.Add(imgStdPvsFlwRate);
             document.Add(newline);
-            document.Add(ls);
-            document.Add(footer);
+
+            int graphCount = bhaToolGraphsLst.Count;
+            int pages = graphCount / 2;
+            int plot = 0;
+            for (int gp = 0; gp < pages; gp++)
+            {
+                document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+                document.Add(head2);
+                
+                document.Add(newline);
+                for (int gpp = 0; gpp < 2; gpp++)
+                {
+                    document.Add(bhaToolGraphsLst[plot]);
+                    plot++;
+                }
+            }
         }
 
-       #region Methods
+        #region Methods
+
+        private static void AddFooter(PdfDocument pdfDocument, Document document, PdfReportService objFooterData)
+        {
+            Paragraph footer = new Paragraph();
+            List<PdfReportService> pdfFooter = new List<PdfReportService>();
+            pdfFooter.Add(new PdfReportService
+            {
+                JobID = (objFooterData.JobID != null ? objFooterData.JobID.ToString() : ""),
+                WPTSReportID = (objFooterData.WPTSReportID != null ? objFooterData.WPTSReportID.ToString() : ""),
+                AccuViewVersion = (objFooterData.AccuViewVersion != null ? objFooterData.AccuViewVersion.ToString() : "")
+            });
+
+            Color footlineColor = new DeviceRgb(165, 42, 42);
+            SolidLine line = new SolidLine(3f);
+            line.SetColor(footlineColor);
+            LineSeparator footerSeperator = new LineSeparator(line);
+
+            // Creating Footer
+            Table footerTable = new Table(3, false).SetFontSize(7);
+            footerTable.AddCell("AccuView Job ID");
+            footerTable.AddCell("WPTS Report ID");
+            footerTable.AddCell("AccuView Version Number");
+
+            foreach (PdfReportService item in pdfFooter)
+            {
+                footerTable.AddCell(item.JobID.ToString()).SetTextAlignment(TextAlignment.LEFT);
+                footerTable.AddCell(item.WPTSReportID.ToString()).SetTextAlignment(TextAlignment.LEFT);
+                footerTable.AddCell(item.AccuViewVersion.ToString()).SetTextAlignment(TextAlignment.LEFT);
+            }
+
+            Paragraph footerTradeMark = new Paragraph("AccuView" + "\u2122" + " is a Weatherford trademark").SetFontSize(7);
+
+            Paragraph footerDisclaimer = new Paragraph("© 2015 WEATHERFORD - All Rights Reserved -Proprietary and Confidential: This document is copyrighted and contains valuable proprietary and confidential" +
+                                       "information, whether patentable or unpatentable, of Weatherford. Recipients agree the document is loaned with confidential restrictions, and with the understanding that" +
+                                        "neither it nor the information contained therein will be reproduced, used or disclosed in whole or in part for any purpose except as may be specifically authorized in" +
+                                          "writing by Weatherford.This document shall be returned to Weatherford upon demand.").SetFontSize(7);
+
+            Table finalfooter = new Table(1, false).SetBorder(Border.NO_BORDER);
+            Cell _footcell = new Cell(1, 1).SetBorder(Border.NO_BORDER);
+                _footcell.Add(footerSeperator).SetWidth(500);
+            Cell _footcell1 = new Cell(2, 1).SetBorder(Border.NO_BORDER);
+                _footcell1.Add(footerTable);
+            Cell _footcell2 = new Cell(3, 1).SetBorder(Border.NO_BORDER);
+                _footcell2.Add(footerTradeMark);
+            Cell _footcell3 = new Cell(4, 6).SetBorder(Border.NO_BORDER);
+             _footcell3.Add(footerDisclaimer).SetWidth(500);
+
+            finalfooter.AddCell(_footcell);
+            finalfooter.AddCell(_footcell1);
+            finalfooter.AddCell(_footcell2);
+            finalfooter.AddCell(_footcell3);
+
+           var numPages = pdfDocument.GetNumberOfPages();
+            for (int pageId = 1; pageId <= numPages; pageId++)
+            {
+                var page = pdfDocument.GetPage(pageId);
+                var leftMarginPosition = document.GetLeftMargin();
+
+                footer.Add(finalfooter); //.Add($"{pageId} out of {numPages}")
+                document.ShowTextAligned(footer, leftMarginPosition, UnitConverter.mm2uu(30), pageId,
+                    TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
+            }
+        }
+        public static class UnitConverter
+        {
+            public static float uu2inch(float uu) => uu / 72f;
+            public static float inch2uu(float inch) => inch * 72f;
+            public static float inch2mm(float inch) => inch * 25.4f;
+            public static float mm2inch(float mm) => mm / 25.4f;
+            public static float uu2mm(float uu) => inch2mm(uu2inch(uu));
+            public static float mm2uu(float mm) => inch2uu(mm2inch(mm));
+        }
 
         #region Graph and Chart Generate Method Section
         public byte[] GeneratePieChart(Dictionary<string, string> objPrsDrop, List<PieData> pieData)
@@ -850,7 +919,7 @@ namespace HydraulicCalAPI.Service
             }
         }
 
-        public Table getAnnulusTableData(Dictionary<string,string> objHydrAnnulus)
+        public Table getAnnulusTableData(Dictionary<string, string> objHydrAnnulus)
         {
             Table _tblannulusdata = new Table(10, true)
                 .SetFontSize(9);
@@ -881,14 +950,14 @@ namespace HydraulicCalAPI.Service
             {
                 string addtocell = string.Empty;
                 Cell _annuluslst = new Cell(1, 1);
-                if (item.Substring(0,4).ToUpper() == "FORA") 
+                if (item.Substring(0, 4).ToUpper() == "FORA")
                 {
                     addtocell = string.IsNullOrEmpty(objHydrAnnulus[item]) ? "" : objHydrAnnulus[item].ToString();
-                    if(addtocell.ToUpper() == "RED")
+                    if (addtocell.ToUpper() == "RED")
                     {
                         _annuluslst = new Cell(1, 1).SetBackgroundColor(ColorConstants.RED).Add(new Paragraph(" "));
                     }
-                    else if(addtocell.ToUpper() == "YELLOW")
+                    else if (addtocell.ToUpper() == "YELLOW")
                     {
                         _annuluslst = new Cell(1, 1).SetBackgroundColor(ColorConstants.YELLOW).Add(new Paragraph(" "));
                     }
@@ -896,9 +965,9 @@ namespace HydraulicCalAPI.Service
                     {
                         _annuluslst = new Cell(1, 1).SetBackgroundColor(ColorConstants.GREEN).Add(new Paragraph(" "));
                     }
-                   _tblannulusdata.AddCell(_annuluslst);
+                    _tblannulusdata.AddCell(_annuluslst);
                 }
-                else if (item.Substring(0, 4).ToUpper() == "AVGV") 
+                else if (item.Substring(0, 4).ToUpper() == "AVGV")
                 {
                     addtocell = string.IsNullOrEmpty(objHydrAnnulus[item]) ? "" : objHydrAnnulus[item].ToString();
                     if (addtocell.ToUpper() == "RED")
@@ -914,7 +983,7 @@ namespace HydraulicCalAPI.Service
                         _annuluslst.SetBackgroundColor(ColorConstants.GREEN);
                     }
                 }
-                else if (item.Substring(0, 4).ToUpper() == "CHPR") 
+                else if (item.Substring(0, 4).ToUpper() == "CHPR")
                 {
                     addtocell = string.IsNullOrEmpty(objHydrAnnulus[item]) ? "" : objHydrAnnulus[item].ToString();
                     if (addtocell.ToUpper() == "RED")
@@ -956,7 +1025,7 @@ namespace HydraulicCalAPI.Service
                 {
                     canvas.DrawLine(margin, margin, margin, height - margin, paint); // Y-axis
                     canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint); // X-axis
-                    
+
                     // Default Point for x-axis and y-axis
                     canvas.DrawText("0", new SKPoint(margin, height + 15 - margin), paint);
 
@@ -966,7 +1035,7 @@ namespace HydraulicCalAPI.Service
                     var yfixPoint = objCags.MaxPressure;
 
                     float xpoint = margin;
-                    for (int i=1; i <= xlimit; i++)
+                    for (int i = 1; i <= xlimit; i++)
                     {
                         int x = i * 100;
                         string xScale = Convert.ToString(x);
@@ -974,14 +1043,14 @@ namespace HydraulicCalAPI.Service
                         canvas.DrawText(xScale, new SKPoint(xpoint, height + 15 - margin), paint);
                     }
                     float ypoint = height + 10 - margin;
-                    for(int j = 1; j <= ylimit; j++)
+                    for (int j = 1; j <= ylimit; j++)
                     {
                         ypoint -= 50;
                         int y = j * 1000;
                         string yScale = Convert.ToString(y);
-                        canvas.DrawText(yScale,new SKPoint(0,ypoint),paint);
+                        canvas.DrawText(yScale, new SKPoint(0, ypoint), paint);
                     }
-                    canvas.DrawText("X",(float)xfixPoint, (float)yfixPoint, paint);
+                    canvas.DrawText("X", (float)xfixPoint, (float)yfixPoint, paint);
                 }
 
                 float minX = (float)objCags.MinimumFlowRate;
@@ -1044,13 +1113,13 @@ namespace HydraulicCalAPI.Service
             }
         }
 
-        public byte[] DrawHydraulicToolsGraph(List<DataPoints> hyprobhadataPoints,ViewModel.HydraulicOutputBHAViewModel service)
+        public byte[] DrawHydraulicToolsGraph(List<DataPoints> hyprobhadataPoints, ViewModel.HydraulicOutputBHAViewModel service)
         {
-            using (var surfcae = SKSurface.Create(new SKImageInfo(400, 300)))
+            using (var surfcae = SKSurface.Create(new SKImageInfo(300, 300)))
             {
                 var canvas = surfcae.Canvas;
                 canvas.Clear(SKColors.White);
-                float width = 400;
+                float width = 300;
                 float height = 300;
                 float margin = 30;
 
@@ -1216,64 +1285,6 @@ namespace HydraulicCalAPI.Service
                 }
             }
             return _tableSeg.SetAutoLayout();
-        }
-        #endregion
-
-        #region Footer Implementation
-        public Table getFooterTable(List<PdfReportService> objValues)
-        {
-            Table _tableFoot = new Table(3, false);
-            _tableFoot.SetFontSize(7);
-            Cell headerJobId = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("AccuView Job ID"));
-            Cell headerWPTSId = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("WPTS Report ID"));
-            Cell headerAccuViewVerion = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("AccuView Version Number"));
-
-            _tableFoot.AddCell(headerJobId);
-            _tableFoot.AddCell(headerWPTSId);
-            _tableFoot.AddCell(headerAccuViewVerion);
-
-            foreach (PdfReportService item in objValues)
-            {
-                Cell jobid = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(item.JobID.ToString()));
-                Cell wptsid = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(item.WPTSReportID.ToString()));
-                Cell accuviewver = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(item.AccuViewVersion.ToString()));
-
-                _tableFoot.AddCell(jobid);
-                _tableFoot.AddCell(wptsid);
-                _tableFoot.AddCell(accuviewver);
-            }
-            return _tableFoot;
-        }
-        public Table FooterSection(List<PdfReportService> objFooter)
-        {
-            Table tabsign = getFooterTable(objFooter);
-
-
-            Table _resultantTable = new Table(1, false)
-                .SetBorder(Border.NO_BORDER);
-
-            // FooterSection
-            Paragraph tmtext = new Paragraph("AccuView" + "\u2122" + "is a Weatherford trademark").SetFontSize(7);
-
-            Paragraph disclaimer = new Paragraph("© 2015 WEATHERFORD - All Rights Reserved -Proprietary and Confidential: This document is copyrighted and contains valuable proprietary and confidential" +
-                                       "information, whether patentable or unpatentable, of Weatherford. Recipients agree the document is loaned with confidential restrictions, and with the understanding that" +
-                                        "neither it nor the information contained therein will be reproduced, used or disclosed in whole or in part for any purpose except as may be specifically authorized in" +
-                                          "writing by Weatherford.This document shall be returned to Weatherford upon demand.").SetFontSize(7);
-            Cell _footcell = new Cell(1, 2)
-                 .SetBorder(Border.NO_BORDER);
-            _footcell.Add(tabsign);
-            Cell _footcell1 = new Cell(2, 2)
-                .SetBorder(Border.NO_BORDER);
-            _footcell1.Add(tmtext);
-            Cell _footcell2 = new Cell(3, 2).SetBorder(Border.NO_BORDER);
-            _footcell1.Add(disclaimer);
-
-            _resultantTable.AddCell(_footcell);
-            _resultantTable.AddCell(_footcell1);
-            _resultantTable.AddCell(_footcell2);
-
-
-            return _resultantTable;
         }
         #endregion
 
@@ -1515,12 +1526,7 @@ namespace HydraulicCalAPI.Service
 
         #endregion
 
-        #region GetHdraPro Series graph per tool
-        public void  getHydraulicBHAGraphs()
-        {
-        } 
         #endregion
-       #endregion
     }
 
 }
