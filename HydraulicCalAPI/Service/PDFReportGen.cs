@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -9,15 +9,17 @@ using iText.IO.Image;
 using iText.Kernel.Pdf;
 using iText.Kernel.Geom;
 using iText.Kernel.Colors;
+using iText.Kernel.Events;
 using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Draw;
 
 using HydraulicCalAPI.Controllers;
 using HydraulicCalAPI.Service;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
+
 
 namespace HydraulicCalAPI.Service
 {
@@ -61,6 +63,38 @@ namespace HydraulicCalAPI.Service
         public string AvgVelocityColor { get; set; }
         public string AnnulusColor { get; set; }
         public string ChipRateColor { get; set; }
+    }
+    class PageEventHandler : IEventHandler
+    {
+        public void HandleEvent(Event @event)
+        {
+            PdfDocumentEvent docEvent = (PdfDocumentEvent)@event;
+            PdfDocument pdfDoc = docEvent.GetDocument();
+            PdfPage page = docEvent.GetPage();
+
+            int pageNumber = pdfDoc.GetPageNumber(page);
+            int numofpages = pdfDoc.GetNumberOfPages();
+            
+            PdfCanvas canvas = new PdfCanvas(page.NewContentStreamBefore(),page.GetResources(),pdfDoc);
+            Rectangle pageSize = page.GetPageSize();
+
+            float x = pageSize.GetWidth() / 2 +140;
+            float yStart = 166;
+            float yEnd = yStart - 20;
+            canvas.SaveState()
+                .SetLineWidth(1)
+                .MoveTo(x, yStart)
+                .LineTo(x, yEnd)
+                .Stroke()
+                .RestoreState();
+
+            canvas.BeginText()
+                .SetFontAndSize(iText.Kernel.Font.PdfFontFactory.CreateFont(iText.IO.Font.Constants.StandardFonts.HELVETICA), 12)
+                .MoveText(pageSize.GetWidth() / 2 + 150, 150)
+                .ShowText(pageNumber.ToString() + " out of " + numofpages)
+                .EndText();
+            canvas.Release();
+        }
     }
 
     public class PDFReportGen
@@ -471,7 +505,8 @@ namespace HydraulicCalAPI.Service
             List<Table> dicLstAnnulusOutputData = new List<Table>();
             foreach (var itemannulsoutputlst in objChartService.HydraulicOutputAnnulusList)
             {
-                objHyAnlyAnnuOutputData.Add(new HydraulicAnalysisAnnulusOutputData { 
+                objHyAnlyAnnuOutputData.Add(new HydraulicAnalysisAnnulusOutputData
+                {
                     AnnulusColor = itemannulsoutputlst.AnnulusColor.ToString(),
                     Annulus = itemannulsoutputlst.Annulus != null ? itemannulsoutputlst.Annulus.ToString() : "",
                     WorkString = itemannulsoutputlst.Workstring != null ? itemannulsoutputlst.Workstring.ToString() : "",
@@ -492,7 +527,7 @@ namespace HydraulicCalAPI.Service
             {
                 dicLstAnnulusOutputData.Add(getAnnulusTableData(objHyAnlyAnnuOutputData[i]));
             }
-            
+
             #endregion
 
             #region Hydraulic BHA Tool OutPut Tables
@@ -506,18 +541,19 @@ namespace HydraulicCalAPI.Service
                 {
                     PositionNum = item.PositionNo > 0 ? item.PositionNo : 0,
                     WorkString = string.IsNullOrEmpty(item.Workstring) ? "" : item.Workstring.ToString(),
-                    Length = item.LengthBHA > 0 ? Math.Round(item.LengthBHA,2) : 0,
-                    InputFlowRate = item.InputFlowRate > 0 ? Math.Round(item.InputFlowRate,3) : 0,
-                    AverageVelocity = item.AverageVelocity > 0 ? Math.Round(item.AverageVelocity,3) : 0,
+                    Length = item.LengthBHA > 0 ? Math.Round(item.LengthBHA, 2) : 0,
+                    InputFlowRate = item.InputFlowRate > 0 ? Math.Round(item.InputFlowRate, 3) : 0,
+                    AverageVelocity = item.AverageVelocity > 0 ? Math.Round(item.AverageVelocity, 3) : 0,
                     AvgVelocityColor = item.AverageVelocityColor.ToString() != null ? item.AverageVelocityColor.ToString() : "",
-                    CriticalVelocity = item.CriticalVelocity > 0 ? Math.Round(item.CriticalVelocity,3) : 0,
+                    CriticalVelocity = item.CriticalVelocity > 0 ? Math.Round(item.CriticalVelocity, 3) : 0,
                     FlowType = string.IsNullOrEmpty(item.FlowType) ? "" : item.FlowType.ToString(),
-                    PressureDrop = item.BHAPressureDrop > 0 ? Math.Round(item.BHAPressureDrop,3) : 0
+                    PressureDrop = item.BHAPressureDrop > 0 ? Math.Round(item.BHAPressureDrop, 3) : 0
                 });
             }
             foreach (var itemInput in objHydCalSrvs.bhaInput)
             {
-                objBha1.Add(new HydraulicBHAToolOutPutData {
+                objBha1.Add(new HydraulicBHAToolOutPutData
+                {
                     PositionNum = itemInput.PositionNumber > 0 ? itemInput.PositionNumber : 0,
                     HydraulicOD = itemInput.OutsideDiameterInInch > 0 ? itemInput.OutsideDiameterInInch : 0,
                     HydraulicID = itemInput.InsideDiameterInInch > 0 ? itemInput.InsideDiameterInInch : 0
@@ -526,8 +562,8 @@ namespace HydraulicCalAPI.Service
 
             foreach (var item in objBhaToolOutput)
             {
-               var hyod = objBha1.Where(bt => bt.PositionNum == item.PositionNum)
-                    .Select(bt => bt.HydraulicOD);
+                var hyod = objBha1.Where(bt => bt.PositionNum == item.PositionNum)
+                     .Select(bt => bt.HydraulicOD);
                 var hyid = objBha1.Where(bt => bt.PositionNum == item.PositionNum)
                    .Select(bt => bt.HydraulicID);
                 item.HydraulicOD = hyod.FirstOrDefault();
@@ -539,7 +575,7 @@ namespace HydraulicCalAPI.Service
                 lstTblBHAheader.Add(getBHAToolLine(objBhaToolOutput[i]));
                 lstTblBhaSide.Add(getBhaToolSide(objBhaToolOutput[i]));
             }
-             #endregion
+            #endregion
 
             #region Hydraulic BHA Tools Graph section
             Dictionary<string, Array> dicBhaChart = new Dictionary<string, Array>();
@@ -589,17 +625,17 @@ namespace HydraulicCalAPI.Service
                     using (PdfDocument pdf = new PdfDocument(writer))
                     {
                         Document document = new Document(pdf, PageSize.A4, immediateFlush: false);
-                        NewMethod(img, ls, newline, 
-                            header, tableAuthor, comment, _headerinfo, 
-                            tblSegment, tblJobInformation, tblWellInformation, tblOriginator, tblCustomerContacts, tblWeatherfordContacts, tblGenInfo, tblApproval,     
-                            _casingLinerTubingInfo, tblDepthAnalysis, tblCasingLinerTube, 
+                        NewMethod(img, ls, newline,
+                            header, tableAuthor, comment, _headerinfo,
+                            tblSegment, tblJobInformation, tblWellInformation, tblOriginator, tblCustomerContacts, tblWeatherfordContacts, tblGenInfo, tblApproval,
+                            _casingLinerTubingInfo, tblDepthAnalysis, tblCasingLinerTube,
                             tblBhaData, tblSurfaceEquipment, tblFluidEnvelope, tblFluid,
                             _stdpipeHeader, imgStdPvsFlwRate, xscale, yscale,
-                            PieChartTable, _chartheader, imgPie, legend, tblHeaderAnnulusOutput,dicLstAnnulusOutputData, 
-                            lstTblBHAheader, lstTblBhaSide,graph, document, pdf);
+                            PieChartTable, _chartheader, imgPie, legend, tblHeaderAnnulusOutput, dicLstAnnulusOutputData,
+                            lstTblBHAheader, lstTblBhaSide, graph, document, pdf);
 
                         AddFooter(pdf, document, objInputData);
-                        
+                        pdf.AddEventHandler(PdfDocumentEvent.END_PAGE, new PageEventHandler());
                         document.Close();
                     }
                 }
@@ -612,11 +648,11 @@ namespace HydraulicCalAPI.Service
                     File.Delete(tempFileName);
                 }
             }
-            
-        #endregion
-    }
 
-    private void getGeneralInfo(PdfReportService objInputData, out string _tabheader, Dictionary<string, string> pdfHederInfoData, out Table tblGenInfo)
+            #endregion
+        }
+
+        private void getGeneralInfo(PdfReportService objInputData, out string _tabheader, Dictionary<string, string> pdfHederInfoData, out Table tblGenInfo)
         {
             _tabheader = "General Information";
             pdfHederInfoData.Add("PL Job Number", objInputData.JobNumber != null ? objInputData.JobNumber.ToString() : "");
@@ -652,13 +688,13 @@ namespace HydraulicCalAPI.Service
             byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
             return fileBytes;
         }
-        private static void NewMethod(Image img, LineSeparator ls, Paragraph newline, 
-            Paragraph header, Table tableAuthor, Paragraph comment, Paragraph _headerinfo, 
+        private static void NewMethod(Image img, LineSeparator ls, Paragraph newline,
+            Paragraph header, Table tableAuthor, Paragraph comment, Paragraph _headerinfo,
             Table tblSegment, Table tblJobInformation, Table tblWellInformation, Table tblOriginator, Table tblCustomerContacts, Table tblWeatherfordContacts, Table tblGenInfo, Table tblApproval,
-            Paragraph _casingLinerTubingInfo, Table tblDepthAnalysis, Table tblCasingLinerTube, 
+            Paragraph _casingLinerTubingInfo, Table tblDepthAnalysis, Table tblCasingLinerTube,
             Table tblBhaData, Table tblSurfaceEquipment, Table tblFluidEnvelope, Table tblFluid,
             Paragraph _stdpipeHeader, Image imgStdPvsFlwRate, Paragraph xscale, Paragraph yscale,
-            Table PieChartTable, Paragraph _chartheader, Image imgPie, Paragraph legend, Table tblHeaderAnnulusOutput, List<Table> dicLstAnnulusOutputData, 
+            Table PieChartTable, Paragraph _chartheader, Image imgPie, Paragraph legend, Table tblHeaderAnnulusOutput, List<Table> dicLstAnnulusOutputData,
             List<Table> lstTblBHAheader, List<Table> lstTblBhaSide, List<Image> bhaToolGraphsLst, Document document, PdfDocument pdf)
         {
             #region Content First Page
@@ -681,12 +717,12 @@ namespace HydraulicCalAPI.Service
             #region Header for all Pages
             Table head1 = new Table(2, false)
                 .SetBorder(Border.NO_BORDER);
-            Cell headcell1 = new Cell(1,1).SetBorder(Border.NO_BORDER);
-             headcell1.Add(img).SetWidth(40);
+            Cell headcell1 = new Cell(1, 1).SetBorder(Border.NO_BORDER);
+            headcell1.Add(img).SetWidth(40);
             Cell headcell2 = new Cell(1, 1).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.CENTER);
-                headcell2.Add(_headerinfo).SetWidth(500); ;
+            headcell2.Add(_headerinfo).SetWidth(500); ;
             Cell headcell3 = new Cell(1, 2).SetBorder(Border.NO_BORDER);
-                headcell3.Add(ls).SetWidth(500);            
+            headcell3.Add(ls).SetWidth(500);
             head1.AddCell(headcell1);
             head1.AddCell(headcell2);
             head1.AddCell(headcell3);
@@ -802,7 +838,7 @@ namespace HydraulicCalAPI.Service
             PieChartTable.Flush();
             PieChartTable.Complete();
             document.Add(newline);
-            
+
             document.Add(_chartheader);
             document.Add(imgPie);
             document.Add(tblHeaderAnnulusOutput);
@@ -810,8 +846,7 @@ namespace HydraulicCalAPI.Service
             {
                 document.Add(dicLstAnnulusOutputData[i]);
             }
-            //dicLstAnnulusOutputData.Flush();
-            //dicLstAnnulusOutputData.Complete();
+
             document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
             #endregion
 
@@ -835,13 +870,13 @@ namespace HydraulicCalAPI.Service
                 bhatooldetail.AddCell(celltd3);
                 document.Add(bhatooldetail);
                 pageBreak++;
-                if(pageBreak == 2)
+                if (pageBreak == 2)
                 {
                     document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
                     pageBreak = 0;
                 }
             }
-            
+
             bhatooldetail.Flush();
             bhatooldetail.Complete();
             #endregion
@@ -887,13 +922,13 @@ namespace HydraulicCalAPI.Service
 
             Table finalfooter = new Table(1, false).SetBorder(Border.NO_BORDER);
             Cell _footcell = new Cell(1, 1).SetBorder(Border.NO_BORDER);
-                _footcell.Add(footerSeperator).SetWidth(500);
+            _footcell.Add(footerSeperator).SetWidth(500);
             Cell _footcell1 = new Cell(2, 1).SetBorder(Border.NO_BORDER);
-                _footcell1.Add(footerTable);
+            _footcell1.Add(footerTable);
             Cell _footcell2 = new Cell(3, 1).SetBorder(Border.NO_BORDER);
-                _footcell2.Add(footerTradeMark);
+            _footcell2.Add(footerTradeMark);
             Cell _footcell3 = new Cell(4, 1).SetBorder(Border.NO_BORDER);
-             _footcell3.Add(footerDisclaimer).SetWidth(500);
+            _footcell3.Add(footerDisclaimer).SetWidth(500);
 
             finalfooter.AddCell(_footcell);
             finalfooter.AddCell(_footcell1);
@@ -921,7 +956,8 @@ namespace HydraulicCalAPI.Service
         }
 
         #region Graph and Chart Generate Method Section
-        public Table getPieHeaderTable(ChartAndGraphService objPieTableData) {
+        public Table getPieHeaderTable(ChartAndGraphService objPieTableData)
+        {
 
             double toolflowrate = 0.00;
             double tooldepth = 0.00;
@@ -930,24 +966,24 @@ namespace HydraulicCalAPI.Service
                 .SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(ColorConstants.LIGHT_GRAY);
             foreach (var item in objPieTableData.HydraulicOutputBHAList)
             {
-                if(item.InputFlowRate >= 0)
+                if (item.InputFlowRate >= 0)
                     toolflowrate += item.InputFlowRate;
             }
             tooldepth = objPieTableData.ToolDepth;
             toolPressureDrop = objPieTableData.TotalPressureDrop;
-            
+
             pHeader.AddCell(new Paragraph("Flow Rate : " + toolflowrate + " (gal/min)"));
             pHeader.AddCell(new Paragraph("Tool Depth : " + tooldepth + " (ft)"));
             pHeader.AddCell(new Paragraph("Flow Rate : " + toolPressureDrop + " (psi)"));
-            
+
             return pHeader.SetAutoLayout();
         }
         public Table getBHAToolLine(HydraulicBHAToolOutPutData objData)
         {
             Table tblbhtoolhead = new Table(8, false)
-                .SetBold().SetFontSize(7);
+                .SetBold().SetFontSize(7).SetWidth(UnitValue.CreatePercentValue(100));
             Cell _blankcell;
-            
+
             Cell tblhead01 = new Cell(1, 1).Add(new Paragraph("").SetBackgroundColor(ColorConstants.LIGHT_GRAY));
             Cell tblhead02 = new Cell(1, 1).Add(new Paragraph("Work String").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
             Cell tblhead03 = new Cell(1, 1).Add(new Paragraph("Length (ft)").SetBackgroundColor(ColorConstants.LIGHT_GRAY).SetTextAlignment(TextAlignment.CENTER));
@@ -967,10 +1003,10 @@ namespace HydraulicCalAPI.Service
             tblbhtoolhead.AddCell(tblhead08);
 
             if (objData.AvgVelocityColor.ToString().ToUpper() == "RED")
-            { 
+            {
                 _blankcell = new Cell(1, 1).SetBackgroundColor(ColorConstants.RED).Add(new Paragraph(" "));
             }
-            else if( objData.AvgVelocityColor.ToString().ToUpper() == "YELLOW")
+            else if (objData.AvgVelocityColor.ToString().ToUpper() == "YELLOW")
             {
                 _blankcell = new Cell(1, 1).SetBackgroundColor(ColorConstants.YELLOW).Add(new Paragraph(" "));
             }
@@ -982,10 +1018,10 @@ namespace HydraulicCalAPI.Service
             Cell celWks = new Cell(1, 1).Add(new Paragraph(objData.WorkString)).SetTextAlignment(TextAlignment.CENTER);
             Cell celLen = new Cell(1, 1).Add(new Paragraph(objData.Length.ToString())).SetTextAlignment(TextAlignment.LEFT);
             Cell celInFlow = new Cell(1, 1).Add(new Paragraph(objData.InputFlowRate.ToString())).SetTextAlignment(TextAlignment.LEFT);
-            Cell celAvgV;           
+            Cell celAvgV;
             if (objData.AvgVelocityColor.ToString().ToUpper() == "RED")
             {
-                celAvgV = new Cell(1,1).Add(new Paragraph(objData.AverageVelocity.ToString())).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(ColorConstants.RED);
+                celAvgV = new Cell(1, 1).Add(new Paragraph(objData.AverageVelocity.ToString())).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(ColorConstants.RED);
             }
             else if (objData.AvgVelocityColor.ToString().ToUpper() == "YELLOW")
             {
@@ -998,7 +1034,7 @@ namespace HydraulicCalAPI.Service
             Cell celCricVel = new Cell(1, 1).Add(new Paragraph(objData.CriticalVelocity.ToString())).SetTextAlignment(TextAlignment.LEFT);
             Cell celFlowtyp = new Cell(1, 1).Add(new Paragraph(objData.FlowType.ToString())).SetTextAlignment(TextAlignment.CENTER);
             Cell celPressureDrp = new Cell(1, 1).Add(new Paragraph(objData.PressureDrop.ToString())).SetTextAlignment(TextAlignment.LEFT);
-            
+
             tblbhtoolhead.AddCell(_blankcell);
             tblbhtoolhead.AddCell(celWks);
             tblbhtoolhead.AddCell(celLen);
@@ -1028,7 +1064,7 @@ namespace HydraulicCalAPI.Service
             Cell cell50 = new Cell(1, 1).Add(new Paragraph("Hydraulic ID"));
             Cell cell51 = new Cell(1, 1).Add(new Paragraph(objData.HydraulicID.ToString()));
             Cell cell60 = new Cell(1, 1).Add(new Paragraph("Length"));
-            Cell cell61 = new Cell(1, 1).Add(new Paragraph(objData.Length.ToString() +  " | ft"));
+            Cell cell61 = new Cell(1, 1).Add(new Paragraph(objData.Length.ToString() + " | ft"));
 
             tblbhtoolSide.AddCell(cell00);
             tblbhtoolSide.AddCell(cell01);
@@ -1044,21 +1080,21 @@ namespace HydraulicCalAPI.Service
             tblbhtoolSide.AddCell(cell51);
             tblbhtoolSide.AddCell(cell60);
             tblbhtoolSide.AddCell(cell61);
-            
+
             return tblbhtoolSide.SetAutoLayout();
         }
         public byte[] GeneratePieChart(Dictionary<string, string> objPrsDrop, List<PieData> pieData)
         {
-            float width = 200;
-            float height = 200;
+            float width = 250;
+            float height = 250;
             float margin = 15;
             using (var surfcae = SKSurface.Create(new SKImageInfo(400, 300)))
             {
                 var canvas = surfcae.Canvas;
                 canvas.Clear(SKColors.White);
-                float centerX = width / 2;
-                float centerY = height / 2;
-                float radius = Math.Min(width, height) / 2 - margin;
+                float centerX = width / 2f;
+                float centerY = height / 2f;
+                float radius = Math.Min(width, height) * 0.8f;
 
                 float totalValue = 0;
 
@@ -1080,7 +1116,7 @@ namespace HydraulicCalAPI.Service
                     {
                         string fltVal = !string.IsNullOrEmpty(objPrsDrop[lstitem]) ? objPrsDrop[lstitem].ToString() : "0";
                         float itValue = (float)Math.Round(float.Parse(fltVal));
-                        sweepAngle = (itValue / totalValue) * 360;
+                        sweepAngle = (itValue / totalValue) * 360f;
                     }
                     if (lstitem.Substring(0, 5) == "Color")
                     {
@@ -1091,13 +1127,13 @@ namespace HydraulicCalAPI.Service
                             string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
 
                             paint.Color = SKColor.Parse(hexString);
-                            canvas.DrawArc(new SKRect(50, 50, 150, 150), startAngle, sweepAngle, true, paint);
+                            canvas.DrawArc(new SKRect(50, 50, 200, 200), startAngle, sweepAngle, true, paint);
                             startAngle += sweepAngle;
                         }
                     }
                 }
 
-                float legendX = 400 - margin - 50;
+                float legendX = 400 - margin - 150;
                 float legendY = margin;
                 float legendItemHeight = 8;
                 foreach (var data in pieData)
@@ -1111,7 +1147,7 @@ namespace HydraulicCalAPI.Service
                         canvas.DrawRect(legendX, legendY, legendItemHeight, legendItemHeight, paint);
                     }
                     float labelPercentage = (float)Math.Round((data.Value / totalValue) * 100);
-                    canvas.DrawText($"({labelPercentage:F2} %)", legendX + legendItemHeight + 5, legendY + 15, new SKPaint());
+                    canvas.DrawText($"({labelPercentage:F2} %) => {data.Label}", legendX + legendItemHeight + 5, legendY + 8, new SKPaint());
                     legendY += legendItemHeight + 5;
                 }
 
@@ -1170,7 +1206,7 @@ namespace HydraulicCalAPI.Service
             {
                 _blankcell = new Cell(1, 1).SetBackgroundColor(ColorConstants.GREEN).Add(new Paragraph(" ")).SetWidth(10);
             }
-            Cell cellAnnulus = new Cell(1,1).Add(new Paragraph(objHydrAnnulus.Annulus.ToString()).SetTextAlignment(TextAlignment.CENTER)).SetWidth(40);
+            Cell cellAnnulus = new Cell(1, 1).Add(new Paragraph(objHydrAnnulus.Annulus.ToString()).SetTextAlignment(TextAlignment.CENTER)).SetWidth(40);
             Cell celWks = new Cell(1, 1).Add(new Paragraph(objHydrAnnulus.WorkString.ToString()).SetTextAlignment(TextAlignment.CENTER)).SetWidth(100);
             Cell celFrom = new Cell(1, 1).Add(new Paragraph(objHydrAnnulus.From.ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(30);
             Cell celTo = new Cell(1, 1).Add(new Paragraph(objHydrAnnulus.To.ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(30);
@@ -1204,7 +1240,7 @@ namespace HydraulicCalAPI.Service
             }
 
             Cell celPressureDrp = new Cell(1, 1).Add(new Paragraph(objHydrAnnulus.PressureDrop.ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(50);
-            
+
             _tblannulusdata.AddCell(_blankcell);
             _tblannulusdata.AddCell(cellAnnulus);
             _tblannulusdata.AddCell(celWks);
@@ -1215,7 +1251,7 @@ namespace HydraulicCalAPI.Service
             _tblannulusdata.AddCell(celFlowtyp);
             _tblannulusdata.AddCell(celChipcolor);
             _tblannulusdata.AddCell(celPressureDrp);
-           
+
             return _tblannulusdata.SetAutoLayout();
         }
         public byte[] DrawLineGraph(ChartAndGraphService objCags, List<DataPoints> dataPoints)
@@ -1244,22 +1280,21 @@ namespace HydraulicCalAPI.Service
                     var yfixPoint = objCags.MaxPressure;
 
                     float xpoint = margin;
-                    for (int i = 1; i <= xlimit; i ++)
+                    for (int i = 1; i <= xlimit; i++)
                     {
-                        int x = i*100;
-                        string xScale = Convert.ToString(x);
-                        xpoint += 50;
-                        canvas.DrawText(xScale, new SKPoint(xpoint, height + 15 - margin), paint);
+                        
                     }
                     float ypoint = height + 10 - margin;
                     for (int j = 1; j <= ylimit; j++)
                     {
                         ypoint -= 50;
                         int y = j * 1000;
+                        int x = (int)(margin);
                         string yScale = Convert.ToString(y);
+                        canvas.DrawLine(x-5,ypoint,x+5,ypoint,paint);
                         canvas.DrawText(yScale, new SKPoint(0, ypoint), paint);
                     }
-                    canvas.DrawText("X", (float)xfixPoint, (float)yfixPoint, paint);
+                    
                 }
 
                 float minX = (float)objCags.MinimumFlowRate;
@@ -1274,12 +1309,13 @@ namespace HydraulicCalAPI.Service
                     minY = Math.Min(minY, point.Y);
                     maxY = Math.Max(maxY, point.Y);
                 }
-
-
+                
                 using (var paint = new SKPaint { Color = SKColors.Red, StrokeWidth = 2, IsAntialias = true })
                 {
                     float scaleX = graphWidth / (maxX - minX);
                     float scaleY = graphHeight / (maxY - minY);
+                    canvas.DrawText("X", minX, minY, paint);
+
                     for (int i = 0; i < dataPoints.Count - 1; i++)
                     {
                         float x1 = margin + (dataPoints[i].X - minX) * scaleX;
@@ -1350,16 +1386,29 @@ namespace HydraulicCalAPI.Service
                     for (int i = 1; i <= xlimit; i++)
                     {
                         int x = i * 100;
+                        int y = (int)(height - margin);
                         string xScale = Convert.ToString(x);
                         xpoint += 50;
-                        canvas.DrawText(xScale, new SKPoint(xpoint, height + 15 - margin), paint);
+                        canvas.DrawLine(xpoint, y - 5, xpoint, y + 5, paint);
+                        canvas.DrawText(xScale, xpoint - 5, (height + 15 - margin), paint);
                     }
                     float ypoint = height + 10 - margin;
                     for (int j = 1; j <= ylimit; j++)
                     {
+                        int y = 0;
                         ypoint -= 50;
-                        int y = j * 1000;
+                        if(yfixPoint < 100)
+                        {
+                            y = j * 10; 
+                        }
+                        else
+                        {
+                            y = j * 1000;
+                        }
+                        
+                        int x = (int)(margin);
                         string yScale = Convert.ToString(y);
+                        canvas.DrawLine(x - 5, ypoint, x + 5, ypoint, paint);
                         canvas.DrawText(yScale, new SKPoint(0, ypoint), paint);
                     }
                     canvas.DrawText("X", (float)xfixPoint, (float)yfixPoint, paint);
@@ -1377,7 +1426,7 @@ namespace HydraulicCalAPI.Service
                     minY = Math.Min(minY, point.Y);
                     maxY = Math.Max(maxY, point.Y);
                 }
-                
+
                 using (var paint = new SKPaint { Color = SKColors.Blue, StrokeWidth = 2, IsAntialias = true })
                 {
                     float scaleX = graphWidth / (maxX - minX);
