@@ -104,11 +104,11 @@ namespace HydraulicCalAPI.Service
         Dictionary<string, string> pdfAuthor;
         Dictionary<string, string> pdfLstItemData;
 
-
         Dictionary<string, string> pdfPieChart = new Dictionary<string, string>();
 
-
         HydraulicCalculationService objHydCalSrvs = new HydraulicCalculationService();
+        string strCasingLinerTubing = "New Run";
+          
 
         public byte[] generatePDF(HydraulicCalAPI.Service.PdfReportService objInputData, ChartAndGraphService objChartService, HydraulicCalculationService inputHydra)
         {
@@ -148,7 +148,7 @@ namespace HydraulicCalAPI.Service
 
             Paragraph comment = new Paragraph("Comment:").SetTextAlignment(TextAlignment.LEFT).SetFontSize(10);
             #endregion
-
+            
             #region HeaderInformation
             Dictionary<string, string> pdfHederInfoData = new Dictionary<string, string>();
             Paragraph _headerinfo = new Paragraph("Header Information")
@@ -236,11 +236,23 @@ namespace HydraulicCalAPI.Service
             #endregion
 
             #region Casing Liner Tubing
-            Paragraph _casingLinerTubingInfo = new Paragraph("CH Fishing Run 1")
+            
+            List<string> pdfCasingData = new List<string>();
+            if(objInputData.SubProductLine.ToString().ToUpper() == "FISHING")
+            {
+                strCasingLinerTubing = "CH Fishing Run";
+            }
+            else if(objInputData.SubProductLine.ToString().ToUpper() == "CASING")
+            {
+                strCasingLinerTubing = "FRE Casing Run";
+            }
+            else
+            {
+                strCasingLinerTubing = "New Run";
+            }
+            Paragraph _casingLinerTubingInfo = new Paragraph(strCasingLinerTubing)
             .SetTextAlignment(TextAlignment.CENTER)
             .SetFontSize(20).SetBold();
-            List<string> pdfCasingData = new List<string>();
-
             //Code to get Annulus Length and BhaTool Length
             double annulusLength = 0.00;
             double bhatoolLength = 0.00;
@@ -285,6 +297,11 @@ namespace HydraulicCalAPI.Service
             }
             Table tblCasingLinerTube = getCasingLinerTubing(dicLstCltData, _tabheader); ;
             increment = 0;
+            #endregion
+
+            #region Table Of Content
+            Table tblToc = new Table(2, false).SetBorder(Border.NO_BORDER);
+            tblToc = getTableOfcontent(strCasingLinerTubing);
             #endregion
 
             #region BHA Input Data
@@ -626,7 +643,7 @@ namespace HydraulicCalAPI.Service
                     {
                         Document document = new Document(pdf, PageSize.A4, immediateFlush: false);
                         NewMethod(img, ls, newline,
-                            header, tableAuthor, comment, _headerinfo,
+                            header, tableAuthor, comment, tblToc, _headerinfo,
                             tblSegment, tblJobInformation, tblWellInformation, tblOriginator, tblCustomerContacts, tblWeatherfordContacts, tblGenInfo, tblApproval,
                             _casingLinerTubingInfo, tblDepthAnalysis, tblCasingLinerTube,
                             tblBhaData, tblSurfaceEquipment, tblFluidEnvelope, tblFluid,
@@ -689,7 +706,7 @@ namespace HydraulicCalAPI.Service
             return fileBytes;
         }
         private static void NewMethod(Image img, LineSeparator ls, Paragraph newline,
-            Paragraph header, Table tableAuthor, Paragraph comment, Paragraph _headerinfo,
+            Paragraph header, Table tableAuthor, Paragraph comment, Table tblToc, Paragraph _headerinfo,
             Table tblSegment, Table tblJobInformation, Table tblWellInformation, Table tblOriginator, Table tblCustomerContacts, Table tblWeatherfordContacts, Table tblGenInfo, Table tblApproval,
             Paragraph _casingLinerTubingInfo, Table tblDepthAnalysis, Table tblCasingLinerTube,
             Table tblBhaData, Table tblSurfaceEquipment, Table tblFluidEnvelope, Table tblFluid,
@@ -739,6 +756,13 @@ namespace HydraulicCalAPI.Service
             head2.AddCell(head2cell1);
             head2.AddCell(head2cell2);
             head2.AddCell(head2cell3);
+            #endregion
+
+            #region Content of TOC
+            document.Add(tblToc);
+            tblToc.Flush();
+            tblToc.Complete();
+            document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
             #endregion
 
             #region Content Header Information
@@ -883,7 +907,40 @@ namespace HydraulicCalAPI.Service
         }
 
         #region Methods
+        public Table getTableOfcontent(string strSubProductLine)
+        {
+            Table _tbltoc = new Table(2, true);
 
+            Cell tocHeader = new Cell(1, 2).Add(new Paragraph("Table Of Contents")).SetFontSize(18).SetBold().SetBorder(Border.NO_BORDER);
+            
+            Cell tocLine1col1 = new Cell(1, 1).Add(new Paragraph("1.        Header Information")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine1col2 = new Cell(1, 1).Add(new Paragraph("......3")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
+            Cell tocLine2col1 = new Cell(1, 1).Add(new Paragraph("2.        " + strSubProductLine + " - Casing Liner Tubing")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine2col2 = new Cell(1, 1).Add(new Paragraph("......4")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
+            Cell tocLine3col1 = new Cell(1, 1).Add(new Paragraph("3.        "+ strSubProductLine + " - BHA")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine3col2 = new Cell(1, 1).Add(new Paragraph("......5")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
+            Cell tocLine4col1 = new Cell(1, 1).Add(new Paragraph("4.        "+ strSubProductLine + " - Surface Equipment & Fluid Information")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine4col2 = new Cell(1, 1).Add(new Paragraph("......6")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
+            Cell tocLine5col1 = new Cell(1, 1).Add(new Paragraph("5.        "+ strSubProductLine + " - Standpipe vs Flowrate Graph")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine5col2 = new Cell(1, 1).Add(new Paragraph("......7")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
+            Cell tocLine6col1 = new Cell(1, 1).Add(new Paragraph("6.        "+ strSubProductLine + " - Hydraulic Output")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine6col2 = new Cell(1, 1).Add(new Paragraph("......8")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
+            
+            _tbltoc.AddCell(tocHeader);
+            _tbltoc.AddCell(tocLine1col1);
+            _tbltoc.AddCell(tocLine1col2);
+            _tbltoc.AddCell(tocLine2col1);
+            _tbltoc.AddCell(tocLine2col2);
+            _tbltoc.AddCell(tocLine3col1);
+            _tbltoc.AddCell(tocLine3col2);
+            _tbltoc.AddCell(tocLine4col1);
+            _tbltoc.AddCell(tocLine4col2);
+            _tbltoc.AddCell(tocLine5col1);
+            _tbltoc.AddCell(tocLine5col2);
+            _tbltoc.AddCell(tocLine6col1);
+            _tbltoc.AddCell(tocLine6col2);
+            return _tbltoc;
+        }
         private static void AddFooter(PdfDocument pdfDocument, Document document, PdfReportService objFooterData)
         {
             Paragraph footer = new Paragraph();
