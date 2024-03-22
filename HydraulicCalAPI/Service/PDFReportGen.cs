@@ -913,17 +913,17 @@ namespace HydraulicCalAPI.Service
 
             Cell tocHeader = new Cell(1, 2).Add(new Paragraph("Table Of Contents")).SetFontSize(18).SetBold().SetBorder(Border.NO_BORDER);
             
-            Cell tocLine1col1 = new Cell(1, 1).Add(new Paragraph("1.        Header Information")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine1col1 = new Cell(1, 1).Add(new Paragraph("1.    Header Information")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine1col2 = new Cell(1, 1).Add(new Paragraph("......3")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
-            Cell tocLine2col1 = new Cell(1, 1).Add(new Paragraph("2.        " + strSubProductLine + " - Casing Liner Tubing")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine2col1 = new Cell(1, 1).Add(new Paragraph("2.    " + strSubProductLine + " - Casing Liner Tubing")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine2col2 = new Cell(1, 1).Add(new Paragraph("......4")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
-            Cell tocLine3col1 = new Cell(1, 1).Add(new Paragraph("3.        "+ strSubProductLine + " - BHA")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine3col1 = new Cell(1, 1).Add(new Paragraph("3.    "+ strSubProductLine + " - BHA")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine3col2 = new Cell(1, 1).Add(new Paragraph("......5")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
-            Cell tocLine4col1 = new Cell(1, 1).Add(new Paragraph("4.        "+ strSubProductLine + " - Surface Equipment & Fluid Information")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine4col1 = new Cell(1, 1).Add(new Paragraph("4.    "+ strSubProductLine + " - Surface Equipment & Fluid Information")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine4col2 = new Cell(1, 1).Add(new Paragraph("......6")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
-            Cell tocLine5col1 = new Cell(1, 1).Add(new Paragraph("5.        "+ strSubProductLine + " - Standpipe vs Flowrate Graph")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine5col1 = new Cell(1, 1).Add(new Paragraph("5.    "+ strSubProductLine + " - Standpipe vs Flowrate Graph")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine5col2 = new Cell(1, 1).Add(new Paragraph("......7")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
-            Cell tocLine6col1 = new Cell(1, 1).Add(new Paragraph("6.        "+ strSubProductLine + " - Hydraulic Output")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine6col1 = new Cell(1, 1).Add(new Paragraph("6.    "+ strSubProductLine + " - Hydraulic Output")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine6col2 = new Cell(1, 1).Add(new Paragraph("......8")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT);
             
             _tbltoc.AddCell(tocHeader);
