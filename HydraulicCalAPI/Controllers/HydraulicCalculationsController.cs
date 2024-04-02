@@ -28,7 +28,6 @@ namespace HydraulicCalAPI.Controllers
         {
             SurfaceEquipment equipment = new SurfaceEquipment(objHcs.surfaceEquipmentInput.CaseType);
             List<BHATool> bhatools = HydraulicCalculationsControllerHelpers.getBHATools(objHcs);
-
             if ((double.IsNaN(objHcs.toolDepthInFeet) || objHcs.toolDepthInFeet == 0))
             {
                 for (int i = 0; i < objHcs.annulusInput.Count; i++)
@@ -36,7 +35,6 @@ namespace HydraulicCalAPI.Controllers
                     objHcs.toolDepthInFeet += objHcs.annulusInput[i].AnnulusBottomInFeet;
                 }
             }
-
             ChartAndGraphService objChartnGraph = new ChartAndGraphService();
             objChartnGraph.GetDataPoints(objHcs.fluidInput,
                                                 objHcs.flowRateInGPMInput,
@@ -48,14 +46,12 @@ namespace HydraulicCalAPI.Controllers
                                                 objHcs.maxflowpressure, objHcs.toolDepthInFeet);
             return objChartnGraph;
         }
-
         [HttpPost("getHydraulicReportGenerator")]
         public FileContentResult getHydraulicReportGenerator([FromBody] HydraulicCalAPI.Service.PdfReportService objRptGeneratorService)
         {    
             ChartAndGraphService someData = executeHydraulicCalulations(objRptGeneratorService.HydraCalcService);
             byte[] memoryPdf = new PDFReportGen().generatePDF(objRptGeneratorService, someData, objRptGeneratorService.HydraCalcService);
             string fileDownloadName = objRptGeneratorService.JobID + "-HYD report.pdf";
-
             Response.Headers.Add("Content-Disposition", $"attachment; filename={fileDownloadName}");
             return base.File(memoryPdf, "application/pdf", fileDownloadName);
         }

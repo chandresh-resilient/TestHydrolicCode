@@ -115,10 +115,13 @@ namespace HydraulicCalAPI.Service
             objHydCalSrvs = inputHydra;
             string _tabheader = string.Empty;
             accuColor = new DeviceRgb(165, 42, 42);
+            string baseDir = AppDomain.CurrentDomain.BaseDirectory;
 
+            // Construct the path to the image relative to the base directory
+            string imagePath = System.IO.Path.Combine(baseDir, "Images", "wft.jpg");
             // Add image
             Image img = new Image(ImageDataFactory
-               .Create("Images/wft.jpg"))
+               .Create(imagePath))
                .SetTextAlignment(TextAlignment.LEFT).SetWidth(80).SetHeight(30).SetMarginBottom(3);
 
             // New line
@@ -625,19 +628,9 @@ namespace HydraulicCalAPI.Service
             #endregion
 
             #region Report Section
-            // Define the path for the temp directory
-            var tempDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "MyTempPdfDir");
-            // Ensure the temp directory exists
-            if (!Directory.Exists(tempDir))
+            using (MemoryStream memoryStream = new MemoryStream())
             {
-                Directory.CreateDirectory(tempDir);
-            }
-
-            // Generate a random file name for the PDF
-            var tempFileName = System.IO.Path.Combine(tempDir, Guid.NewGuid().ToString() + ".pdf");
-            try
-            {
-                using (PdfWriter writer = new PdfWriter(tempFileName))
+                using (PdfWriter writer = new PdfWriter(memoryStream))
                 {
                     using (PdfDocument pdf = new PdfDocument(writer))
                     {
@@ -655,16 +648,12 @@ namespace HydraulicCalAPI.Service
                         pdf.AddEventHandler(PdfDocumentEvent.END_PAGE, new PageEventHandler());
                         document.Close();
                     }
-                }
-                return GetPdfBytesFromFile(tempFileName);
-            }
-            finally
-            {
-                if (File.Exists(tempFileName))
-                {
-                    File.Delete(tempFileName);
+
+                    // After closing the document, the MemoryStream contains the PDF
+                    return memoryStream.ToArray();
                 }
             }
+
 
             #endregion
         }

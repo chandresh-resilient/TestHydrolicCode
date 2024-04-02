@@ -2,7 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ShowAllFiles>false</ShowAllFiles>
-    <NameOfLastUsedPublishProfile>D:\xcode\Hyd\HydraulicCalAPI\Properties\PublishProfiles\wftaccuvopdevscuswa021 - Web Deploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>D:\xcode\Hyd\HydraulicCalAPI\Properties\PublishProfiles\wftaccuvopstgscusappservice022 - Web Deploy.pubxml</NameOfLastUsedPublishProfile>
     <Controller_SelectedScaffolderID>ApiControllerEmptyScaffolder</Controller_SelectedScaffolderID>
     <Controller_SelectedScaffolderCategoryPath>root/Common/Api</Controller_SelectedScaffolderCategoryPath>
     <ActiveDebugProfile>HydraulicCalAPI</ActiveDebugProfile>
