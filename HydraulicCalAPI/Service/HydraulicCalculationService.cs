@@ -12,6 +12,7 @@ namespace HydraulicCalAPI.Service
 
     public class HydraulicCalculationService
     {
+       
         public Fluid fluidInput { get; set; }
         public List<BHATool> bhaInput { get; set; }
         public double flowRateInGPMInput { get; set; }
@@ -31,17 +32,19 @@ namespace HydraulicCalAPI.Service
         /// </summary>
         public class BHATool
         {
-           // public List<HydraulicEngine.BHATool> bhaToolInput = new List<HydraulicEngine.BHATool>();
-
-           // public Guid? ToolIdentifier { get; set; }
+            public enum NozzleTypes { Jet, Hole };
+            public class Nozzles
+            {
+                public NozzleTypes NozzleType { get; set; }
+                public int NozzleQuantity { get; set; }
+                public double NozzleDiameterInInch { get; set; }
+                public double NozzleCoefficient { get; set; }
+            }
+            // public Guid? ToolIdentifier { get; set; }
             public int PositionNumber { get; set; }
             public string toolDescription { get; set; }
             public double OutsideDiameterInInch { get; set; }
             public double LengthInFeet { get; set; }
-
-            //this property is by default set to false.
-            // for tool types with split flow or different states. This need to be set to true
- //           public bool HasVariableFlow { get; set; }
 
             /// <summary>
             /// Input point to get workstring data
@@ -64,8 +67,7 @@ namespace HydraulicCalAPI.Service
             /// Input Points for BHATootType3
             /// </summary>
             public List<Nozzles> NozzlesInfomation { get; set; }
-           // public int NozzleQuantity { get; set; }
-          //  public double NozzleDiameterInInch { get; set; }
+          
             /// <summary>
             /// Input Points for BHAToolType4
             /// </summary>
@@ -88,7 +90,7 @@ namespace HydraulicCalAPI.Service
             /// </summary>
             public double LengthBeforeAnnulusOpeningInFeet { get; set; }
             public double LengthAfterAnnulusOpeningInFeet { get; set; }
- //           public List<BHATool> BHATools { get; set; }
+
             public Common.ToolState BHAOpeningState { get; set; }
 
             /// <summary>

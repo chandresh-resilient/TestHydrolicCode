@@ -2,10 +2,11 @@
 using HydraulicEngine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 internal static class HydraulicCalculationsControllerHelpers
 {
-
+    public enum NozzleTypes { Jet, Hole };
     public static BHATool ConvertWorkstringToBHAForHydraulic(int positionNumber, string sectionName, double outerDiameter, double innerDiameter, double wrkstrLength)
     {
         BHAToolType1 bhaToolTyp1 = new BHAToolType1(positionNumber, sectionName != null ? sectionName : "", outerDiameter, wrkstrLength, innerDiameter, double.MinValue);
@@ -16,6 +17,7 @@ internal static class HydraulicCalculationsControllerHelpers
     public static List<BHATool> getBHATools(HydraulicCalculationService objHcs)
     {
         List<HydraulicEngine.BHATool> bhatools = new List<HydraulicEngine.BHATool>();
+
         foreach (var item in objHcs.bhaInput)
         {
             var toolcasetype = item.bhatooltype;
@@ -57,7 +59,7 @@ internal static class HydraulicCalculationsControllerHelpers
                             toolDescription = item.toolDescription,
                             OutsideDiameterInInch = item.OutsideDiameterInInch,
                             LengthInFeet = item.LengthInFeet,
-                            NozzlesInfomation = item.NozzlesInfomation,//Check with Shwetang Nozzel Cofficient kahan se aayega
+                            NozzlesInfomation = GetNozzleList(item.NozzlesInfomation),
                             InsideDiameterInInch = item.InsideDiameterInInch
                         });
                         break;
@@ -88,7 +90,7 @@ internal static class HydraulicCalculationsControllerHelpers
                             toolDescription = item.toolDescription,
                             OutsideDiameterInInch = item.OutsideDiameterInInch,
                             LengthInFeet = item.LengthInFeet,
-                            AnnulusNozzleInformation = item.AnnulusNozzleInformation,
+                            AnnulusNozzleInformation = GetNozzleList(item.AnnulusNozzleInformation),
                             InsideDiameterInInches = item.InsideDiameterInInch
                         });
                         break;
@@ -103,8 +105,8 @@ internal static class HydraulicCalculationsControllerHelpers
                             OutsideDiameterInInch = item.OutsideDiameterInInch,
                             LengthInFeet = item.LengthInFeet,
                             CurrentState = item.CurrentState,
-                            BHANozzleInformation = item.BHANozzleInformation,
-                            AnnulusNozzleInformation = item.AnnulusNozzleInformation,
+                            BHANozzleInformation = GetNozzleList(item.BHANozzleInformation),
+                            AnnulusNozzleInformation = GetNozzleList(item.AnnulusNozzleInformation),
                             InsideDiameterInInches = item.InsideDiameterInInch,
                             LengthBeforeAnnulusOpeningInFeet = item.LengthBeforeAnnulusOpeningInFeet,
                             LengthAfterAnnulusOpeningInFeet = item.LengthAfterAnnulusOpeningInFeet,
@@ -160,7 +162,7 @@ internal static class HydraulicCalculationsControllerHelpers
                             toolDescription = item.toolDescription,
                             OutsideDiameterInInch = item.OutsideDiameterInInch,
                             LengthInFeet = item.LengthInFeet,
-                            NozzlesInfomation = item.NozzlesInfomation,
+                            NozzlesInfomation = GetNozzleList(item.NozzlesInfomation),
                             InsideDiameterInInch = item.InsideDiameterInInch,
                             ToolAccuset = item.ToolAccuset
                         });
@@ -185,5 +187,21 @@ internal static class HydraulicCalculationsControllerHelpers
         }
 
         return bhatools;
+    }
+
+    private static List<Nozzles> GetNozzleList(List<HydraulicCalculationService.BHATool.Nozzles> nozzlesInfomation)
+    {
+        var objNozzle = nozzlesInfomation;
+        List<Nozzles> lstNozzles = new List<Nozzles>();
+
+        Nozzles _nozzles = (new Nozzles
+        {
+            ncount = objNozzle[0].NozzleQuantity,
+            nozType = (Nozzles.NozzleTypes)objNozzle[0].NozzleType,
+            dia = objNozzle[0].NozzleDiameterInInch
+        });
+
+        lstNozzles.Add(_nozzles);
+        return lstNozzles;
     }
 }
