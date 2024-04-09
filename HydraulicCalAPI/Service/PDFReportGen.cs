@@ -267,7 +267,7 @@ namespace HydraulicCalAPI.Service
             {
                 annulusLength += anulsitem.Length;
             }
-            foreach (var bhaTitem in objChartService.)
+            foreach (var bhaTitem in objChartService.HydraulicOutputBHAList)
             {
                 bhatoolLength += bhaTitem.LengthBHA;
             }
