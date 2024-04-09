@@ -29,6 +29,7 @@ namespace HydraulicCalAPI.Service
         public float Y { get; set; }
         public string LineClr { get; set; }
     }
+
     public class PieData
     {
         public string Label { get; set; }
@@ -99,7 +100,9 @@ namespace HydraulicCalAPI.Service
 
     public class PDFReportGen
     {
-        Color accuColor,rptgreen,lgtGrey, bhatblgreen;
+        Color accuColor, rptgreen, lgtGrey, bhatblgreen;
+        DateTime currentDate = DateTime.UtcNow.Date;
+
 
         Dictionary<string, string> pdfAuthor;
         Dictionary<string, string> pdfLstItemData;
@@ -116,18 +119,16 @@ namespace HydraulicCalAPI.Service
             string _tabheader = string.Empty;
             accuColor = new DeviceRgb(165, 42, 42);
             rptgreen = new DeviceRgb(0, 128, 0);
-            
-            lgtGrey = new DeviceRgb(217,217,217);
-            
+            lgtGrey = new DeviceRgb(217, 217, 217);
 
             // Construct the path to the image relative to the base directory
             string imagePath = System.IO.Path.Combine(baseDir, "Images", "wft.jpg");
-                       
+
             // Add image
             Image img = new Image(ImageDataFactory
                .Create(imagePath))
                .SetTextAlignment(TextAlignment.LEFT).SetWidth(80).SetHeight(30).SetMarginBottom(3);
-           
+
             // New line
             Paragraph newline = new Paragraph(new Text("\n"));
             Paragraph legend = new Paragraph();
@@ -150,7 +151,7 @@ namespace HydraulicCalAPI.Service
             pdfAuthor.Add("Job Number : ", objInputData.JobNumber != null ? objInputData.JobNumber.ToString() : "");
             pdfAuthor.Add("Well Name and Number : ", objInputData.WellNameNumber != null ? objInputData.WellNameNumber.ToString() : "");
             pdfAuthor.Add("Prepared By : ", objInputData.PreparedBy != null ? objInputData.JobNumber.ToString() : "");
-            pdfAuthor.Add("Prepared On : ", objInputData.PreparedOn != null ? objInputData.PreparedOn.ToString() : "");
+            pdfAuthor.Add("Prepared On : ", GetFormattedDate(objInputData.PreparedOn.ToString()));
             Table tableAuthor = getTableContent(pdfAuthor);
 
             Paragraph comment = new Paragraph("Comment:").SetTextAlignment(TextAlignment.LEFT).SetPadding(5).SetFontSize(11).SetBold().SetHeight(100).SetBorder(new SolidBorder(1));
@@ -170,11 +171,11 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Clear();
 
             _tabheader = "Job Information";
-            pdfHederInfoData.Add("Job Start Date", objInputData.JobStartDate != null ? objInputData.JobStartDate.ToString() : "");
+            pdfHederInfoData.Add("Job Start Date", objInputData.JobStartDate != null ? GetFormattedDate(objInputData.JobStartDate.ToString()) : currentDate.ToString("dd/MM/yyyy"));
             pdfHederInfoData.Add("Well Location", objInputData.WellLocation != null ? objInputData.WellLocation.ToString() : "");
             pdfHederInfoData.Add("Customer", objInputData.Customer != null ? objInputData.Customer.ToString() : "");
-            pdfHederInfoData.Add("Well Depth (MD)", objInputData.WellDepth > 0.00 ? (objInputData.WellDepth.ToString() + " | ft") : "0.00");
-            pdfHederInfoData.Add("Job End Date", objInputData.JobEndDate != null ? objInputData.JobEndDate.ToString() : "");
+            pdfHederInfoData.Add("Well Depth (MD)", objInputData.WellDepth > 0.00 ? objInputData.WellDepth.ToString() : "0.00");
+            pdfHederInfoData.Add("Job End Date", objInputData.JobEndDate != null ? GetFormattedDate(objInputData.JobEndDate.ToString()) : currentDate.ToString("dd/MM/yyyy"));
             pdfHederInfoData.Add("JDE Delivery Ticket No", objInputData.JDEDeliveryTicketNo != null ? objInputData.JDEDeliveryTicketNo.ToString() : "");
             Table tblJobInformation = getHeaderInfoTable(pdfHederInfoData, _tabheader);
 
@@ -232,10 +233,10 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Status", objInputData.Status != null ? objInputData.Status.ToString() : "");
             pdfHederInfoData.Add("Input By", objInputData.InputBy != null ? objInputData.InputBy.ToString() : "");
             pdfHederInfoData.Add("Prepared By", objInputData.StatusPreparedBy != null ? objInputData.StatusPreparedBy.ToString() : "");
-            pdfHederInfoData.Add("Accuview Input Date", objInputData.WellDepth > 0.00 ? (objInputData.WellDepth.ToString() + " | ft") : "0.00");
-            pdfHederInfoData.Add("Submitted Date", objInputData.JobEndDate != null ? objInputData.JobEndDate.ToString() : "");
-            pdfHederInfoData.Add("Approved By", objInputData.JDEDeliveryTicketNo != null ? objInputData.JDEDeliveryTicketNo.ToString() : "");
-            pdfHederInfoData.Add("Approved Date", objInputData.JDEDeliveryTicketNo != null ? objInputData.JDEDeliveryTicketNo.ToString() : "");
+            pdfHederInfoData.Add("Accuview Input Date", objInputData.AccuviewInputDate != null ? GetFormattedDate(objInputData.AccuviewInputDate.ToString()) : currentDate.ToString("dd/MM/yyyy"));
+            pdfHederInfoData.Add("Submitted Date", objInputData.SubmittedDate != null ? GetFormattedDate(objInputData.SubmittedDate.ToString()) : currentDate.ToString("dd/MM/yyyy"));
+            pdfHederInfoData.Add("Approved By", objInputData.ApprovedBy != null ? objInputData.ApprovedBy.ToString() : "");
+            pdfHederInfoData.Add("Approved Date", objInputData.ApprovedDate != null ? GetFormattedDate(objInputData.ApprovedDate.ToString()) : currentDate.ToString("dd/MM/yyyy"));
             Table tblApproval = getHeaderInfoTable(pdfHederInfoData, _tabheader);
 
             pdfHederInfoData.Clear();
@@ -273,7 +274,7 @@ namespace HydraulicCalAPI.Service
             }
 
             pdfCasingData.Add(annulusLength > 0 ? (Math.Round(annulusLength, 2).ToString()) : "0.00");
-            pdfCasingData.Add(bhatoolLength > 0 ? (Math.Round(bhatoolLength,2).ToString()) : "0.00");
+            pdfCasingData.Add(bhatoolLength > 0 ? (Math.Round(bhatoolLength, 2).ToString()) : "0.00");
             pdfCasingData.Add(objChartService.ToolDepth > 0 ? (Math.Round(objChartService.ToolDepth, 2).ToString()) : "0.00");
 
             _tabheader = "Depth Analysis";
@@ -307,7 +308,7 @@ namespace HydraulicCalAPI.Service
             #endregion
 
             #region Table Of Content
-            Table tblToc = new Table(2, false).SetBorder(Border.NO_BORDER);
+            Table tblToc = new Table(3, false).SetBorder(Border.NO_BORDER);
             tblToc = getTableOfcontent(strCasingLinerTubing);
             #endregion
 
@@ -403,7 +404,7 @@ namespace HydraulicCalAPI.Service
                 pdfHederInfoData.Add("Solids", fluidlstitem.Solids > 0.00 ? fluidlstitem.Solids.ToString() : "");
                 pdfHederInfoData.Add("Drilling Fluid Type", fluidlstitem.DrillingFluidType != null ? fluidlstitem.DrillingFluidType.ToString() : "");
                 pdfHederInfoData.Add("Drilling Fluid Weight", objHydCalSrvs.fluidInput.DensityInPoundPerGallon > 0.00 ? objHydCalSrvs.fluidInput.DensityInPoundPerGallon.ToString() : "");
-                pdfHederInfoData.Add("Buoyancy Factor", fluidlstitem.BuoyancyFactor > 0.00 ? fluidlstitem.BuoyancyFactor.ToString(): "");
+                pdfHederInfoData.Add("Buoyancy Factor", fluidlstitem.BuoyancyFactor > 0.00 ? fluidlstitem.BuoyancyFactor.ToString() : "");
                 pdfHederInfoData.Add("Plastic Viscosity", objHydCalSrvs.fluidInput.PlasticViscosityInCentiPoise > 0.00 ? objHydCalSrvs.fluidInput.PlasticViscosityInCentiPoise.ToString() : "");
                 pdfHederInfoData.Add("Yield Point", objHydCalSrvs.fluidInput.YieldPointInPoundPerFeetSquare > 0.00 ? objHydCalSrvs.fluidInput.YieldPointInPoundPerFeetSquare.ToString() : "");
                 pdfHederInfoData.Add("Cutting Average Size", objHydCalSrvs.cuttingsInput.AverageCuttingSizeInInch > 0 ? objHydCalSrvs.cuttingsInput.AverageCuttingSizeInInch.ToString() : "");
@@ -615,12 +616,14 @@ namespace HydraulicCalAPI.Service
             for (int i = 0; i < dicBhaChart.Count; i++)
             {
                 hyprodatapoints = new List<DataPoints>();
-                foreach (WFT.UI.Common.Charts.XYValueModelForLineData<double> hyproitem in dicBhaChart["HydraproLineSeries" + i])
+                string dictKey = "HydraproLineSeries" + i.ToString();
+                foreach (WFT.UI.Common.Charts.XYValueModelForLineData<double> hyproitem in dicBhaChart[dictKey])
                 {
                     hyprodatapoints.Add(new DataPoints
                     {
                         X = (float)hyproitem.PrimaryAxisValue,
-                        Y = (float)hyproitem.SecondaryAxisValue
+                        Y = (float)hyproitem.SecondaryAxisValue,
+                        LineClr = "Blue"
                     });
                 }
                 hydraprograph = DrawHydraulicToolsGraph(hyprodatapoints, objChartService.HydraulicOutputBHAList[i]);
@@ -647,7 +650,7 @@ namespace HydraulicCalAPI.Service
                             _stdpipeHeader, imgStdPvsFlwRate, xscale, yscale,
                             PieChartTable, _chartheader, imgPie, legend, tblHeaderAnnulusOutput, dicLstAnnulusOutputData,
                             lstTblBHAheader, lstTblBhaSide, graph, document, pdf);
-                                              
+
                         AddFooter(pdf, document, objInputData);
                         pdf.AddEventHandler(PdfDocumentEvent.END_PAGE, new PageEventHandler());
                         document.Close();
@@ -669,10 +672,10 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Project Name", objInputData.ProjectName != null ? objInputData.ProjectName.ToString() : "");
             pdfHederInfoData.Add("Customer Order Number", objInputData.CustomerOrderNumber != null ? objInputData.CustomerOrderNumber.ToString() : "");
             pdfHederInfoData.Add("Quote Number", objInputData.QuoteNumber != null ? objInputData.QuoteNumber.ToString() : "");
-            pdfHederInfoData.Add("Rig Elevation", objInputData.RigElevation != null ? (objInputData.RigElevation.ToString() + " | ft") : "");
+            pdfHederInfoData.Add("Rig Elevation", objInputData.RigElevation != null ? objInputData.RigElevation.ToString() : "");
             pdfHederInfoData.Add("Reservoir Type", objInputData.ReservoirType != null ? objInputData.ReservoirType.ToString() : "");
-            pdfHederInfoData.Add("Water Depth", objInputData.WaterDepth != null ? (objInputData.WaterDepth.ToString() + " | ft") : "");
-            pdfHederInfoData.Add("Well Depth (TVD)", objInputData.WellDepth > 0.00 ? (objInputData.WellDepth.ToString() + " | ft") : "");
+            pdfHederInfoData.Add("Water Depth", objInputData.WaterDepth != null ? objInputData.WaterDepth.ToString() : "");
+            pdfHederInfoData.Add("Well Depth (TVD)", objInputData.WellDepth > 0.00 ? objInputData.WellDepth.ToString() : "");
             pdfHederInfoData.Add("Rig Type", objInputData.RigType != null ? objInputData.RigType.ToString() : "");
             pdfHederInfoData.Add("Well Classification", objInputData.WellClassification != null ? objInputData.WellClassification.ToString() : "");
             pdfHederInfoData.Add("Work String", objInputData.WorkString != null ? objInputData.WorkString.ToString() : "");
@@ -680,23 +683,10 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Customer Type", objInputData.CustomerType != null ? objInputData.CustomerType.ToString() : "");
             pdfHederInfoData.Add("H2S Present", objInputData.H2SPresent != null ? objInputData.H2SPresent.ToString() : "");
             pdfHederInfoData.Add("CO2 Present", objInputData.CO2Present != null ? objInputData.CO2Present.ToString() : "0.00");
-            pdfHederInfoData.Add("Total mileage to/from location", objInputData.TotalMileageTFLocation != null ? (objInputData.TotalMileageTFLocation.ToString() + " | miles") : "");
-            pdfHederInfoData.Add("Total travel time to/from location", objInputData.TotalTravelTimeTFLlocation != null ? (objInputData.TotalTravelTimeTFLlocation.ToString() + " | hours") : "");
-            pdfHederInfoData.Add("Total off-duty hours at location", objInputData.TotalOffDutyHrsAtLocation != null ? (objInputData.TotalOffDutyHrsAtLocation.ToString() + " | hours") : "");
+            pdfHederInfoData.Add("Total mileage to/from location", objInputData.TotalMileageTFLocation != null ? objInputData.TotalMileageTFLocation.ToString() : "");
+            pdfHederInfoData.Add("Total travel time to/from location", objInputData.TotalTravelTimeTFLlocation != null ? objInputData.TotalTravelTimeTFLlocation.ToString() : "");
+            pdfHederInfoData.Add("Total off-duty hours at location", objInputData.TotalOffDutyHrsAtLocation != null ? objInputData.TotalOffDutyHrsAtLocation.ToString() : "");
             tblGenInfo = getHeaderInfoTable(pdfHederInfoData, _tabheader);
-        }
-
-        public byte[] GetPdfBytesFromFile(string filePath)
-        {
-            // Ensure the file exists to prevent FileNotFoundException
-            if (!System.IO.File.Exists(filePath))
-            {
-                throw new FileNotFoundException("The specified file was not found.", filePath);
-            }
-
-            // Read the file into a byte array
-            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
-            return fileBytes;
         }
         private static void NewMethod(Image img, LineSeparator ls, Paragraph newline,
             Paragraph header, Table tableAuthor, Paragraph comment, Table tblToc, Paragraph _headerinfo,
@@ -900,33 +890,44 @@ namespace HydraulicCalAPI.Service
         }
 
         #region Methods
+        public string GetFormattedDate(string objDate)
+        {
+            DateTime dateObject;
+            string formattedDate = "";
+            if (objDate != null)
+            {
+                dateObject = DateTime.ParseExact(objDate, "yyyy/MM/dd", null);
+                formattedDate = dateObject.ToString("MM/dd/yyyy");
+            }
+            return formattedDate;
+        }
         public Table getTableOfcontent(string strSubProductLine)
         {
             Table _tbltoc = new Table(3, true);
 
             Cell tocHeader = new Cell(1, 3).Add(new Paragraph("Table Of Contents")).SetFontSize(18).SetBold().SetBorder(Border.NO_BORDER);
 
-            Cell tocLine1col1r1 = new Cell(1, 1).Add(new Paragraph("1. ")).SetWidth(40).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine1col2r1 = new Cell(1, 1).Add(new Paragraph("Header Information")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine1col3r1 = new Cell(1, 1).Add(new Paragraph("3")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
+            Cell tocLine1col1r1 = new Cell(1, 1).Add(new Paragraph("1. ")).SetWidth(5).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine1col2r1 = new Cell(1, 1).Add(new Paragraph("Header Information")).SetWidth(90).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine1col3r1 = new Cell(1, 1).Add(new Paragraph("3")).SetWidth(10).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
 
-            Cell tocLine2col1r2 = new Cell(1, 1).Add(new Paragraph("2. ")).SetWidth(40).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine2col1r2 = new Cell(1, 1).Add(new Paragraph("2. ")).SetWidth(5).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine2col2r2 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Casing Liner Tubing")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine2col3r2 = new Cell(1, 1).Add(new Paragraph("4")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
 
-            Cell tocLine3col1r3 = new Cell(1, 1).Add(new Paragraph("3. ")).SetWidth(40).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine3col1r3 = new Cell(1, 1).Add(new Paragraph("3. ")).SetWidth(5).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine3col2r3 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - BHA")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine3col3r3 = new Cell(1, 1).Add(new Paragraph("5")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
 
-            Cell tocLine4col1r4 = new Cell(1, 1).Add(new Paragraph("4. ")).SetWidth(40).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine4col1r4 = new Cell(1, 1).Add(new Paragraph("4. ")).SetWidth(5).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine4col2r4 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Surface Equipment & Fluid Information")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine4col3r4 = new Cell(1, 1).Add(new Paragraph("6")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
 
-            Cell tocLine5col1r5 = new Cell(1, 1).Add(new Paragraph("5. ")).SetWidth(40).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine5col1r5 = new Cell(1, 1).Add(new Paragraph("5. ")).SetWidth(5).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine5col2r5 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Standpipe vs Flowrate Graph")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine5col3r5 = new Cell(1, 1).Add(new Paragraph("7")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
 
-            Cell tocLine6col1r6 = new Cell(1, 1).Add(new Paragraph("6. ")).SetWidth(40).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
+            Cell tocLine6col1r6 = new Cell(1, 1).Add(new Paragraph("6. ")).SetWidth(5).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine6col2r6 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Hydraulic Output")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
             Cell tocLine6col3r6 = new Cell(1, 1).Add(new Paragraph("8")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
 
@@ -1047,13 +1048,13 @@ namespace HydraulicCalAPI.Service
 
             pHeader.AddCell(new Paragraph("Flow Rate : " + toolflowrate + " (gal/min)"));
             pHeader.AddCell(new Paragraph("Tool Depth : " + tooldepth + " (ft)"));
-            pHeader.AddCell(new Paragraph("Standpipe Pressure : " + Math.Round(toolPressureDrop,2) + " (psi)"));
+            pHeader.AddCell(new Paragraph("Standpipe Pressure : " + Math.Round(toolPressureDrop, 2) + " (psi)"));
 
             return pHeader.SetAutoLayout();
         }
         public Table getBHAToolLine(HydraulicBHAToolOutPutData objData)
         {
-           
+
             string dnArrowPath = System.IO.Path.Combine(baseDir, "Images", "down-arrow.png");
             bhatblgreen = new DeviceRgb(180, 241, 198);
             // Add image
@@ -1085,7 +1086,7 @@ namespace HydraulicCalAPI.Service
 
             if (objData.AvgVelocityColor.ToString().ToUpper() == "RED")
             {
-                _blankcell = new Cell(1,1).Add(imgDnArrow).SetWidth(10).SetBackgroundColor(ColorConstants.RED);
+                _blankcell = new Cell(1, 1).Add(imgDnArrow).SetWidth(10).SetBackgroundColor(ColorConstants.RED);
             }
             else if (objData.AvgVelocityColor.ToString().ToUpper() == "YELLOW")
             {
@@ -1095,7 +1096,7 @@ namespace HydraulicCalAPI.Service
             {
                 _blankcell = new Cell(1, 1).Add(imgDnArrow).SetWidth(10).SetBackgroundColor(bhatblgreen);
             }
-            
+
             Cell celWks = new Cell(1, 1).Add(new Paragraph(objData.WorkString)).SetTextAlignment(TextAlignment.CENTER);
             Cell celLen = new Cell(1, 1).Add(new Paragraph(objData.Length.ToString())).SetTextAlignment(TextAlignment.LEFT);
             Cell celInFlow = new Cell(1, 1).Add(new Paragraph(objData.InputFlowRate.ToString())).SetTextAlignment(TextAlignment.LEFT);
@@ -1278,8 +1279,8 @@ namespace HydraulicCalAPI.Service
 
             Table _tblannulusdata = new Table(12, false)
                 .SetFontSize(7).SetWidth(UnitValue.CreatePercentValue(100));
-            Cell _blankcell,_blankcell1,_blankcell2;
-           
+            Cell _blankcell, _blankcell1, _blankcell2;
+
             if (objHydrAnnulus.AnnulusColor.ToString().ToUpper() == "RED")
             {
                 _blankcell = new Cell(1, 1).SetBackgroundColor(ColorConstants.RED).Add(imgUpArrow).SetWidth(10);
@@ -1461,6 +1462,24 @@ namespace HydraulicCalAPI.Service
         }
         public byte[] DrawHydraulicToolsGraph(List<DataPoints> hyprobhadataPoints, ViewModel.HydraulicOutputBHAViewModel service)
         {
+            var xfixPoint = 0;
+            var yfixPoint = 0;
+            string annoteMark = "+";
+            var datatodraw = service.BHAchart["HydraproLineSeries"];
+            var xlimit = datatodraw[datatodraw.Count - 1].PrimaryAxisValue;
+            var ylimit = datatodraw[datatodraw.Count - 1].SecondaryAxisValue;
+
+            WFT.UI.Common.Charts.ChartViewModel<double> annote = new WFT.UI.Common.Charts.ChartViewModel<double>();
+            annote = service._standpipeVsFlowRateChart;
+
+            var annoteKey = annote.AnnotationValues["OperatingPoint"];
+            if (annoteKey.Count > 0)
+            {
+                xfixPoint = Convert.ToInt32(annoteKey[0].PrimaryAxisValue);
+                yfixPoint = Convert.ToInt32(annoteKey[0].SecondaryAxisValue);
+                annoteMark = annoteKey[0].AnnotationText;
+            }
+
             using (var surfcae = SKSurface.Create(new SKImageInfo(200, 200)))
             {
                 var canvas = surfcae.Canvas;
@@ -1478,11 +1497,6 @@ namespace HydraulicCalAPI.Service
 
                     // Default Point for x-axis and y-axis
                     canvas.DrawText("0", new SKPoint(margin, height + 15 - margin), paint);
-
-                    var xlimit = service.InputFlowRate;
-                    var ylimit = service.BHAPressureDrop;
-                    var xfixPoint = service.InputFlowRate;
-                    var yfixPoint = service.BHAPressureDrop;
 
                     float xpoint = margin;
                     for (int i = 1; i <= xlimit; i++)
@@ -1513,13 +1527,13 @@ namespace HydraulicCalAPI.Service
                         canvas.DrawLine(x - 5, ypoint, x + 5, ypoint, paint);
                         canvas.DrawText(yScale, new SKPoint(0, ypoint), paint);
                     }
-                    canvas.DrawText("X", (float)xfixPoint, (float)yfixPoint, paint);
+
                 }
 
-                float minX = (float)service.InputFlowRate;
-                float maxX = (float)service._maxFlowRate;
-                float minY = (float)service.BHAPressureDrop;
-                float maxY = (float)service._maxPressure;
+                float minX = 0;
+                float maxX = (float)xlimit;
+                float minY = 0;
+                float maxY = (float)ylimit;
 
                 foreach (var point in hyprobhadataPoints)
                 {
@@ -1541,6 +1555,7 @@ namespace HydraulicCalAPI.Service
                         float y2 = height - margin - (hyprobhadataPoints[i + 1].Y - minY) * scaleY;
                         canvas.DrawLine(x1, y1, x2, y2, paint);
                     }
+                    canvas.DrawText(annoteMark, (float)xfixPoint, (float)yfixPoint, paint);
                 }
 
                 // Convert bitmap to byte array
@@ -1580,47 +1595,84 @@ namespace HydraulicCalAPI.Service
         public Table getHeaderInfoTable(Dictionary<string, string> objSegment, string tabHeader)
         {
             string tabheadertext = tabHeader;
-            string headertype = tabheadertext.Substring(0, 8).ToUpper();
-            Cell cellChoiceKey = new Cell();
-            Cell cellChoiceVal = new Cell();
-
-            Table _tableSeg = new Table(4, true);
+            
+            Table _tableSeg = new Table(6, true);
             _tableSeg.SetFontSize(7);
-            Cell sn = new Cell(1, 4).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(tabheadertext).SetBackgroundColor(lgtGrey).SetBold());
+            Cell sn = new Cell(1, 6).Add(new Paragraph(tabheadertext)).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(lgtGrey).SetBold();
             _tableSeg.AddHeaderCell(sn);
-
-            switch (headertype)
-            {
-                case "APPROVAL":
-                    {
-                        cellChoiceKey = new Cell(2, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Status").SetBold());
-                        cellChoiceVal = new Cell(2, 4).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(objSegment["Status"].ToString()));
-                        _tableSeg.AddCell(cellChoiceKey);
-                        _tableSeg.AddCell(cellChoiceVal);
-                        break;
-                    }
-                case "ORIGINAT":
-                    {
-                        cellChoiceKey = new Cell(2, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("WFRD Location").SetBold());
-                        cellChoiceVal = new Cell(2, 4).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(objSegment["WFRD Location"].ToString()));
-                        _tableSeg.AddCell(cellChoiceKey);
-                        _tableSeg.AddCell(cellChoiceVal);
-                        break;
-                    }
-                default:
-                    {
-                        break;
-                    }
-            }
 
             foreach (var item in objSegment)
             {
-                if (item.Key.ToUpper() == "STATUS") { }
-                else if (item.Key.ToUpper() == "WFRD LOCATION") { }
+                Cell celhinfoValue, celhinfoUom;
+
+                string itemKey = string.IsNullOrEmpty(item.Key) ? "" : item.Key.ToString();
+                string itmvalue = string.IsNullOrEmpty(item.Value) ? "" : item.Value.ToString();
+
+                Cell celHinfoKey = new Cell(1, 1).Add(new Paragraph(itemKey)).SetBold().SetTextAlignment(TextAlignment.LEFT);
+                _tableSeg.AddCell(celHinfoKey);
+                if (itemKey.ToUpper() == "WELL DEPTH (MD)")
+                {
+                    celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
+                    _tableSeg.AddCell(celhinfoValue);
+                    celhinfoUom = new Cell(1, 1).Add(new Paragraph(" ft "));
+                    _tableSeg.AddCell(celhinfoUom);
+                }
+                else if (itemKey.ToUpper() == "RIG ELEVATION")
+                {
+                    celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
+                    _tableSeg.AddCell(celhinfoValue);
+                    celhinfoUom = new Cell(1, 1).Add(new Paragraph(" ft "));
+                    _tableSeg.AddCell(celhinfoUom);
+                }
+                else if (itemKey.ToUpper() == "WATER DEPTH")
+                {
+                    celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
+                    _tableSeg.AddCell(celhinfoValue);
+                    celhinfoUom = new Cell(1, 1).Add(new Paragraph(" ft "));
+                    _tableSeg.AddCell(celhinfoUom);
+                }
+                else if (itemKey.ToUpper() == "WELL DEPTH (TVD)")
+                {
+                    celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
+                    _tableSeg.AddCell(celhinfoValue);
+                    celhinfoUom = new Cell(1, 1).Add(new Paragraph(" ft "));
+                    _tableSeg.AddCell(celhinfoUom);
+                }
+                else if (itemKey.ToUpper() == "TOTAL MILEAGE TO/FROM LOCATION")
+                {
+                    celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
+                    _tableSeg.AddCell(celhinfoValue);
+                    celhinfoUom = new Cell(1, 1).Add(new Paragraph(" miles "));
+                    _tableSeg.AddCell(celhinfoUom);
+                }
+                else if (itemKey.ToUpper() == "TOTAL TRAVEL TIME TO/FROM LOCATION")
+                {
+                    celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
+                    _tableSeg.AddCell(celhinfoValue);
+                    celhinfoUom = new Cell(1, 1).Add(new Paragraph(" hours "));
+                    _tableSeg.AddCell(celhinfoUom);
+                }
+                else if (itemKey.ToUpper() == "TOTAL OFF-DUTY HOURS AT LOCATION")
+                {
+                    celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
+                    _tableSeg.AddCell(celhinfoValue);
+                    celhinfoUom = new Cell(1, 1).Add(new Paragraph(" hours "));
+                    _tableSeg.AddCell(celhinfoUom);
+                }
+                else if (itemKey.ToUpper() == "STATUS")
+                {
+                    celhinfoValue = new Cell(1, 6).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
+                    _tableSeg.AddCell(celhinfoValue);
+                }
+                else if (itemKey.ToUpper() == "WFRD LOCATION")
+                {
+                    celhinfoValue = new Cell(1, 6).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
+                    _tableSeg.AddCell(celhinfoValue);
+                }
                 else
                 {
-                    _tableSeg.AddCell(new Paragraph(item.Key).SetTextAlignment(TextAlignment.LEFT).SetBold());
-                    _tableSeg.AddCell(new Paragraph(item.Value).SetTextAlignment(TextAlignment.LEFT));
+                    celhinfoValue = new Cell(1, 2).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
+                    _tableSeg.AddCell(celhinfoValue);
                 }
             }
             return _tableSeg.SetAutoLayout();
@@ -1800,11 +1852,10 @@ namespace HydraulicCalAPI.Service
             }
             return tlength;
         }
-
         public Table getSurfaceEquipDataTable(Dictionary<string, string> objSurfEquip, string tabHeader)
         {
             string tabheadertext = tabHeader;
-            
+
             Table _tableSeg = new Table(5, true);
             _tableSeg.SetFontSize(8);
             Cell sn = new Cell(1, 5).Add(new Paragraph(tabheadertext)).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(lgtGrey).SetBold();
@@ -1812,7 +1863,7 @@ namespace HydraulicCalAPI.Service
 
             foreach (var item in objSurfEquip)
             {
-                Cell celsrfEqpKey = new Cell(1,1).Add(new Paragraph(item.Key)).SetBold().SetTextAlignment(TextAlignment.LEFT);
+                Cell celsrfEqpKey = new Cell(1, 1).Add(new Paragraph(item.Key)).SetBold().SetTextAlignment(TextAlignment.LEFT);
                 Cell celsrfEqpValue = new Cell(1, 1).Add(new Paragraph(item.Value)).SetTextAlignment(TextAlignment.LEFT);
                 _tableSeg.AddCell(celsrfEqpKey);
                 _tableSeg.AddCell(celsrfEqpValue);
@@ -1832,7 +1883,7 @@ namespace HydraulicCalAPI.Service
 
             foreach (var item in objSegment)
             {
-                Cell celfldValue,celfldUom;
+                Cell celfldValue, celfldUom;
                 string itmvalue = string.IsNullOrEmpty(item.Value) ? "" : item.Value.ToString();
                 Cell celFldKey = new Cell(1, 1).Add(new Paragraph(item.Key)).SetBold().SetTextAlignment(TextAlignment.LEFT);
                 _tableSurf.AddCell(celFldKey);
@@ -1893,7 +1944,6 @@ namespace HydraulicCalAPI.Service
             }
             return _tableSurf.SetAutoLayout();
         }
-
         public Table getFluidEnvelopeInfo(Dictionary<string, string> objfluidvalues, string fluidenvheader)
         {
             int count = 3;
@@ -1913,7 +1963,7 @@ namespace HydraulicCalAPI.Service
                         {
                             Cell maxflowpressure = new Cell(1, 1).Add(new Paragraph("Maximum Allowable Pressure")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(150);
                             Cell maxflowpr = new Cell(1, 1).Add(new Paragraph(objfluidvalues["MaximumAllowablePressure"])).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
-                            Cell celMfpUom = new Cell(1,1).Add(new Paragraph(" psi ")).SetTextAlignment(TextAlignment.LEFT).SetWidth(50);
+                            Cell celMfpUom = new Cell(1, 1).Add(new Paragraph(" psi ")).SetTextAlignment(TextAlignment.LEFT).SetWidth(50);
                             _tabFluidEnvelope.AddCell(maxflowpressure);
                             _tabFluidEnvelope.AddCell(maxflowpr);
                             _tabFluidEnvelope.AddCell(celMfpUom);
@@ -1948,6 +1998,4 @@ namespace HydraulicCalAPI.Service
 
         #endregion
     }
-
 }
-
