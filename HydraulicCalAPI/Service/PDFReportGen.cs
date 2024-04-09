@@ -150,7 +150,7 @@ namespace HydraulicCalAPI.Service
             pdfAuthor.Add("Customer : ", objInputData.Customer != null ? objInputData.Customer.ToString() : "");
             pdfAuthor.Add("Job Number : ", objInputData.JobNumber != null ? objInputData.JobNumber.ToString() : "");
             pdfAuthor.Add("Well Name and Number : ", objInputData.WellNameNumber != null ? objInputData.WellNameNumber.ToString() : "");
-            pdfAuthor.Add("Prepared By : ", objInputData.PreparedBy != null ? objInputData.JobNumber.ToString() : "");
+            pdfAuthor.Add("Prepared By : ", objInputData.PreparedBy != null ? objInputData.PreparedBy.ToString() : "");
             pdfAuthor.Add("Prepared On : ", GetFormattedDate(objInputData.PreparedOn.ToString()));
             Table tableAuthor = getTableContent(pdfAuthor);
 
@@ -1385,7 +1385,12 @@ namespace HydraulicCalAPI.Service
                     float xpoint = margin;
                     for (int i = 1; i <= xlimit; i++)
                     {
-
+                        int x = i * 100;
+                        int y = (int)(height - margin);
+                        string xScale = Convert.ToString(x);
+                        xpoint += 50;
+                        canvas.DrawLine(xpoint, y - 5, xpoint, y + 5, paint);
+                        canvas.DrawText(xScale, xpoint - 5, (height + 15 - margin), paint);
                     }
                     float ypoint = height + 10 - margin;
                     for (int j = 1; j <= ylimit; j++)
