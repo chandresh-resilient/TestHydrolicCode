@@ -151,7 +151,7 @@ namespace HydraulicCalAPI.Service
             pdfAuthor.Add("Job Number : ", objInputData.JobNumber != null ? objInputData.JobNumber.ToString() : "");
             pdfAuthor.Add("Well Name and Number : ", objInputData.WellNameNumber != null ? objInputData.WellNameNumber.ToString() : "");
             pdfAuthor.Add("Prepared By : ", objInputData.PreparedBy != null ? objInputData.PreparedBy.ToString() : "");
-            pdfAuthor.Add("Prepared On : ", GetFormattedDate(objInputData.PreparedOn.ToString()));
+            pdfAuthor.Add("Prepared On : ", objInputData.PreparedOn != null ? GetFormattedDate(objInputData.PreparedOn.ToString()) : "");
             Table tableAuthor = getTableContent(pdfAuthor);
 
             Paragraph comment = new Paragraph("Comment:").SetTextAlignment(TextAlignment.LEFT).SetPadding(5).SetFontSize(11).SetBold().SetHeight(100).SetBorder(new SolidBorder(1));
@@ -171,11 +171,11 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Clear();
 
             _tabheader = "Job Information";
-            pdfHederInfoData.Add("Job Start Date", objInputData.JobStartDate != null ? GetFormattedDate(objInputData.JobStartDate.ToString()) : currentDate.ToString("dd/MM/yyyy"));
+            pdfHederInfoData.Add("Job Start Date", objInputData.JobStartDate != null ? GetFormattedDate(objInputData.JobStartDate.ToString()) : "");
             pdfHederInfoData.Add("Well Location", objInputData.WellLocation != null ? objInputData.WellLocation.ToString() : "");
             pdfHederInfoData.Add("Customer", objInputData.Customer != null ? objInputData.Customer.ToString() : "");
-            pdfHederInfoData.Add("Well Depth (MD)", objInputData.WellDepth > 0.00 ? objInputData.WellDepth.ToString() : "0.00");
-            pdfHederInfoData.Add("Job End Date", objInputData.JobEndDate != null ? GetFormattedDate(objInputData.JobEndDate.ToString()) : currentDate.ToString("dd/MM/yyyy"));
+            pdfHederInfoData.Add("Well Depth (MD)", objInputData.WellDepth > 0.00 ? objInputData.WellDepth.ToString() : "");
+            pdfHederInfoData.Add("Job End Date", objInputData.JobEndDate != null ? GetFormattedDate(objInputData.JobEndDate.ToString()) : "");
             pdfHederInfoData.Add("JDE Delivery Ticket No", objInputData.JDEDeliveryTicketNo != null ? objInputData.JDEDeliveryTicketNo.ToString() : "");
             Table tblJobInformation = getHeaderInfoTable(pdfHederInfoData, _tabheader);
 
@@ -233,10 +233,10 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Status", objInputData.Status != null ? objInputData.Status.ToString() : "");
             pdfHederInfoData.Add("Input By", objInputData.InputBy != null ? objInputData.InputBy.ToString() : "");
             pdfHederInfoData.Add("Prepared By", objInputData.StatusPreparedBy != null ? objInputData.StatusPreparedBy.ToString() : "");
-            pdfHederInfoData.Add("Accuview Input Date", objInputData.AccuviewInputDate != null ? GetFormattedDate(objInputData.AccuviewInputDate.ToString()) : currentDate.ToString("dd/MM/yyyy"));
-            pdfHederInfoData.Add("Submitted Date", objInputData.SubmittedDate != null ? GetFormattedDate(objInputData.SubmittedDate.ToString()) : currentDate.ToString("dd/MM/yyyy"));
+            pdfHederInfoData.Add("Accuview Input Date", objInputData.AccuviewInputDate != null ? GetFormattedDate(objInputData.AccuviewInputDate.ToString()) : "");
+            pdfHederInfoData.Add("Submitted Date", objInputData.SubmittedDate != null ? GetFormattedDate(objInputData.SubmittedDate.ToString()) : "");
             pdfHederInfoData.Add("Approved By", objInputData.ApprovedBy != null ? objInputData.ApprovedBy.ToString() : "");
-            pdfHederInfoData.Add("Approved Date", objInputData.ApprovedDate != null ? GetFormattedDate(objInputData.ApprovedDate.ToString()) : currentDate.ToString("dd/MM/yyyy"));
+            pdfHederInfoData.Add("Approved Date", objInputData.ApprovedDate != null ? GetFormattedDate(objInputData.ApprovedDate.ToString()) : "");
             Table tblApproval = getHeaderInfoTable(pdfHederInfoData, _tabheader);
 
             pdfHederInfoData.Clear();
@@ -273,9 +273,9 @@ namespace HydraulicCalAPI.Service
                 bhatoolLength += bhaTitem.LengthBHA;
             }
 
-            pdfCasingData.Add(annulusLength > 0 ? (Math.Round(annulusLength, 2).ToString()) : "0.00");
-            pdfCasingData.Add(bhatoolLength > 0 ? (Math.Round(bhatoolLength, 2).ToString()) : "0.00");
-            pdfCasingData.Add(objChartService.ToolDepth > 0 ? (Math.Round(objChartService.ToolDepth, 2).ToString()) : "0.00");
+            pdfCasingData.Add(annulusLength > 0 ? (Math.Round(annulusLength, 2).ToString()) : "");
+            pdfCasingData.Add(bhatoolLength > 0 ? (Math.Round(bhatoolLength, 2).ToString()) : "");
+            pdfCasingData.Add(objChartService.ToolDepth > 0 ? (Math.Round(objChartService.ToolDepth, 2).ToString()) : "");
 
             _tabheader = "Depth Analysis";
             Table tblDepthAnalysis = getDepthAnalysis(pdfCasingData, _tabheader);
@@ -296,11 +296,11 @@ namespace HydraulicCalAPI.Service
                 increment++;
                 dicLstCltData.Add("CLTID" + increment, increment.ToString());
                 dicLstCltData.Add("WellBoreSection" + increment, (cltItem.WellboreSectionName != null ? cltItem.WellboreSectionName.ToString() : ""));
-                dicLstCltData.Add("OutDiameter" + increment, (cltItem.AnnulusODInInch > 0 ? cltItem.AnnulusODInInch.ToString() : "0"));
-                dicLstCltData.Add("InnDiameter" + increment, (cltItem.AnnulusIDInInch > 0 ? cltItem.AnnulusIDInInch.ToString() : "0"));
-                dicLstCltData.Add("WellBoreWeight" + increment, (string.IsNullOrEmpty(cltWeight) ? "0" : cltWeight));
+                dicLstCltData.Add("OutDiameter" + increment, (cltItem.AnnulusODInInch > 0 ? cltItem.AnnulusODInInch.ToString() : ""));
+                dicLstCltData.Add("InnDiameter" + increment, (cltItem.AnnulusIDInInch > 0 ? cltItem.AnnulusIDInInch.ToString() : ""));
+                dicLstCltData.Add("WellBoreWeight" + increment, (string.IsNullOrEmpty(cltWeight) ? "" : cltWeight));
                 dicLstCltData.Add("Grade" + increment, (string.IsNullOrEmpty(cltGrade.ToString()) ? "" : cltGrade));
-                dicLstCltData.Add("WellTop" + increment, (cltItem.AnnulusTopInFeet >= 0 ? cltItem.AnnulusTopInFeet.ToString() : "0"));
+                dicLstCltData.Add("WellTop" + increment, (cltItem.AnnulusTopInFeet >= 0 ? cltItem.AnnulusTopInFeet.ToString() : ""));
                 dicLstCltData.Add("WellBottom" + increment, (cltItem.AnnulusBottomInFeet > 0 ? cltItem.AnnulusBottomInFeet.ToString() : ""));
             }
             Table tblCasingLinerTube = getCasingLinerTubing(dicLstCltData, _tabheader); ;
@@ -327,21 +327,21 @@ namespace HydraulicCalAPI.Service
                             dicLstBhaData.Add("BhaLstID" + increment, increment.ToString());
                             dicLstBhaData.Add("ToolDescription" + increment, bhawrkStrlstitem.SectionName != null ? bhawrkStrlstitem.SectionName.ToString() : "");
                             dicLstBhaData.Add("SerialNumber" + increment, "");
-                            dicLstBhaData.Add("MeasuredOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "0");
-                            dicLstBhaData.Add("InnerDiameter" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "0");
+                            dicLstBhaData.Add("MeasuredOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "");
+                            dicLstBhaData.Add("InnerDiameter" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "");
                             // code to get Workstring Weight and Upper Connection type
                             var wrkStrWeight = objInputData.WorkStringItems.Where(wks => increment.Equals(bhawrkStrlstitem.PositionNumber))
                                                   .Select(wks => wks.wrkWeight);
                             var wrkStrUpConnTyp = objInputData.WorkStringItems.Where(wks => increment.Equals(bhawrkStrlstitem.PositionNumber))
                                                     .Select(wks => wks.wrkUpperConnType);
-                            dicLstBhaData.Add("Weight" + increment, wrkStrWeight != null ? wrkStrWeight.FirstOrDefault() : "0");
-                            dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "0");
-                            dicLstBhaData.Add("UpperConnType" + increment, wrkStrUpConnTyp != null ? wrkStrUpConnTyp.FirstOrDefault() : "N/A");
-                            dicLstBhaData.Add("LowerConnType" + increment, "N/A");
-                            dicLstBhaData.Add("FishNeckOD" + increment, "0.00");
-                            dicLstBhaData.Add("FishNeckLength" + increment, "0");
-                            dicLstBhaData.Add("HydraulicOD" + increment, "0");
-                            dicLstBhaData.Add("HydraulicID" + increment, "0");
+                            dicLstBhaData.Add("Weight" + increment, wrkStrWeight != null ? wrkStrWeight.FirstOrDefault() : "");
+                            dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "");
+                            dicLstBhaData.Add("UpperConnType" + increment, wrkStrUpConnTyp != null ? wrkStrUpConnTyp.FirstOrDefault() : "");
+                            dicLstBhaData.Add("LowerConnType" + increment, "");
+                            dicLstBhaData.Add("FishNeckOD" + increment, "");
+                            dicLstBhaData.Add("FishNeckLength" + increment, "");
+                            dicLstBhaData.Add("HydraulicOD" + increment, "");
+                            dicLstBhaData.Add("HydraulicID" + increment, "");
                             break;
                         }
                     default:
@@ -349,8 +349,8 @@ namespace HydraulicCalAPI.Service
                             dicLstBhaData.Add("BhaLstID" + increment, increment.ToString());
                             dicLstBhaData.Add("ToolDescription" + increment, bhawrkStrlstitem.toolDescription != null ? bhawrkStrlstitem.toolDescription.ToString() : "");
                             dicLstBhaData.Add("SerialNumber" + increment, bhawrkStrlstitem.PositionNumber > 0 ? bhawrkStrlstitem.PositionNumber.ToString() : "");
-                            dicLstBhaData.Add("MeasuredOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "0");
-                            dicLstBhaData.Add("InnerDiameter" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "0");
+                            dicLstBhaData.Add("MeasuredOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "");
+                            dicLstBhaData.Add("InnerDiameter" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "");
                             // code to get BHA Weight and Upper Connection type
                             var bhatoolWeight = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
                                                 .Select(bt => bt.Weight);
@@ -362,14 +362,14 @@ namespace HydraulicCalAPI.Service
                                                                     .Select(bt => bt.FishNeckOD);
                             var bhatoolFishNeckLen = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
                                                                      .Select(bt => bt.FishNeckLength);
-                            dicLstBhaData.Add("Weight" + increment, bhatoolWeight != null ? bhatoolWeight.FirstOrDefault() : "0");
-                            dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "0");
-                            dicLstBhaData.Add("UpperConnType" + increment, bhatoolUpConnTyp != null ? bhatoolUpConnTyp.FirstOrDefault() : "N/A");
-                            dicLstBhaData.Add("LowerConnType" + increment, bhatoolLowConntyp != null ? bhatoolLowConntyp.FirstOrDefault() : "N/A");
+                            dicLstBhaData.Add("Weight" + increment, bhatoolWeight != null ? bhatoolWeight.FirstOrDefault() : "");
+                            dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "");
+                            dicLstBhaData.Add("UpperConnType" + increment, bhatoolUpConnTyp != null ? bhatoolUpConnTyp.FirstOrDefault() : "");
+                            dicLstBhaData.Add("LowerConnType" + increment, bhatoolLowConntyp != null ? bhatoolLowConntyp.FirstOrDefault() : "");
                             dicLstBhaData.Add("FishNeckOD" + increment, bhatoolFishNeckOD != null ? bhatoolFishNeckOD.FirstOrDefault() : "");
-                            dicLstBhaData.Add("FishNeckLength" + increment, bhatoolFishNeckLen != null ? bhatoolFishNeckLen.FirstOrDefault() : "0");
-                            dicLstBhaData.Add("HydraulicOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "0");
-                            dicLstBhaData.Add("HydraulicID" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "0");
+                            dicLstBhaData.Add("FishNeckLength" + increment, bhatoolFishNeckLen != null ? bhatoolFishNeckLen.FirstOrDefault() : "");
+                            dicLstBhaData.Add("HydraulicOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "");
+                            dicLstBhaData.Add("HydraulicID" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "");
                             break;
                         }
                 }
@@ -385,14 +385,14 @@ namespace HydraulicCalAPI.Service
             string _surfaceEquipmentData = objHydCalSrvs.surfaceEquipmentInput.CaseType.ToString();
             double _totLength = getSurfaceEquipmentTotalLength(_surfaceEquipmentData.ToString());
             pdfHederInfoData.Add("Surface Equipment", _surfaceEquipmentData != null ? _surfaceEquipmentData.ToString() : "");
-            pdfHederInfoData.Add("Total Length", _totLength > 0.00 ? _totLength.ToString() : "0.00");
+            pdfHederInfoData.Add("Total Length", _totLength > 0.00 ? _totLength.ToString() : "");
             Table tblSurfaceEquipment = getSurfaceEquipDataTable(pdfHederInfoData, _tabheader);
             pdfHederInfoData.Clear();
 
             _tabheader = "Fluid Envelope";
             pdfLstItemData = new Dictionary<string, string>();
-            pdfLstItemData.Add("MaximumAllowablePressure", objHydCalSrvs.maxflowpressure > 0 ? objHydCalSrvs.maxflowpressure.ToString() : "0.00");
-            pdfLstItemData.Add("MaximumAllowableFlowrate", objHydCalSrvs.maxflowrate > 0 ? objHydCalSrvs.maxflowrate.ToString() : "0.00");
+            pdfLstItemData.Add("MaximumAllowablePressure", objHydCalSrvs.maxflowpressure > 0 ? objHydCalSrvs.maxflowpressure.ToString() : "");
+            pdfLstItemData.Add("MaximumAllowableFlowrate", objHydCalSrvs.maxflowrate > 0 ? objHydCalSrvs.maxflowrate.ToString() : "");
             pdfLstItemData.Add("Comments", objInputData.Comments != null ? objInputData.Comments.ToString() : "");
             Table tblFluidEnvelope = getFluidEnvelopeInfo(pdfLstItemData, _tabheader);
 
@@ -655,13 +655,10 @@ namespace HydraulicCalAPI.Service
                         pdf.AddEventHandler(PdfDocumentEvent.END_PAGE, new PageEventHandler());
                         document.Close();
                     }
-
                     // After closing the document, the MemoryStream contains the PDF
                     return memoryStream.ToArray();
                 }
             }
-
-
             #endregion
         }
 
@@ -844,8 +841,7 @@ namespace HydraulicCalAPI.Service
             document.Add(PieChartTable);
             PieChartTable.Flush();
             PieChartTable.Complete();
-            document.Add(newline);
-
+          
             document.Add(_chartheader);
             document.Add(imgPie);
             document.Add(tblHeaderAnnulusOutput);
@@ -853,7 +849,7 @@ namespace HydraulicCalAPI.Service
             {
                 document.Add(dicLstAnnulusOutputData[i]);
             }
-
+            document.Add(newline);
             document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
             #endregion
 
@@ -1167,19 +1163,18 @@ namespace HydraulicCalAPI.Service
         }
         public byte[] GeneratePieChart(Dictionary<string, string> objPrsDrop, List<PieData> pieData)
         {
-            float width = 250;
-            float height = 250;
+            float width = 200;
+            float height = 200;
             float margin = 15;
-            using (var surfcae = SKSurface.Create(new SKImageInfo(400, 300)))
+            using (var surfcae = SKSurface.Create(new SKImageInfo(350, 250)))
             {
                 var canvas = surfcae.Canvas;
                 canvas.Clear(SKColors.White);
                 float centerX = width / 2f;
                 float centerY = height / 2f;
                 float radius = Math.Min(width, height) * 0.8f;
-
+                float labelPercentage = 0;
                 float totalValue = 0;
-
                 foreach (var itemval in objPrsDrop.Keys)
                 {
                     if (itemval.Substring(0, 5) == "Value")
@@ -1194,6 +1189,23 @@ namespace HydraulicCalAPI.Service
                 float sweepAngle = 0;
                 foreach (var lstitem in objPrsDrop.Keys)
                 {
+                    float legendX = 400 - margin - 200;
+                    float legendY = margin;
+                    float legendItemHeight = 8;
+                    foreach (var data in pieData)
+                    {
+                        labelPercentage = (float)Math.Round((data.Value / totalValue) * 100);
+                        using (var paint = new SKPaint())
+                        {
+                            string colourName = data.Color;
+                            string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
+                            paint.Color = SKColor.Parse(hexString);
+                            canvas.DrawRect(legendX, legendY, legendItemHeight, legendItemHeight, paint);
+                        }
+                        canvas.DrawText($"{data.Label}", legendX + legendItemHeight + 5, legendY + 8, new SKPaint());
+                        legendY += legendItemHeight + 5;
+                    }
+
                     if (lstitem.Substring(0, 5) == "Value")
                     {
                         string fltVal = !string.IsNullOrEmpty(objPrsDrop[lstitem]) ? objPrsDrop[lstitem].ToString() : "0";
@@ -1205,34 +1217,14 @@ namespace HydraulicCalAPI.Service
                         using (var paint = new SKPaint())
                         {
                             string colourName = objPrsDrop[lstitem].ToString();
-
                             string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
-
+                           
                             paint.Color = SKColor.Parse(hexString);
-                            canvas.DrawArc(new SKRect(50, 50, 200, 200), startAngle, sweepAngle, true, paint);
+                            canvas.DrawArc(new SKRect(50, 50, 150, 150), startAngle, sweepAngle, true, paint);
                             startAngle += sweepAngle;
                         }
                     }
                 }
-
-                float legendX = 400 - margin - 150;
-                float legendY = margin;
-                float legendItemHeight = 8;
-                foreach (var data in pieData)
-                {
-                    using (var paint = new SKPaint())
-                    {
-                        string colourName = data.Color;
-                        string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
-
-                        paint.Color = SKColor.Parse(hexString);
-                        canvas.DrawRect(legendX, legendY, legendItemHeight, legendItemHeight, paint);
-                    }
-                    float labelPercentage = (float)Math.Round((data.Value / totalValue) * 100);
-                    canvas.DrawText($"({labelPercentage:F2} %) => {data.Label}", legendX + legendItemHeight + 5, legendY + 8, new SKPaint());
-                    legendY += legendItemHeight + 5;
-                }
-
                 using (var image = surfcae.Snapshot())
                 using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
                 {
@@ -1359,6 +1351,8 @@ namespace HydraulicCalAPI.Service
         }
         public byte[] DrawLineGraph(ChartAndGraphService objCags, List<DataPoints> dataPoints)
         {
+            float xfixPoint = 0;
+            float yfixPoint = 0;
             using (var surfcae = SKSurface.Create(new SKImageInfo(400, 300)))
             {
                 var canvas = surfcae.Canvas;
@@ -1379,8 +1373,8 @@ namespace HydraulicCalAPI.Service
 
                     var xlimit = objCags.MaxFlowRate;
                     var ylimit = objCags.MaxPressure;
-                    var xfixPoint = objCags.ObservedPressure;
-                    var yfixPoint = objCags.MaxPressure;
+                    xfixPoint = (float)objCags.MaximumFlowRate;
+                    yfixPoint = (float)Math.Round(objCags.TotalPressureDrop);
 
                     float xpoint = margin;
                     for (int i = 1; i <= xlimit; i++)
@@ -1402,7 +1396,6 @@ namespace HydraulicCalAPI.Service
                         canvas.DrawLine(x - 5, ypoint, x + 5, ypoint, paint);
                         canvas.DrawText(yScale, new SKPoint(0, ypoint), paint);
                     }
-
                 }
 
                 float minX = (float)objCags.MinimumFlowRate;
@@ -1422,7 +1415,7 @@ namespace HydraulicCalAPI.Service
                 {
                     float scaleX = graphWidth / (maxX - minX);
                     float scaleY = graphHeight / (maxY - minY);
-                    canvas.DrawText("X", minX, minY, paint);
+                    canvas.DrawText("X", xfixPoint, yfixPoint, paint);
 
                     for (int i = 0; i < dataPoints.Count - 1; i++)
                     {
