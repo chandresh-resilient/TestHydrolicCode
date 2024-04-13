@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HydraulicCalAPI.Controllers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -101,8 +102,9 @@ namespace HydraulicCalAPI.Service
         public string ApprovedBy { get; set; }
         public string ApprovedDate { get; set; }
         public string Comments { get; set; }
-       
+
         public HydraulicCalculationService HydraCalcService { get; set; }
+        public MeasurementParameters MeasurementParameters { get; set; }
         public List<CaseLinerTube> CasingLinerTubeData { get; set; }
         public List<WorkStringData> WorkStringItems { get; set; }
         public List<BhaTopToBottom> BHAToolItemData { get; set; }
