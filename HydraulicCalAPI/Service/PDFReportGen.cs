@@ -29,7 +29,6 @@ namespace HydraulicCalAPI.Service
         public float Y { get; set; }
         public string LineClr { get; set; }
     }
-
     public class PieData
     {
         public string Label { get; set; }
@@ -97,7 +96,6 @@ namespace HydraulicCalAPI.Service
             canvas.Release();
         }
     }
-
     public class PDFReportGen
     {
         Color accuColor, rptgreen, lgtGrey, bhatblgreen;
@@ -171,11 +169,11 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Clear();
 
             _tabheader = "Job Information";
-            pdfHederInfoData.Add("Job Start Date", objInputData.JobStartDate != null ? GetFormattedDate(objInputData.JobStartDate.ToString()) : "");
+            pdfHederInfoData.Add("Job Start Date", (objInputData.JobStartDate == null || objInputData.JobStartDate == "NA") ? "" :GetFormattedDate(objInputData.JobStartDate.ToString()));
             pdfHederInfoData.Add("Well Location", objInputData.WellLocation != null ? objInputData.WellLocation.ToString() : "");
             pdfHederInfoData.Add("Customer", objInputData.Customer != null ? objInputData.Customer.ToString() : "");
             pdfHederInfoData.Add("Well Depth (MD)", objInputData.WellDepth > 0.00 ? objInputData.WellDepth.ToString() : "");
-            pdfHederInfoData.Add("Job End Date", objInputData.JobEndDate != null ? GetFormattedDate(objInputData.JobEndDate.ToString()) : "");
+            pdfHederInfoData.Add("Job End Date", (objInputData.JobEndDate == null || objInputData.JobEndDate == "NA") ? "" : GetFormattedDate(objInputData.JobEndDate.ToString()));
             pdfHederInfoData.Add("JDE Delivery Ticket No", objInputData.JDEDeliveryTicketNo != null ? objInputData.JDEDeliveryTicketNo.ToString() : "");
             Table tblJobInformation = getHeaderInfoTable(pdfHederInfoData, _tabheader);
 
@@ -233,10 +231,10 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Status", objInputData.Status != null ? objInputData.Status.ToString() : "");
             pdfHederInfoData.Add("Input By", objInputData.InputBy != null ? objInputData.InputBy.ToString() : "");
             pdfHederInfoData.Add("Prepared By", objInputData.StatusPreparedBy != null ? objInputData.StatusPreparedBy.ToString() : "");
-            pdfHederInfoData.Add("Accuview Input Date", objInputData.AccuviewInputDate != null ? GetFormattedDate(objInputData.AccuviewInputDate.ToString()) : "");
+            pdfHederInfoData.Add("Accuview Input Date", (objInputData.AccuviewInputDate == null || objInputData.AccuviewInputDate == "NA") ? "" : GetFormattedDate(objInputData.AccuviewInputDate.ToString()));
             pdfHederInfoData.Add("Submitted Date", objInputData.SubmittedDate != null ? GetFormattedDate(objInputData.SubmittedDate.ToString()) : "");
-            pdfHederInfoData.Add("Approved By", objInputData.ApprovedBy != null ? objInputData.ApprovedBy.ToString() : "");
-            pdfHederInfoData.Add("Approved Date", objInputData.ApprovedDate != null ? GetFormattedDate(objInputData.ApprovedDate.ToString()) : "");
+            pdfHederInfoData.Add("Approved By", (objInputData.ApprovedBy == null || objInputData.ApprovedBy == "NA") ? "" : objInputData.ApprovedBy.ToString());
+            pdfHederInfoData.Add("Approved Date", (objInputData.ApprovedDate == null || objInputData.ApprovedDate == "NA") ? "" : GetFormattedDate(objInputData.ApprovedDate.ToString()));
             Table tblApproval = getHeaderInfoTable(pdfHederInfoData, _tabheader);
 
             pdfHederInfoData.Clear();
