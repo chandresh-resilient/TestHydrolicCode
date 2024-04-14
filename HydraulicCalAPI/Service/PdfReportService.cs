@@ -50,6 +50,7 @@ namespace HydraulicCalAPI.Service
         public string JobID { get; set; }
         public string WPTSReportID { get; set; }
         public string AccuViewVersion { get; set; }
+        public string AccuViewDocNo { get; set; }
         public string ProductLine { get; set; }
         public string SubProductLine { get; set; }
         public string JobStartDate { get; set; }
