@@ -100,13 +100,9 @@ namespace HydraulicCalAPI.Service
     {
         Color accuColor, rptgreen, lgtGrey, bhatblgreen;
         DateTime currentDate = DateTime.UtcNow.Date;
-
-
         Dictionary<string, string> pdfAuthor;
         Dictionary<string, string> pdfLstItemData;
-
         Dictionary<string, string> pdfPieChart = new Dictionary<string, string>();
-
         HydraulicCalculationService objHydCalSrvs = new HydraulicCalculationService();
         string strCasingLinerTubing = "New Run";
         string baseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -118,7 +114,7 @@ namespace HydraulicCalAPI.Service
             accuColor = new DeviceRgb(165, 42, 42);
             rptgreen = new DeviceRgb(0, 128, 0);
             lgtGrey = new DeviceRgb(217, 217, 217);
-
+            
             // Construct the path to the image relative to the base directory
             string imagePath = System.IO.Path.Combine(baseDir, "Images", "wft.jpg");
 
@@ -164,7 +160,7 @@ namespace HydraulicCalAPI.Service
             _tabheader = "Segment and Product / Service";
             pdfHederInfoData.Add("Segment", objInputData.ProductLine != null ? objInputData.ProductLine.ToString() : "");
             pdfHederInfoData.Add("Product / Service", objInputData.SubProductLine != null ? objInputData.SubProductLine.ToString() : "");
-            Table tblSegment = getHeaderInfoTable(pdfHederInfoData, _tabheader);
+            Table tblSegment = getHeaderInfoTable(objInputData,pdfHederInfoData, _tabheader);
 
             pdfHederInfoData.Clear();
 
@@ -175,7 +171,7 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Well Depth (MD)", objInputData.WellDepth > 0.00 ? objInputData.WellDepth.ToString() : "");
             pdfHederInfoData.Add("Job End Date", (objInputData.JobEndDate == null || objInputData.JobEndDate == "NA") ? "" : GetFormattedDate(objInputData.JobEndDate.ToString()));
             pdfHederInfoData.Add("JDE Delivery Ticket No", objInputData.JDEDeliveryTicketNo != null ? objInputData.JDEDeliveryTicketNo.ToString() : "");
-            Table tblJobInformation = getHeaderInfoTable(pdfHederInfoData, _tabheader);
+            Table tblJobInformation = getHeaderInfoTable(objInputData,pdfHederInfoData, _tabheader);
 
             pdfHederInfoData.Clear();
 
@@ -190,7 +186,7 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Longitude", objInputData.Longitude != null ? objInputData.Longitude.ToString() : "");
             pdfHederInfoData.Add("Well Country", objInputData.WellCountry != null ? objInputData.WellCountry.ToString() : "");
             pdfHederInfoData.Add("County/Parish", objInputData.CountyParish != null ? objInputData.CountyParish.ToString() : "");
-            Table tblWellInformation = getHeaderInfoTable(pdfHederInfoData, _tabheader);
+            Table tblWellInformation = getHeaderInfoTable(objInputData, pdfHederInfoData, _tabheader);
 
             pdfHederInfoData.Clear();
 
@@ -200,10 +196,10 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Geozone", objInputData.Geozone != null ? objInputData.Geozone.ToString() : "");
             pdfHederInfoData.Add("Region", objInputData.Region != null ? objInputData.Region.ToString() : "");
             pdfHederInfoData.Add("SubRegion", objInputData.SubRegion != null ? objInputData.SubRegion.ToString() : "");
-            Table tblOriginator = getHeaderInfoTable(pdfHederInfoData, _tabheader);
+            Table tblOriginator = getHeaderInfoTable(objInputData,pdfHederInfoData, _tabheader);
 
             pdfHederInfoData.Clear();
-
+            
             _tabheader = "Customer Contacts";
             pdfHederInfoData.Add("Customer Contact (Office)", objInputData.CustomerContactOffice != null ? objInputData.CustomerContactOffice.ToString() : "");
             pdfHederInfoData.Add("Customer Phone No. (Office)", objInputData.CustomerPhoneNoOffice != null ? objInputData.CustomerPhoneNoOffice.ToString() : "");
@@ -211,14 +207,14 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Customer Phone No. (Field)", objInputData.CustomerPhoneNoField != null ? objInputData.CustomerPhoneNoField.ToString() : "");
             pdfHederInfoData.Add("Drilling Engineer", objInputData.DrillingEngineer != null ? objInputData.DrillingEngineer.ToString() : "");
             pdfHederInfoData.Add("Drilling Contractor", objInputData.DrillingContractor != null ? objInputData.DrillingContractor.ToString() : "");
-            Table tblCustomerContacts = getHeaderInfoTable(pdfHederInfoData, _tabheader);
+            Table tblCustomerContacts = getHeaderInfoTable(objInputData, pdfHederInfoData, _tabheader);
 
             pdfHederInfoData.Clear();
 
             _tabheader = "Weatherford Contacts";
             pdfHederInfoData.Add("WFRD Salesman", objInputData.WFRDSalesman != null ? objInputData.WFRDSalesman.ToString() : "");
             pdfHederInfoData.Add("WFRD Field Engineer", objInputData.WFRDFieldEngineer != null ? objInputData.WFRDFieldEngineer.ToString() : "");
-            Table tblWeatherfordContacts = getHeaderInfoTable(pdfHederInfoData, _tabheader);
+            Table tblWeatherfordContacts = getHeaderInfoTable(objInputData, pdfHederInfoData, _tabheader);
 
             pdfHederInfoData.Clear();
 
@@ -235,7 +231,7 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Submitted Date", objInputData.SubmittedDate != null ? GetFormattedDate(objInputData.SubmittedDate.ToString()) : "");
             pdfHederInfoData.Add("Approved By", (objInputData.ApprovedBy == null || objInputData.ApprovedBy == "NA") ? "" : objInputData.ApprovedBy.ToString());
             pdfHederInfoData.Add("Approved Date", (objInputData.ApprovedDate == null || objInputData.ApprovedDate == "NA") ? "" : GetFormattedDate(objInputData.ApprovedDate.ToString()));
-            Table tblApproval = getHeaderInfoTable(pdfHederInfoData, _tabheader);
+            Table tblApproval = getHeaderInfoTable(objInputData, pdfHederInfoData, _tabheader);
 
             pdfHederInfoData.Clear();
 
@@ -681,7 +677,7 @@ namespace HydraulicCalAPI.Service
             pdfHederInfoData.Add("Total mileage to/from location", objInputData.TotalMileageTFLocation != null ? objInputData.TotalMileageTFLocation.ToString() : "");
             pdfHederInfoData.Add("Total travel time to/from location", objInputData.TotalTravelTimeTFLlocation != null ? objInputData.TotalTravelTimeTFLlocation.ToString() : "");
             pdfHederInfoData.Add("Total off-duty hours at location", objInputData.TotalOffDutyHrsAtLocation != null ? objInputData.TotalOffDutyHrsAtLocation.ToString() : "");
-            tblGenInfo = getHeaderInfoTable(pdfHederInfoData, _tabheader);
+            tblGenInfo = getHeaderInfoTable(objInputData, pdfHederInfoData, _tabheader);
         }
         private static void NewMethod(Image img, LineSeparator ls, Paragraph newline,
             Paragraph header, Table tableAuthor, Paragraph comment, Table tblToc, Paragraph _headerinfo,
@@ -1588,7 +1584,7 @@ namespace HydraulicCalAPI.Service
             //doc.Add(table);
             return _table.SetAutoLayout();
         }
-        public Table getHeaderInfoTable(Dictionary<string, string> objSegment, string tabHeader)
+        public Table getHeaderInfoTable(PdfReportService objUOM, Dictionary<string, string> objSegment, string tabHeader)
         {
             string tabheadertext = tabHeader;
             
@@ -1600,7 +1596,12 @@ namespace HydraulicCalAPI.Service
             foreach (var item in objSegment)
             {
                 Cell celhinfoValue, celhinfoUom;
-
+                string charFt = "ft";
+                if(objUOM.UOM.DepthName.ToUpper() != "FT")
+                {
+                    charFt = "m";
+                }
+                
                 string itemKey = string.IsNullOrEmpty(item.Key) ? "" : item.Key.ToString();
                 string itmvalue = string.IsNullOrEmpty(item.Value) ? "" : item.Value.ToString();
 
@@ -1610,28 +1611,29 @@ namespace HydraulicCalAPI.Service
                 {
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
-                    celhinfoUom = new Cell(1, 1).Add(new Paragraph(" ft "));
+
+                    celhinfoUom = new Cell(1, 1).Add(new Paragraph("  " + charFt));
                     _tableSeg.AddCell(celhinfoUom);
                 }
                 else if (itemKey.ToUpper() == "RIG ELEVATION")
                 {
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
-                    celhinfoUom = new Cell(1, 1).Add(new Paragraph(" ft "));
+                    celhinfoUom = new Cell(1, 1).Add(new Paragraph("  " + charFt));
                     _tableSeg.AddCell(celhinfoUom);
                 }
                 else if (itemKey.ToUpper() == "WATER DEPTH")
                 {
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
-                    celhinfoUom = new Cell(1, 1).Add(new Paragraph(" ft "));
+                    celhinfoUom = new Cell(1, 1).Add(new Paragraph("  " + charFt));
                     _tableSeg.AddCell(celhinfoUom);
                 }
                 else if (itemKey.ToUpper() == "WELL DEPTH (TVD)")
                 {
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
-                    celhinfoUom = new Cell(1, 1).Add(new Paragraph(" ft "));
+                    celhinfoUom = new Cell(1, 1).Add(new Paragraph("  " + charFt));
                     _tableSeg.AddCell(celhinfoUom);
                 }
                 else if (itemKey.ToUpper() == "TOTAL MILEAGE TO/FROM LOCATION")

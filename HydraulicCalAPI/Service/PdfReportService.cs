@@ -104,7 +104,7 @@ namespace HydraulicCalAPI.Service
         public string Comments { get; set; }
 
         public HydraulicCalculationService HydraCalcService { get; set; }
-        public MeasurementParameters MeasurementParameters { get; set; }
+        public MeasurementParameters UOM { get; set; }
         public List<CaseLinerTube> CasingLinerTubeData { get; set; }
         public List<WorkStringData> WorkStringItems { get; set; }
         public List<BhaTopToBottom> BHAToolItemData { get; set; }
