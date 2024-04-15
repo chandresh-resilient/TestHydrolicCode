@@ -356,12 +356,53 @@ namespace HydraulicCalAPI.Service
                                                                     .Select(bt => bt.FishNeckOD);
                             var bhatoolFishNeckLen = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
                                                                      .Select(bt => bt.FishNeckLength);
-                            dicLstBhaData.Add("Weight" + increment, bhatoolWeight != null ? bhatoolWeight.FirstOrDefault().Substring(0, bhatoolWeight.FirstOrDefault().Length - 5) : "");
+                            string _bhatoolweight = bhatoolWeight.FirstOrDefault();
+                            if (_bhatoolweight == null || _bhatoolweight.ToUpper() == "NULL" || _bhatoolweight.ToUpper() == "NA")
+                            {
+                                dicLstBhaData.Add("Weight" + increment, "");
+                            }
+                            else
+                            {
+                                dicLstBhaData.Add("Weight" + increment, bhatoolWeight.FirstOrDefault().Substring(0, bhatoolWeight.FirstOrDefault().Length - 5)); 
+                            }
                             dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "");
-                            dicLstBhaData.Add("UpperConnType" + increment, bhatoolUpConnTyp != null ? bhatoolUpConnTyp.FirstOrDefault() : "");
-                            dicLstBhaData.Add("LowerConnType" + increment, bhatoolLowConntyp != null ? bhatoolLowConntyp.FirstOrDefault() : "");
-                            dicLstBhaData.Add("FishNeckOD" + increment, bhatoolFishNeckOD != null ? bhatoolFishNeckOD.FirstOrDefault() : "");
-                            dicLstBhaData.Add("LenFshNck" + increment, bhatoolFishNeckLen != null ? bhatoolFishNeckLen.FirstOrDefault() : "");
+
+                            string _bhatoolUpConnTyp = bhatoolUpConnTyp.FirstOrDefault();
+                            if (_bhatoolUpConnTyp == null || _bhatoolUpConnTyp.ToUpper() == "NULL" || _bhatoolUpConnTyp.ToUpper() == "NA")
+                            {
+                                dicLstBhaData.Add("UpperConnType" + increment, ""); 
+                            }
+                            else
+                            {
+                                dicLstBhaData.Add("UpperConnType" + increment, bhatoolUpConnTyp.FirstOrDefault());
+                            }
+                            string _bhatoolLowConntyp = bhatoolLowConntyp.FirstOrDefault();
+                            if (_bhatoolLowConntyp == null || _bhatoolLowConntyp.ToUpper() == "NULL" || _bhatoolLowConntyp.ToUpper() == "NA")
+                            {
+                                dicLstBhaData.Add("LowerConnType" + increment, "");
+                            }
+                            else
+                            {
+                                dicLstBhaData.Add("LowerConnType" + increment, bhatoolLowConntyp.FirstOrDefault());
+                            }
+                            string _bhatoolFishNeckOD = bhatoolFishNeckOD.FirstOrDefault();
+                            if (_bhatoolFishNeckOD == null || _bhatoolFishNeckOD.ToUpper() == "NULL" || _bhatoolFishNeckOD.ToUpper() == "NA")
+                            {
+                                dicLstBhaData.Add("FishNeckOD" + increment, "");
+                            }
+                            else
+                            {
+                                dicLstBhaData.Add("FishNeckOD" + increment, bhatoolFishNeckOD.FirstOrDefault());
+                            }
+                            string _bhatoolFishNeckLen = bhatoolFishNeckLen.FirstOrDefault();
+                            if (_bhatoolFishNeckLen == null || _bhatoolFishNeckLen.ToUpper() == "NULL" || _bhatoolFishNeckLen.ToUpper() == "NA")
+                            {
+                                dicLstBhaData.Add("LenFshNck" + increment, "");
+                            }
+                            else
+                            {
+                                dicLstBhaData.Add("LenFshNck" + increment, bhatoolFishNeckLen.FirstOrDefault());
+                            }
                             dicLstBhaData.Add("HydraulicOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "");
                             dicLstBhaData.Add("HydraulicID" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "");
                             break;
@@ -1753,7 +1794,7 @@ namespace HydraulicCalAPI.Service
                 }
                 else if (itemKey.ToUpper() == "RIG ELEVATION")
                 {
-                    if (itmvalue != "")
+                    if (itmvalue != "" && itmvalue.ToUpper() != "NULL")
                     {
                         itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
                     }
