@@ -7,12 +7,9 @@ namespace HydraulicCalAPI.Service
 {
     public enum ResultType { Good, Caution, Problem };
     public enum ToolTypes { Type1, Type2, Type3, Type4, Type5, Type6, Type7, Type8, Type9 };
-  //  public enum SurfaceEquipmentCaseType { Case1, Case2, Case3, Case4, TopDrive };
-   // public enum CuttingType { Steel, Rock, CastIron, Granite, Sandstone, Concrete, WetSand };
-
     public class HydraulicCalculationService
     {
-       
+
         public Fluid fluidInput { get; set; }
         public List<BHATool> bhaInput { get; set; }
         public double flowRateInGPMInput { get; set; }
@@ -54,11 +51,6 @@ namespace HydraulicCalAPI.Service
             public double InsideDiameterInInch { get; set; }
 
             /// <summary>
-            /// Input Points for BHAToolType1
-            /// </summary>
-            public double Depth { get; set; }
-
-            /// <summary>
             /// Input Points for BHAToolType2
             /// </summary>
             public Common.BHAType2ModelName ModelName { get; set; }
@@ -67,7 +59,7 @@ namespace HydraulicCalAPI.Service
             /// Input Points for BHATootType3
             /// </summary>
             public List<Nozzles> NozzlesInfomation { get; set; }
-          
+
             /// <summary>
             /// Input Points for BHAToolType4
             /// </summary>

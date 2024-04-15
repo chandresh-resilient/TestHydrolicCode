@@ -34,7 +34,6 @@ internal static class HydraulicCalculationsControllerHelpers
                             OutsideDiameterInInch = item.OutsideDiameterInInch,
                             LengthInFeet = item.LengthInFeet,
                             InsideDiameterInInch = item.InsideDiameterInInch,
-                            Depth = item.Depth
                         };
                         break;
                     }
@@ -55,7 +54,6 @@ internal static class HydraulicCalculationsControllerHelpers
                         bhaToolItem = (new BHAToolType3
                         {
                             PositionNumber = item.PositionNumber,
-                            Depth = item.Depth,
                             toolDescription = item.toolDescription,
                             OutsideDiameterInInch = item.OutsideDiameterInInch,
                             LengthInFeet = item.LengthInFeet,
@@ -100,7 +98,6 @@ internal static class HydraulicCalculationsControllerHelpers
                         bhaToolItem = (new BHAToolType6
                         {
                             PositionNumber = item.PositionNumber,
-                            Depth = item.Depth,
                             toolDescription = item.toolDescription,
                             OutsideDiameterInInch = item.OutsideDiameterInInch,
                             LengthInFeet = item.LengthInFeet,
@@ -131,7 +128,6 @@ internal static class HydraulicCalculationsControllerHelpers
                         bhaToolItem = (new BHAToolType8
                         {
                             PositionNumber = item.PositionNumber,
-                            Depth = item.Depth,
                             toolDescription = item.toolDescription,
                             OutsideDiameterInInch = item.OutsideDiameterInInch,
                             LengthInFeet = item.LengthInFeet,
@@ -158,7 +154,6 @@ internal static class HydraulicCalculationsControllerHelpers
                         bhaToolItem = (new BHAToolType10
                         {
                             PositionNumber = item.PositionNumber,
-                            Depth = item.Depth,
                             toolDescription = item.toolDescription,
                             OutsideDiameterInInch = item.OutsideDiameterInInch,
                             LengthInFeet = item.LengthInFeet,
@@ -177,7 +172,6 @@ internal static class HydraulicCalculationsControllerHelpers
                             OutsideDiameterInInch = item.OutsideDiameterInInch,
                             LengthInFeet = item.LengthInFeet,
                             InsideDiameterInInch = item.InsideDiameterInInch,
-                            Depth = item.Depth
                         });
 
                         break;
