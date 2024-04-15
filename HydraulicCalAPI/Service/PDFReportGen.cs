@@ -1473,15 +1473,17 @@ namespace HydraulicCalAPI.Service
                 float scaleX = graphWidth / maxX;
                 float scaleY = graphHeight / maxY;
 
+                float opPointX = (float)objCags.MaxFlowRate;
+                float opPointY = (float)objCags.TotalPressureDrop;
+
                 using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1 })
                 {
                     // Draw X and Y axis
                     canvas.DrawLine(margin, margin, margin, height - margin, paint);
                     canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint);
-                                       
+                    canvas.DrawText("X", opPointX+50, opPointY-108, paint);
+
                     float xpoints = (float)Math.Round(maxX / 100);
-                    float ypoints = (float)Math.Round(maxY / 100);
-                    
                     float counterX = 1;
                     float counterY = 1;
                     do
@@ -1507,13 +1509,13 @@ namespace HydraulicCalAPI.Service
                         yMultiplier = 10;
                     }
 
-                    float ypoint = height + 10 - margin;
+                    float ypoint = height - margin;
                     do
                     {
                         ypoint -= 50;
                         int cordsX = (int)margin;
                         canvas.DrawLine(cordsX - 2, ypoint, cordsX + 5, ypoint, paint);
-                        canvas.DrawText((counterY * yMultiplier).ToString(), new SKPoint(margin-5, ypoint), paint);
+                        canvas.DrawText((counterY * yMultiplier).ToString(), new SKPoint(margin-28, ypoint), paint);
                         counterY++;
                     } while (counterY < 9);
                 }
@@ -1547,14 +1549,14 @@ namespace HydraulicCalAPI.Service
                             canvas.DrawLine(x1, y1, x2, y2, paint);
                         }
                     }
-             }
+                }
 
                 // Add X-axis label
                 using (var xLabelPaint = new SKPaint())
                 {
                     xLabelPaint.Color = SKColors.Black;
                     xLabelPaint.TextAlign = SKTextAlign.Center;
-                    xLabelPaint.TextSize = 16;
+                    xLabelPaint.TextSize = 14;
                     canvas.DrawText("Flow Rate (" + gXValue + ")", width / 2, margin / 2 + 370, xLabelPaint);
                 }
 
@@ -1563,10 +1565,10 @@ namespace HydraulicCalAPI.Service
                 {
                     yLabelPaint.Color = SKColors.Black;
                     yLabelPaint.TextAlign = SKTextAlign.Center;
-                    yLabelPaint.TextSize = 16;
+                    yLabelPaint.TextSize = 14;
                     yLabelPaint.IsAntialias = true;
                     canvas.RotateDegrees(-90);
-                    canvas.DrawText("Standpipe Pressure (" + gYValue + ")", -height / 2 - 5, margin / 2 -3, yLabelPaint);
+                    canvas.DrawText("Standpipe Pressure (" + gYValue + ")", -height / 2 - 5, (margin / 2)-10, yLabelPaint);
                     canvas.RotateDegrees(90);
                 }
 
@@ -1739,8 +1741,10 @@ namespace HydraulicCalAPI.Service
                 _tableSeg.AddCell(celHinfoKey);
                 if (itemKey.ToUpper() == "WELL DEPTH (MD)")
                 {
-
-                    itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                    if(itmvalue != "")
+                    {
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                    }
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
 
@@ -1749,7 +1753,10 @@ namespace HydraulicCalAPI.Service
                 }
                 else if (itemKey.ToUpper() == "RIG ELEVATION")
                 {
-                    itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                    if (itmvalue != "")
+                    {
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                    }
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
                     celhinfoUom = new Cell(1, 1).Add(new Paragraph("  " + charFt));
@@ -1757,7 +1764,11 @@ namespace HydraulicCalAPI.Service
                 }
                 else if (itemKey.ToUpper() == "WATER DEPTH")
                 {
-                    itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                    if (itmvalue != "")
+                    {
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                    }
+                    
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
                     celhinfoUom = new Cell(1, 1).Add(new Paragraph("  " + charFt));
@@ -1765,7 +1776,11 @@ namespace HydraulicCalAPI.Service
                 }
                 else if (itemKey.ToUpper() == "WELL DEPTH (TVD)")
                 {
-                    itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                    if (itmvalue != "")
+                    {
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                    }
+
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
                     celhinfoUom = new Cell(1, 1).Add(new Paragraph("  " + charFt));
