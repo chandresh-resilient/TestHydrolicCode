@@ -356,7 +356,7 @@ namespace HydraulicCalAPI.Service
                                                                     .Select(bt => bt.FishNeckOD);
                             var bhatoolFishNeckLen = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
                                                                      .Select(bt => bt.FishNeckLength);
-                            dicLstBhaData.Add("Weight" + increment, bhatoolWeight != null ? bhatoolWeight.FirstOrDefault() : "");
+                            dicLstBhaData.Add("Weight" + increment, bhatoolWeight != null ? bhatoolWeight.FirstOrDefault().Substring(0, bhatoolWeight.FirstOrDefault().Length - 5) : "");
                             dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "");
                             dicLstBhaData.Add("UpperConnType" + increment, bhatoolUpConnTyp != null ? bhatoolUpConnTyp.FirstOrDefault() : "");
                             dicLstBhaData.Add("LowerConnType" + increment, bhatoolLowConntyp != null ? bhatoolLowConntyp.FirstOrDefault() : "");
@@ -1855,8 +1855,10 @@ namespace HydraulicCalAPI.Service
                         {
                             _length = 0.00;
                             Cell daAnnulusLength = new Cell(1, 1).Add(new Paragraph("Annulus Length")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(100);
-
-                            _length = double.Parse(objDpthAnalysisValue[0]) * objUOM.UOM.DepthMultiplier;
+                            if(objDpthAnalysisValue[0] != "")
+                            {
+                                _length = double.Parse(objDpthAnalysisValue[0]) * objUOM.UOM.DepthMultiplier;
+                            }
                             Cell daAnLen = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 2).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
                             _tabDepth.AddCell(daAnnulusLength);
                             _tabDepth.AddCell(daAnLen);
@@ -1866,8 +1868,11 @@ namespace HydraulicCalAPI.Service
                         {
                             _length = 0.00;
                             Cell daBHALength = new Cell(1, 1).Add(new Paragraph("BHA Length")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(100);
-                            _length = double.Parse(objDpthAnalysisValue[1]) * objUOM.UOM.DepthMultiplier;
-                            Cell daBhaLen = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 2).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
+                            if (objDpthAnalysisValue[1] != "")
+                            {
+                                _length = double.Parse(objDpthAnalysisValue[1]) * objUOM.UOM.DepthMultiplier;
+                            }
+                             Cell daBhaLen = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 2).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
                             _tabDepth.AddCell(daBHALength);
                             _tabDepth.AddCell(daBhaLen);
                             break;
@@ -1876,7 +1881,10 @@ namespace HydraulicCalAPI.Service
                         {
                             _length = 0.00;
                             Cell daToolLength = new Cell(1, 1).Add(new Paragraph("Tool Depth")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(100);
-                            _length = double.Parse(objDpthAnalysisValue[2]) * objUOM.UOM.DepthMultiplier;
+                            if (objDpthAnalysisValue[2] != "")
+                            {
+                                _length = double.Parse(objDpthAnalysisValue[2]) * objUOM.UOM.DepthMultiplier;
+                            }
                             Cell daTulDpth = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 2).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
                             _tabDepth.AddCell(daToolLength);
                             _tabDepth.AddCell(daTulDpth);
