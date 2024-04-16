@@ -77,11 +77,6 @@
             Input point to get workstring data
             </summary>
         </member>
-        <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.Depth">
-            <summary>
-            Input Points for BHAToolType1
-            </summary>
-        </member>
         <member name="P:HydraulicCalAPI.Service.HydraulicCalculationService.BHATool.ModelName">
             <summary>
             Input Points for BHAToolType2

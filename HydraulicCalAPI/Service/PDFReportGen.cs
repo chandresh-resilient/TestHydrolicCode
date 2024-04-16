@@ -893,7 +893,6 @@ namespace HydraulicCalAPI.Service
             document.Add(head2);
             for (int gp = 0; gp < graphCount; gp++)
             {
-                document.Add(newline);
                 celltd1 = new Cell(1, 2).Add(lstTblBHAheader[gp]);
                 celltd2 = new Cell(1, 1).Add(lstTblBhaSide[gp]).SetPadding(10);
                 celltd3 = new Cell(1, 1).Add(bhaToolGraphsLst[gp]);
@@ -901,6 +900,7 @@ namespace HydraulicCalAPI.Service
                 bhatooldetail.AddCell(celltd2);
                 bhatooldetail.AddCell(celltd3);
                 document.Add(bhatooldetail);
+                document.Add(newline);
                 pageBreak++;
                 if (pageBreak == 2)
                 {
@@ -1215,38 +1215,38 @@ namespace HydraulicCalAPI.Service
             Table tblbhtoolSide = new Table(3, false)
                 .SetTextAlignment(TextAlignment.LEFT).SetFontSize(7);
 
-            Cell cell00 = new Cell(1, 1).Add(new Paragraph("Flow Type").SetBold());
-            Cell cell01 = new Cell(1, 2).Add(new Paragraph(objData.FlowType));
+            Cell cell00 = new Cell(1, 1).Add(new Paragraph("Flow Type").SetBold()).SetWidth(80);
+            Cell cell01 = new Cell(1, 2).Add(new Paragraph(objData.FlowType)).SetWidth(80);
 
-            Cell cell10 = new Cell(1, 1).Add(new Paragraph("Average Velocity").SetBold());
+            Cell cell10 = new Cell(1, 1).Add(new Paragraph("Average Velocity").SetBold()).SetWidth(80);
             double tlAvgVel = objData.AverageVelocity * objUOM.UOM.DepthMultiplier;
-            Cell cell11 = new Cell(1, 1).Add(new Paragraph(tlAvgVel.ToString()));
-            Cell cell12 = new Cell(1, 1).Add(new Paragraph(" " + charFt));
+            Cell cell11 = new Cell(1, 1).Add(new Paragraph(tlAvgVel.ToString())).SetWidth(60);
+            Cell cell12 = new Cell(1, 1).Add(new Paragraph(" " + charFt)).SetWidth(20);
 
-            Cell cell20 = new Cell(1, 1).Add(new Paragraph("Critical Velocity").SetBold());
+            Cell cell20 = new Cell(1, 1).Add(new Paragraph("Critical Velocity").SetBold()).SetWidth(80);
             double tlCritVel = objData.CriticalVelocity * objUOM.UOM.DepthMultiplier;
-            Cell cell21 = new Cell(1, 1).Add(new Paragraph(tlCritVel.ToString()));
-            Cell cell22 = new Cell(1, 1).Add(new Paragraph(" " + charFt));
+            Cell cell21 = new Cell(1, 1).Add(new Paragraph(tlCritVel.ToString())).SetWidth(60);
+            Cell cell22 = new Cell(1, 1).Add(new Paragraph(" " + charFt)).SetWidth(20);
 
-            Cell cell30 = new Cell(1, 1).Add(new Paragraph("Pressure Drop").SetBold());
+            Cell cell30 = new Cell(1, 1).Add(new Paragraph("Pressure Drop").SetBold()).SetWidth(80);
             double tlPrDrop = objData.PressureDrop * objUOM.UOM.PressureMultiplier;
-            Cell cell31 = new Cell(1, 1).Add(new Paragraph(tlPrDrop.ToString()));
-            Cell cell32 = new Cell(1, 1).Add(new Paragraph(" " + charPsi));
+            Cell cell31 = new Cell(1, 1).Add(new Paragraph(tlPrDrop.ToString())).SetWidth(60);
+            Cell cell32 = new Cell(1, 1).Add(new Paragraph(" " + charPsi)).SetWidth(20);
 
-            Cell cell40 = new Cell(1, 1).Add(new Paragraph("Hydraulic OD").SetBold());
+            Cell cell40 = new Cell(1, 1).Add(new Paragraph("Hydraulic OD").SetBold()).SetWidth(80);
             double tlHydraOD = objData.HydraulicOD * objUOM.UOM.SizeMultiplier;
-            Cell cell41 = new Cell(1, 1).Add(new Paragraph(tlHydraOD.ToString()));
-            Cell cell42 = new Cell(1, 1).Add(new Paragraph(" " + charIn));
+            Cell cell41 = new Cell(1, 1).Add(new Paragraph(tlHydraOD.ToString())).SetWidth(60);
+            Cell cell42 = new Cell(1, 1).Add(new Paragraph(" " + charIn)).SetWidth(20);
 
-            Cell cell50 = new Cell(1, 1).Add(new Paragraph("Hydraulic ID").SetBold());
+            Cell cell50 = new Cell(1, 1).Add(new Paragraph("Hydraulic ID").SetBold()).SetWidth(80);
             double tlHydraID = objData.HydraulicID * objUOM.UOM.SizeMultiplier;
-            Cell cell51 = new Cell(1, 1).Add(new Paragraph(tlHydraID.ToString()));
-            Cell cell52 = new Cell(1, 1).Add(new Paragraph(" " + charIn));
+            Cell cell51 = new Cell(1, 1).Add(new Paragraph(tlHydraID.ToString())).SetWidth(60);
+            Cell cell52 = new Cell(1, 1).Add(new Paragraph(" " + charIn)).SetWidth(20);
 
-            Cell cell60 = new Cell(1, 1).Add(new Paragraph("Length").SetBold());
+            Cell cell60 = new Cell(1, 1).Add(new Paragraph("Length").SetBold()).SetWidth(80);
             double tlLen = objData.Length * objUOM.UOM.DepthMultiplier;
-            Cell cell61 = new Cell(1, 1).Add(new Paragraph(tlLen.ToString()));
-            Cell cell62 = new Cell(1, 1).Add(new Paragraph(" " + charFt));
+            Cell cell61 = new Cell(1, 1).Add(new Paragraph(tlLen.ToString())).SetWidth(60);
+            Cell cell62 = new Cell(1, 1).Add(new Paragraph(" " + charFt)).SetWidth(20);
 
             tblbhtoolSide.AddCell(cell00);
             tblbhtoolSide.AddCell(cell01);
@@ -1522,22 +1522,27 @@ namespace HydraulicCalAPI.Service
                 float opPointX = (float)objCags.MaxFlowRate;
                 float opPointY = (float)objCags.TotalPressureDrop;
 
+                float anx1 = margin + opPointX * scaleX;
+                float any1 = height - margin - opPointY * scaleY;
+               
                 using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1 })
                 {
                     // Draw X and Y axis
                     canvas.DrawLine(margin, margin, margin, height - margin, paint);
                     canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint);
-                    canvas.DrawText("X", opPointX+50, opPointY-108, paint);
+                    canvas.DrawText("X", anx1 - 50 , any1 + 15, paint);
 
                     float xpoints = (float)Math.Round(maxX / 100);
                     float counterX = 1;
                     float counterY = 1;
+                    float xpoint = margin;
                     do
                     {
+                        xpoint += 50;
                         float valXAxis = counterX * 100;
                         int cordsY = (int)(height - margin);
-                        canvas.DrawLine(valXAxis, cordsY-5, valXAxis, cordsY+5, paint);
-                        canvas.DrawText(valXAxis.ToString(), valXAxis - 3, (height + 15 - margin), paint);
+                        canvas.DrawLine(xpoint, cordsY-5, xpoint, cordsY+5, paint);
+                        canvas.DrawText(valXAxis.ToString(), xpoint-5, cordsY+15, paint);
                         counterX++;
                     } while (counterX <= xpoints);
 
@@ -1563,7 +1568,7 @@ namespace HydraulicCalAPI.Service
                         canvas.DrawLine(cordsX - 2, ypoint, cordsX + 5, ypoint, paint);
                         canvas.DrawText((counterY * yMultiplier).ToString(), new SKPoint(margin-28, ypoint), paint);
                         counterY++;
-                    } while (counterY < 9);
+                    } while (counterY < 10);
                 }
 
                 using (var paint = new SKPaint { Color = SKColors.Red, StrokeWidth = 1, IsAntialias = true })
@@ -1654,12 +1659,12 @@ namespace HydraulicCalAPI.Service
                 pressure.Add(hyprobhadataPoints[i].Y);
             }
 
-            using (var surfcae = SKSurface.Create(new SKImageInfo(300, 250)))
+            using (var surfcae = SKSurface.Create(new SKImageInfo(300, 280)))
             {
                 var canvas = surfcae.Canvas;
                 canvas.Clear(SKColors.White);
-                float width = 300;
-                float height = 250;
+                float width = 280;
+                float height = 270;
                 float margin = 35;
 
                 float graphWidth = width - 2 * margin;
@@ -1674,22 +1679,27 @@ namespace HydraulicCalAPI.Service
                 float opPointX = (float)service.InputFlowRate;
                 float opPointY = (float)service.BHAPressureDrop;
 
+                float anx1 = margin + opPointX * scaleX;
+                float any1 = height - margin - opPointY * scaleY;
+
                 using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1 })
                 {
                     // Draw X and Y axis
                     canvas.DrawLine(margin, margin, margin, height - margin, paint);
                     canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint);
-                    canvas.DrawText("X", opPointX + 50, opPointY - 108, paint);
+                    canvas.DrawText("X", anx1, any1, paint);
 
                     float xpoints = (float)Math.Round(maxX / 100);
                     float counterX = 1;
                     float counterY = 1;
+                    float xpoint = margin;
                     do
                     {
+                        xpoint += 50;
                         float valXAxis = counterX * 100;
                         int cordsY = (int)(height - margin);
-                        canvas.DrawLine(valXAxis, cordsY - 5, valXAxis, cordsY + 5, paint);
-                        canvas.DrawText(valXAxis.ToString(), valXAxis - 3, (height + 15 - margin), paint);
+                        canvas.DrawLine(xpoint, cordsY - 5, xpoint, cordsY + 5, paint);
+                        canvas.DrawText(valXAxis.ToString(), xpoint - 5, cordsY + 15, paint);
                         counterX++;
                     } while (counterX < xpoints);
 
@@ -1704,7 +1714,7 @@ namespace HydraulicCalAPI.Service
                     }
                     else
                     {
-                        yMultiplier = 10;
+                        yMultiplier = 20;
                     }
 
                     float ypoint = height - margin;
@@ -1713,7 +1723,7 @@ namespace HydraulicCalAPI.Service
                         ypoint -= 50;
                         int cordsX = (int)margin;
                         canvas.DrawLine(cordsX - 2, ypoint, cordsX + 5, ypoint, paint);
-                        canvas.DrawText((counterY * yMultiplier).ToString(), new SKPoint(margin - 28, ypoint), paint);
+                        canvas.DrawText((counterY * yMultiplier).ToString(), new SKPoint(margin - 18, ypoint), paint);
                         counterY++;
                     } while (counterY < 5);
                 }
@@ -1737,7 +1747,7 @@ namespace HydraulicCalAPI.Service
                     xLabelPaint.Color = SKColors.Black;
                     xLabelPaint.TextAlign = SKTextAlign.Center;
                     xLabelPaint.TextSize = 10;
-                    canvas.DrawText("Flow Rate (" + gXValue + ")", width / 2, margin / 2 + 220, xLabelPaint);
+                    canvas.DrawText("Flow Rate (" + gXValue + ")", width / 2, margin / 2 + 250, xLabelPaint);
                 }
 
                 // Add Y-axis label
@@ -1889,7 +1899,7 @@ namespace HydraulicCalAPI.Service
                 }
                 else
                 {
-                    celhinfoValue = new Cell(1, 2).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
+                    celhinfoValue = new Cell(1, 2).Add(new Paragraph(itmvalue)).SetWidth(100).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
                 }
             }

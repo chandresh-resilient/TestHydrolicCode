@@ -187,15 +187,21 @@ internal static class HydraulicCalculationsControllerHelpers
     {
         var objNozzle = nozzlesInfomation;
         List<Nozzles> lstNozzles = new List<Nozzles>();
-
-        Nozzles _nozzles = (new Nozzles
+        if (objNozzle != null)
         {
-            ncount = objNozzle[0].NozzleQuantity,
-            nozType = (Nozzles.NozzleTypes)objNozzle[0].NozzleType,
-            dia = objNozzle[0].NozzleDiameterInInch
-        });
+            Nozzles _nozzles = (new Nozzles
+            {
+                ncount = objNozzle[0].NozzleQuantity,
+                nozType = (Nozzles.NozzleTypes)objNozzle[0].NozzleType,
+                dia = objNozzle[0].NozzleDiameterInInch
+            });
+            lstNozzles.Add(_nozzles);
+            return lstNozzles;
+        }
+        else
+        {
+            return null;
+        }
 
-        lstNozzles.Add(_nozzles);
-        return lstNozzles;
     }
 }
