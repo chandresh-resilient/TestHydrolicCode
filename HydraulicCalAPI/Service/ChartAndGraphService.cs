@@ -492,8 +492,14 @@ namespace HydraulicCalAPI.Service
 
                     BhaToolLength += item.LengthInFeet;
                     HydraulicOutputBHAList.Add(bhaObject);
-                    if (!double.IsNaN(item.BHAHydraulicsOutput.OutputFlowInGallonsPerMinute))
-                        inputFlowRate = item.BHAHydraulicsOutput.OutputFlowInGallonsPerMinute;
+                    if (item.BHAHydraulicsOutput.OutputFlowInGallonsPerMinute > 0)
+                    { 
+                        inputFlowRate = item.BHAHydraulicsOutput.OutputFlowInGallonsPerMinute; 
+                    }
+                    else {
+                        inputFlowRate = flowRateChartedData;
+                    }
+
                 }
             DateTime startOfCalculations = DateTime.UtcNow;
             foreach (HydraulicOutputBHAViewModel item in HydraulicOutputBHAList)

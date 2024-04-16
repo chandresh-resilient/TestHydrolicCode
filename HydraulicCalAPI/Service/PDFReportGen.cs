@@ -657,7 +657,7 @@ namespace HydraulicCalAPI.Service
                         LineClr = "Blue"
                     });
                 }
-                hydraprograph = DrawHydraulicToolsGraph(hyprodatapoints, objChartService.HydraulicOutputBHAList[i]);
+                hydraprograph = DrawHydraulicToolsGraph(hyprodatapoints, objChartService.HydraulicOutputBHAList[i],objInputData);
                 graph.Add(new Image(ImageDataFactory.Create(hydraprograph)));
                 hyprodatapoints.Clear();
             }
@@ -1065,16 +1065,17 @@ namespace HydraulicCalAPI.Service
             string charFt = "ft";
             if (objUOM.UOM.PressureName.ToUpper() != "PSI")
             {
-                charPsi = "kPa";
+                charPsi = objUOM.UOM.PressureName.ToString();
             }
             else if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
             {
-                charFlowRt = "L/min";
+                charFlowRt = objUOM.UOM.FlowRateName.ToString();
             }
-            else
+            else if (objUOM.UOM.DepthName.ToUpper() != "FT")
             {
-                charFt = "m";
+                charFt = objUOM.UOM.DepthName.ToString();
             }
+            else { }
 
             double toolflowrate = 0.00;
             double tooldepth = 0.00;
@@ -1097,21 +1098,22 @@ namespace HydraulicCalAPI.Service
         }
         public Table getBHAToolLine(HydraulicBHAToolOutPutData objData, PdfReportService objUOM)
         {
-            string charFt = "ft";
-            string charFlowRt = "gal/min";
             string charPsi = "psi";
+            string charFlowRt = "gal/min";
+            string charFt = "ft";
             if (objUOM.UOM.PressureName.ToUpper() != "PSI")
             {
-                charPsi = "kPa";
+                charPsi = objUOM.UOM.PressureName.ToString();
             }
             else if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
             {
-                charFlowRt = "L/min";
+                charFlowRt = objUOM.UOM.FlowRateName.ToString();
             }
-            else
+            else if (objUOM.UOM.DepthName.ToUpper() != "FT")
             {
-                charFt = "m";
+                charFt = objUOM.UOM.DepthName.ToString();
             }
+            else { }
 
             string dnArrowPath = System.IO.Path.Combine(baseDir, "Images", "down-arrow.png");
             bhatblgreen = new DeviceRgb(180, 241, 198);
@@ -1124,14 +1126,14 @@ namespace HydraulicCalAPI.Service
                 .SetBold().SetFontSize(7).SetWidth(UnitValue.CreatePercentValue(100));
             Cell _blankcell;
 
-            Cell tblhead01 = new Cell(1, 1).Add(new Paragraph("").SetBackgroundColor(lgtGrey));
-            Cell tblhead02 = new Cell(1, 1).Add(new Paragraph("Work String").SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER));
-            Cell tblhead03 = new Cell(1, 1).Add(new Paragraph("Length (" + charFt + ")").SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER));
-            Cell tblhead04 = new Cell(1, 1).Add(new Paragraph("Input Flow Rate (" + charFlowRt + ")").SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER));
-            Cell tblhead05 = new Cell(1, 1).Add(new Paragraph("Average Velocity (" + charFt + "/sec)").SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER));
-            Cell tblhead06 = new Cell(1, 1).Add(new Paragraph("Critical Velocity (" + charFt + "/sec)").SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER));
-            Cell tblhead07 = new Cell(1, 1).Add(new Paragraph("Flow").SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER));
-            Cell tblhead08 = new Cell(1, 1).Add(new Paragraph("Pressure Drop (" + charPsi + ")").SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER));
+            Cell tblhead01 = new Cell(1, 1).Add(new Paragraph("")).SetBackgroundColor(lgtGrey);
+            Cell tblhead02 = new Cell(1, 1).Add(new Paragraph("Work String")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
+            Cell tblhead03 = new Cell(1, 1).Add(new Paragraph("Length (" + charFt + ")")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
+            Cell tblhead04 = new Cell(1, 1).Add(new Paragraph("Input Flow Rate (" + charFlowRt + ")")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
+            Cell tblhead05 = new Cell(1, 1).Add(new Paragraph("Average Velocity (" + charFt + "/sec)")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
+            Cell tblhead06 = new Cell(1, 1).Add(new Paragraph("Critical Velocity (" + charFt + "/sec)")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
+            Cell tblhead07 = new Cell(1, 1).Add(new Paragraph("Flow")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
+            Cell tblhead08 = new Cell(1, 1).Add(new Paragraph("Pressure Drop (" + charPsi + ")")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
 
             tblbhtoolhead.AddCell(tblhead01);
             tblbhtoolhead.AddCell(tblhead02);
@@ -1199,16 +1201,17 @@ namespace HydraulicCalAPI.Service
             string charPsi = "psi";
             if (objUOM.UOM.PressureName.ToUpper() != "PSI")
             {
-                charPsi = "kPa";
+                charPsi = objUOM.UOM.PressureName.ToString();
             }
-            else if (objUOM.UOM.PressureName.ToUpper() != "IN")
+            else if (objUOM.UOM.SizeName.ToUpper() != "IN")
             {
-                charIn = "mm";
+                charIn = objUOM.UOM.SizeName.ToString();
             }
-            else
+            else if (objUOM.UOM.DepthName.ToUpper() != "FT")
             {
-                charFt = "m";
+                charFt = objUOM.UOM.DepthName.ToString();
             }
+            else { }
             Table tblbhtoolSide = new Table(3, false)
                 .SetTextAlignment(TextAlignment.LEFT).SetFontSize(7);
 
@@ -1349,12 +1352,13 @@ namespace HydraulicCalAPI.Service
             string charPsi = "psi";
             if (objUOM.UOM.PressureName.ToUpper() != "PSI")
             {
-                charPsi = "kPa";
+                charPsi = objUOM.UOM.PressureName.ToString();
             }
-            else
+            else if (objUOM.UOM.DepthName.ToUpper() != "PSI")
             {
-                charFt = "m";
+                charFt = objUOM.UOM.DepthName.ToString();
             }
+            else { }
 
             Table tblhead = new Table(12, false).SetFontSize(7).SetWidth(UnitValue.CreatePercentValue(100));
             Cell tblhead01 = new Cell(1, 3).Add(new Paragraph(" ")).SetWidth(33).SetBackgroundColor(lgtGrey);
@@ -1363,7 +1367,7 @@ namespace HydraulicCalAPI.Service
             Cell tblhead04 = new Cell(1, 1).Add(new Paragraph("From (" + charFt + ")").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(32);
             Cell tblhead05 = new Cell(1, 1).Add(new Paragraph("To (" + charFt + ")").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(32);
             Cell tblhead06 = new Cell(1, 1).Add(new Paragraph("Average Velocity (" + charFt + "/min)").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
-            Cell tblhead07 = new Cell(1, 1).Add(new Paragraph("Critical Velocity (ft" + charFt + "/min)").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
+            Cell tblhead07 = new Cell(1, 1).Add(new Paragraph("Critical Velocity (" + charFt + "/min)").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
             Cell tblhead08 = new Cell(1, 1).Add(new Paragraph("Flow").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(68);
             Cell tblhead09 = new Cell(1, 1).Add(new Paragraph("Chip Rate (" + charFt + "/min)").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
             Cell tblhead10 = new Cell(1, 1).Add(new Paragraph("Pressure Drop (" + charPsi + ")").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
@@ -1481,12 +1485,13 @@ namespace HydraulicCalAPI.Service
             string gYValue = "psi";
             if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
             {
-                gXValue = "L/min";
+                gXValue = objUOM.UOM.FlowRateName.ToString();
             }
             else if (objUOM.UOM.PressureName.ToUpper() != "PSI")
             {
-                gYValue = "kPa";
+                gYValue = objUOM.UOM.PressureName.ToString();
             }
+            else { }
             // Sample data (replace with your actual data)
             List<float> flowrate = new List<float>();
             List<float> pressure = new List<float>();
@@ -1625,102 +1630,126 @@ namespace HydraulicCalAPI.Service
                 }
             }
         }
-        public byte[] DrawHydraulicToolsGraph(List<DataPoints> hyprobhadataPoints, ViewModel.HydraulicOutputBHAViewModel service)
+        public byte[] DrawHydraulicToolsGraph(List<DataPoints> hyprobhadataPoints, ViewModel.HydraulicOutputBHAViewModel service, PdfReportService objUOM)
         {
-            var xfixPoint = 0;
-            var yfixPoint = 0;
-            string annoteMark = "+";
-            var datatodraw = service.BHAchart["HydraproLineSeries"];
-            var xlimit = datatodraw[datatodraw.Count - 1].PrimaryAxisValue;
-            var ylimit = datatodraw[datatodraw.Count - 1].SecondaryAxisValue;
-
-            WFT.UI.Common.Charts.ChartViewModel<double> annote = new WFT.UI.Common.Charts.ChartViewModel<double>();
-            annote = service._standpipeVsFlowRateChart;
-
-            var annoteKey = annote.AnnotationValues["OperatingPoint"];
-            if (annoteKey.Count > 0)
+            // Add labels and values to PDF document
+            string gXValue = "gal/min";
+            string gYValue = "psi";
+            if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
             {
-                xfixPoint = Convert.ToInt32(annoteKey[0].PrimaryAxisValue);
-                yfixPoint = Convert.ToInt32(annoteKey[0].SecondaryAxisValue);
-                annoteMark = annoteKey[0].AnnotationText;
+                gXValue = objUOM.UOM.FlowRateName.ToString();
+            }
+            else if (objUOM.UOM.PressureName.ToUpper() != "PSI")
+            {
+                gYValue = objUOM.UOM.PressureName.ToString();
+            }
+            else { }
+            // Sample data (replace with your actual data)
+            List<float> flowrate = new List<float>();
+            List<float> pressure = new List<float>();
+
+            for (int i = 0; i < hyprobhadataPoints.Count; i++)
+            {
+                flowrate.Add(hyprobhadataPoints[i].X);
+                pressure.Add(hyprobhadataPoints[i].Y);
             }
 
-            using (var surfcae = SKSurface.Create(new SKImageInfo(200, 200)))
+            using (var surfcae = SKSurface.Create(new SKImageInfo(300, 250)))
             {
                 var canvas = surfcae.Canvas;
                 canvas.Clear(SKColors.White);
-                float width = 200;
-                float height = 200;
-                float margin = 30;
+                float width = 300;
+                float height = 250;
+                float margin = 35;
 
                 float graphWidth = width - 2 * margin;
                 float graphHeight = height - 2 * margin;
+
+                // Define the scaling factors
+                float maxX = flowrate[flowrate.Count - 1];
+                float maxY = pressure[pressure.Count - 1];
+                float scaleX = graphWidth / maxX;
+                float scaleY = graphHeight / maxY;
+
+                float opPointX = (float)service.InputFlowRate;
+                float opPointY = (float)service.BHAPressureDrop;
+
                 using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1 })
                 {
-                    canvas.DrawLine(margin, margin, margin, height - margin, paint); // Y-axis
-                    canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint); // X-axis
+                    // Draw X and Y axis
+                    canvas.DrawLine(margin, margin, margin, height - margin, paint);
+                    canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint);
+                    canvas.DrawText("X", opPointX + 50, opPointY - 108, paint);
 
-                    // Default Point for x-axis and y-axis
-                    canvas.DrawText("0", new SKPoint(margin, height + 15 - margin), paint);
-
-                    float xpoint = margin;
-                    for (int i = 1; i <= xlimit; i++)
+                    float xpoints = (float)Math.Round(maxX / 100);
+                    float counterX = 1;
+                    float counterY = 1;
+                    do
                     {
-                        int x = i * 100;
-                        int y = (int)(height - margin);
-                        string xScale = Convert.ToString(x);
-                        xpoint += 50;
-                        canvas.DrawLine(xpoint, y - 5, xpoint, y + 5, paint);
-                        canvas.DrawText(xScale, xpoint - 5, (height + 15 - margin), paint);
+                        float valXAxis = counterX * 100;
+                        int cordsY = (int)(height - margin);
+                        canvas.DrawLine(valXAxis, cordsY - 5, valXAxis, cordsY + 5, paint);
+                        canvas.DrawText(valXAxis.ToString(), valXAxis - 3, (height + 15 - margin), paint);
+                        counterX++;
+                    } while (counterX < xpoints);
+
+                    float yMultiplier = 0;
+                    if (maxY > 1000)
+                    {
+                        yMultiplier = 1000;
                     }
-                    float ypoint = height + 10 - margin;
-                    for (int j = 1; j <= ylimit; j++)
+                    else if (maxY > 100 && maxY < 1000)
                     {
-                        int y = 0;
+                        yMultiplier = 100;
+                    }
+                    else
+                    {
+                        yMultiplier = 10;
+                    }
+
+                    float ypoint = height - margin;
+                    do
+                    {
                         ypoint -= 50;
-                        if (yfixPoint < 100)
-                        {
-                            y = j * 10;
-                        }
-                        else
-                        {
-                            y = j * 1000;
-                        }
-
-                        int x = (int)(margin);
-                        string yScale = Convert.ToString(y);
-                        canvas.DrawLine(x - 5, ypoint, x + 5, ypoint, paint);
-                        canvas.DrawText(yScale, new SKPoint(0, ypoint), paint);
-                    }
-
+                        int cordsX = (int)margin;
+                        canvas.DrawLine(cordsX - 2, ypoint, cordsX + 5, ypoint, paint);
+                        canvas.DrawText((counterY * yMultiplier).ToString(), new SKPoint(margin - 28, ypoint), paint);
+                        counterY++;
+                    } while (counterY < 5);
                 }
 
-                float minX = 0;
-                float maxX = (float)xlimit;
-                float minY = 0;
-                float maxY = (float)ylimit;
-
-                foreach (var point in hyprobhadataPoints)
+                using (var paint = new SKPaint { Color = SKColors.Blue, StrokeWidth = 1, IsAntialias = true })
                 {
-                    minX = Math.Min(minX, point.X);
-                    maxX = Math.Max(maxX, point.X);
-                    minY = Math.Min(minY, point.Y);
-                    maxY = Math.Max(maxY, point.Y);
-                }
-
-                using (var paint = new SKPaint { Color = SKColors.Blue, StrokeWidth = 2, IsAntialias = true })
-                {
-                    float scaleX = graphWidth / (maxX - minX);
-                    float scaleY = graphHeight / (maxY - minY);
+                    // Draw data points and lines
                     for (int i = 0; i < hyprobhadataPoints.Count - 1; i++)
                     {
-                        float x1 = margin + (hyprobhadataPoints[i].X - minX) * scaleX;
-                        float y1 = height - margin - (hyprobhadataPoints[i].Y - minY) * scaleY;
-                        float x2 = margin + (hyprobhadataPoints[i + 1].X - minX) * scaleX;
-                        float y2 = height - margin - (hyprobhadataPoints[i + 1].Y - minY) * scaleY;
+                        float x1 = margin + hyprobhadataPoints[i].X * scaleX;
+                        float y1 = height - margin - hyprobhadataPoints[i].Y * scaleY;
+                        float x2 = margin + hyprobhadataPoints[i + 1].X * scaleX;
+                        float y2 = height - margin - hyprobhadataPoints[i + 1].Y * scaleY;
                         canvas.DrawLine(x1, y1, x2, y2, paint);
                     }
-                    canvas.DrawText(annoteMark, (float)xfixPoint, (float)yfixPoint, paint);
+                }
+
+                // Add X-axis label
+                using (var xLabelPaint = new SKPaint())
+                {
+                    xLabelPaint.Color = SKColors.Black;
+                    xLabelPaint.TextAlign = SKTextAlign.Center;
+                    xLabelPaint.TextSize = 10;
+                    canvas.DrawText("Flow Rate (" + gXValue + ")", width / 2, margin / 2 + 220, xLabelPaint);
+                }
+
+                // Add Y-axis label
+                using (var yLabelPaint = new SKPaint())
+                {
+                    yLabelPaint.Color = SKColors.Black;
+                    yLabelPaint.TextAlign = SKTextAlign.Center;
+                    yLabelPaint.TextSize = 10;
+                    yLabelPaint.IsAntialias = true;
+                    canvas.RotateDegrees(-90);
+                    canvas.DrawText("Standpipe Pressure (" + gYValue + ")", -height / 2 - 5, (margin / 2) - 10, yLabelPaint);
+                    canvas.RotateDegrees(90);
                 }
 
                 // Convert bitmap to byte array
@@ -1772,7 +1801,7 @@ namespace HydraulicCalAPI.Service
                 string charFt = "ft";
                 if (objUOM.UOM.DepthName.ToUpper() != "FT")
                 {
-                    charFt = "m";
+                    charFt = objUOM.UOM.DepthName.ToString();
                 }
 
                 string itemKey = string.IsNullOrEmpty(item.Key) ? "" : item.Key.ToString();
@@ -1877,7 +1906,7 @@ namespace HydraulicCalAPI.Service
             string charFt = "ft";
             if (objUOM.UOM.DepthName.ToUpper() != "FT")
             {
-                charFt = "m";
+                charFt = objUOM.UOM.DepthName.ToString();
             }
 
             double _length;
@@ -1948,15 +1977,15 @@ namespace HydraulicCalAPI.Service
             string charLbs = "lbs";
             if (objUOM.UOM.SizeName.ToUpper() != "IN")
             {
-                charIn = "mm";
+                charIn = objUOM.UOM.SizeName.ToString();
             }
             else if (objUOM.UOM.WeightName.ToUpper() != "LBS")
             {
-                charLbs = "kg";
+                charLbs = objUOM.UOM.WeightName.ToString();
             }
             else if (objUOM.UOM.DepthName.ToUpper() != "FT")
             {
-                charFt = "m";
+                charFt = objUOM.UOM.DepthName.ToString();
             }
             else { }
 
@@ -2049,15 +2078,15 @@ namespace HydraulicCalAPI.Service
             string charLbs = "lbs";
             if (objUOM.UOM.SizeName.ToUpper() != "IN")
             {
-                charIn = "mm";
+                charIn = objUOM.UOM.SizeName.ToString();
             }
             else if (objUOM.UOM.WeightName.ToUpper() != "LBS")
             {
-                charLbs = "kg";
+                charLbs = objUOM.UOM.WeightName.ToString();
             }
             else if (objUOM.UOM.DepthName.ToUpper() != "FT")
             {
-                charFt = "m";
+                charFt = objUOM.UOM.DepthName.ToString();
             }
             else { }
 
@@ -2216,7 +2245,7 @@ namespace HydraulicCalAPI.Service
             string charFt = "ft";
             if (objUOM.UOM.DepthName.ToUpper() != "FT")
             {
-                charFt = "m";
+                charFt = objUOM.UOM.DepthName.ToString();
             }
 
             double _surfLength = 0.00;
@@ -2246,15 +2275,16 @@ namespace HydraulicCalAPI.Service
             int count = 3;
             string _tblheadText = fluidenvheader;
             string charPsi = "psi";
-            string charGal = "gal";
+            string charGal = "gal/min";
             if (objUOM.UOM.PressureName.ToUpper() != "PSI")
             {
-                charPsi = "kPa";
+                charPsi = objUOM.UOM.PressureName.ToString();
             }
-            else
+            else if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
             {
-                charGal = "L";
+                charGal = objUOM.UOM.FlowRateName.ToString();
             }
+            else { }
 
             double pfrValue;
 
@@ -2292,7 +2322,7 @@ namespace HydraulicCalAPI.Service
                                 pfrValue = Math.Round((double.Parse(objfluidvalues["MaximumAllowableFlowrate"]) * objUOM.UOM.FlowRateMultiplier), 2);
                             }
                             Cell maxflrate = new Cell(1, 1).Add(new Paragraph(pfrValue > 0 ? pfrValue.ToString() : "")).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
-                            Cell celUomflrate = new Cell(1, 1).Add(new Paragraph(" " + charGal + "/ min ")).SetTextAlignment(TextAlignment.LEFT).SetWidth(50);
+                            Cell celUomflrate = new Cell(1, 1).Add(new Paragraph(" " + charGal)).SetTextAlignment(TextAlignment.LEFT).SetWidth(50);
                             _tabFluidEnvelope.AddCell(maxflowrate);
                             _tabFluidEnvelope.AddCell(maxflrate);
                             _tabFluidEnvelope.AddCell(celUomflrate);
@@ -2323,19 +2353,19 @@ namespace HydraulicCalAPI.Service
 
             if (objUOM.UOM.SizeName.ToUpper() != "IN")
             {
-                charIn = "mm";
+                charIn = objUOM.UOM.SizeName.ToString();
             }
             else if (objUOM.UOM.YieldPointName.ToUpper() != "LBF/100FT^2")
             {
-                charYld = "Pa";
+                charYld = objUOM.UOM.YieldPointName.ToString();
             }
-            if (objUOM.UOM.DensityName.ToUpper() != "LB/GAL")
+            if (objUOM.UOM.DensityName.ToUpper() != "LB/GAL" || objUOM.UOM.DensityName.ToUpper() != "PSI")
             {
-                charDens = "kg/L";
+                charDens = objUOM.UOM.DensityName.ToString();
             }
             else if (objUOM.UOM.PlasticViscosityName.ToUpper() != "CENTIPOISE")
             {
-                charCenti = "Pa-s";
+                charCenti = objUOM.UOM.PlasticViscosityName.ToString();
             }
             else { }
 
