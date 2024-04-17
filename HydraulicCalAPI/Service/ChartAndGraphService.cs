@@ -392,6 +392,7 @@ namespace HydraulicCalAPI.Service
            // PlotChart();
             double totalPressureDrop = CalculateTotalPressureDropFROMHydraulicAnalysisOutput(_hydraulicAnalysisOutput);
             CalculateHydraulics();
+            
 
             ChartNGraphDataPoints.Add("hydraulicOutput", _hydraulicAnalysisOutput);
             ChartNGraphDataPoints.Add("TotalPressureDrop", totalPressureDrop);
