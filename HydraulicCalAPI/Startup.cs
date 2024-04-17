@@ -12,6 +12,8 @@ using Microsoft.OpenApi.Any;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text.Json.Serialization;
 using System.Linq;
+using System.Globalization;
+using System.Text.Json;
 
 namespace HydraulicCalAPI
 {
@@ -31,6 +33,7 @@ namespace HydraulicCalAPI
                       .AddJsonOptions(options =>
                       {
                           options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                          options.JsonSerializerOptions.Converters.Add(new DoubleConverter());
                       });
             services.AddSingleton<HydraulicCalculationService>();
             services.AddSwaggerGen(c =>
@@ -113,6 +116,53 @@ public class DecimalSchemaFilter : ISchemaFilter
                     property.Example = new OpenApiDouble(1.2);
                 }
             }
+        }
+    }
+}
+public class DoubleConverter : JsonConverter<Double>
+{
+    public override double Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        // Check if the token type is a number and return its value directly
+        if (reader.TokenType == JsonTokenType.Number)
+        {
+            return reader.GetDouble();
+        }
+
+        // Handle the token as a string if it is not a number
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            string stringValue = reader.GetString();
+            if (stringValue == "Infinity")
+                return double.PositiveInfinity;
+            if (stringValue == "-Infinity")
+                return double.NegativeInfinity;
+            if (stringValue == "NaN")
+                return double.NaN;
+
+            // Attempt to parse the string as a double
+            if (double.TryParse(stringValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double result))
+            {
+                return result;
+            }
+            // If parsing fails, throw an informative exception
+            return 0.0;
+        }
+        return 0.0;
+
+    }
+
+
+
+    public override void Write(Utf8JsonWriter writer, double value, JsonSerializerOptions options)
+    {
+        if (double.IsPositiveInfinity(value) || double.IsNegativeInfinity(value) || double.IsNaN(value))
+        {
+            writer.WriteNumberValue(0);
+        }
+        else
+        {
+            writer.WriteNumberValue(value);
         }
     }
 }
