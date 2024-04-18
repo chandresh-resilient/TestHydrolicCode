@@ -41,6 +41,7 @@ namespace HydraulicCalAPI.Service
     public class PdfReportService
     {
         public string ReportHeader { get; set; }
+        public string RunName { get; set; }
         public string Customer { get; set; }
         public string JobNumber { get; set; }
         public string WellNameNumber { get; set; }
@@ -82,9 +83,11 @@ namespace HydraulicCalAPI.Service
         public string ProjectName { get; set; }
         public string CustomerOrderNumber { get; set; }
         public string QuoteNumber { get; set; }
+        public string PlJobNumber { get; set; }
         public string RigElevation { get; set; }
         public string ReservoirType { get; set; }
         public string WaterDepth { get; set; }
+        public double WellDepthTVD { get; set; }
         public string RigType { get; set; }
         public string WellClassification { get; set; }
         public string WorkString { get; set; }    

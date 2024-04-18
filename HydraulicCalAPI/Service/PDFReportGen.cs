@@ -17,6 +17,7 @@ using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Draw;
 
 using HydraulicCalAPI.Controllers;
+using HydraulicCalAPI.ViewModel;
 using HydraulicCalAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 using iText.Kernel.Font;
@@ -78,9 +79,9 @@ namespace HydraulicCalAPI.Service
             PdfCanvas canvas = new PdfCanvas(page.NewContentStreamBefore(), page.GetResources(), pdfDoc);
             Rectangle pageSize = page.GetPageSize();
 
-            float x = pageSize.GetWidth() / 2 + 140;
-            float yStart = 166;
-            float yEnd = yStart - 20;
+            float x = pageSize.GetWidth() / 2 + 170;
+            float yStart = 180;
+            float yEnd = yStart - 15;
             canvas.SaveState()
                 .SetLineWidth(1)
                 .MoveTo(x, yStart)
@@ -90,7 +91,7 @@ namespace HydraulicCalAPI.Service
 
             canvas.BeginText()
                 .SetFontAndSize(iText.Kernel.Font.PdfFontFactory.CreateFont(iText.IO.Font.Constants.StandardFonts.HELVETICA), 12)
-                .MoveText(pageSize.GetWidth() / 2 + 150, 150)
+                .MoveText(pageSize.GetWidth() / 2 + 170, 170)
                 .ShowText(pageNumber.ToString() + " out of " + numofpages)
                 .EndText();
             canvas.Release();
@@ -98,14 +99,19 @@ namespace HydraulicCalAPI.Service
     }
     public class PDFReportGen
     {
+        PgPreface objAuthor = new PgPreface();
+        PgTableOfContent objTblOfContent = new PgTableOfContent();
+        PgCasingLinerTubing objCasingLinerTubing = new PgCasingLinerTubing();
+        PgFluidSurface objFluidSurface = new PgFluidSurface();
+
         Color accuColor, rptgreen, lgtGrey, bhatblgreen;
         DateTime currentDate = DateTime.UtcNow.Date;
-        Dictionary<string, string> pdfAuthor;
-        Dictionary<string, string> pdfLstItemData;
+       
         Dictionary<string, string> pdfPieChart = new Dictionary<string, string>();
         HydraulicCalculationService objHydCalSrvs = new HydraulicCalculationService();
         string strCasingLinerTubing = "New Run";
         string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        int increment = 0;
 
         public byte[] generatePDF(HydraulicCalAPI.Service.PdfReportService objInputData, ChartAndGraphService objChartService, HydraulicCalculationService inputHydra)
         {
@@ -115,7 +121,7 @@ namespace HydraulicCalAPI.Service
             rptgreen = new DeviceRgb(0, 128, 0);
             lgtGrey = new DeviceRgb(217, 217, 217);
 
-            // Construct the path to the image relative to the base directory
+            // Construct the path to the image relative to the base directoryf
             string imagePath = System.IO.Path.Combine(baseDir, "Images", "wft.jpg");
 
             // Add image
@@ -131,6 +137,15 @@ namespace HydraulicCalAPI.Service
             line.SetColor(accuColor);
             LineSeparator ls = new LineSeparator(line);
 
+            if (string.IsNullOrEmpty(objInputData.RunName.ToString()))
+            {
+                strCasingLinerTubing = objInputData.RunName.ToString();
+            }
+            else
+            {
+                strCasingLinerTubing = "New Run";
+            }
+
             #region First Page
             Paragraph header = getHeader(objInputData.ReportHeader.ToString());
 
@@ -140,15 +155,13 @@ namespace HydraulicCalAPI.Service
             _pdfHead.AddCell(_pdfHeadcell)
                 .SetMarginBottom(2);
 
-            pdfAuthor = new Dictionary<string, string>();
-            pdfAuthor.Add("Customer : ", objInputData.Customer != null ? objInputData.Customer.ToString() : "");
-            pdfAuthor.Add("Job Number : ", objInputData.JobNumber != null ? objInputData.JobNumber.ToString() : "");
-            pdfAuthor.Add("Well Name and Number : ", objInputData.WellNameNumber != null ? objInputData.WellNameNumber.ToString() : "");
-            pdfAuthor.Add("Prepared By : ", objInputData.PreparedBy != null ? objInputData.PreparedBy.ToString() : "");
-            pdfAuthor.Add("Prepared On : ", objInputData.PreparedOn != null ? GetFormattedDate(objInputData.PreparedOn.ToString()) : "");
-            Table tableAuthor = getTableContent(pdfAuthor);
-
+            Table tableAuthor =  objAuthor.GetAuthorContent(objInputData);
             Paragraph comment = new Paragraph("Comment:").SetTextAlignment(TextAlignment.LEFT).SetPadding(5).SetFontSize(11).SetBold().SetHeight(100).SetBorder(new SolidBorder(1));
+            #endregion
+
+            #region Table Of Content
+            Table tblToc = new Table(3, false).SetBorder(Border.NO_BORDER);
+            tblToc = objTblOfContent.GetTableOfcontent(strCasingLinerTubing);
             #endregion
 
             #region HeaderInformation
@@ -177,7 +190,7 @@ namespace HydraulicCalAPI.Service
 
             _tabheader = "Well Information";
             pdfHederInfoData.Add("Well Name and Number", objInputData.WellNameNumber != null ? objInputData.WellNameNumber.ToString() : "");
-            pdfHederInfoData.Add("Well Location", objInputData.WellLocation != null ? objInputData.WellLocation.ToString() : "");
+            pdfHederInfoData.Add("Well Location", objInputData.WFRDLocation != null ? objInputData.WFRDLocation.ToString() : "");
             pdfHederInfoData.Add("Field", objInputData.Field != null ? objInputData.Field.ToString() : "");
             pdfHederInfoData.Add("Lease", objInputData.Lease != null ? objInputData.Lease.ToString() : "");
             pdfHederInfoData.Add("Rig", objInputData.Rig != null ? objInputData.Rig.ToString() : "");
@@ -238,72 +251,16 @@ namespace HydraulicCalAPI.Service
             #endregion
 
             #region Casing Liner Tubing
-
-            List<string> pdfCasingData = new List<string>();
-            if (objInputData.SubProductLine.ToString().ToUpper() == "FISHING")
-            {
-                strCasingLinerTubing = "CH Fishing Run";
-            }
-            else if (objInputData.SubProductLine.ToString().ToUpper() == "CASING")
-            {
-                strCasingLinerTubing = "FRE Casing Run";
-            }
-            else
-            {
-                strCasingLinerTubing = "New Run";
-            }
             Paragraph _casingLinerTubingInfo = new Paragraph(strCasingLinerTubing)
             .SetTextAlignment(TextAlignment.CENTER)
             .SetFontSize(20).SetBold();
-            //Code to get Annulus Length and BhaTool Length
-            double annulusLength = 0.00;
-            double bhatoolLength = 0.00;
-            foreach (var anulsitem in objChartService.HydraulicOutputAnnulusList)
-            {
-                annulusLength += anulsitem.Length;
-            }
-            foreach (var bhaTitem in objChartService.HydraulicOutputBHAList)
-            {
-                bhatoolLength += bhaTitem.LengthBHA;
-            }
-
-            pdfCasingData.Add(annulusLength > 0 ? (Math.Round(annulusLength, 2).ToString()) : "");
-            pdfCasingData.Add(bhatoolLength > 0 ? (Math.Round(bhatoolLength, 2).ToString()) : "");
-            pdfCasingData.Add(objChartService.ToolDepth > 0 ? (Math.Round(objChartService.ToolDepth, 2).ToString()) : "");
 
             _tabheader = "Depth Analysis";
-            Table tblDepthAnalysis = getDepthAnalysis(objInputData, pdfCasingData, _tabheader);
-
-            pdfCasingData.Clear();
+            Table tblDepthAnalysis = objCasingLinerTubing.GetDepthAnalysis(objInputData, objChartService, _tabheader);
 
             _tabheader = "Casing/ Liner/ Tubing Data";
-            // preparing Casing, Liner and Tubing Object List
-            Dictionary<string, string> dicLstCltData = new Dictionary<string, string>(); ;
-            int increment = 0;
-            foreach (var cltItem in objHydCalSrvs.annulusInput)
-            {
-
-                //Code to get WellBore weight and WellBore Grade form PdfReportService
-                string cltWeight = objInputData.CasingLinerTubeData[increment].WellBoreWeight;
-
-                string cltGrade = objInputData.CasingLinerTubeData[increment].Grade;
-                increment++;
-                dicLstCltData.Add("CLTID" + increment, increment.ToString());
-                dicLstCltData.Add("WellBoreSection" + increment, (cltItem.WellboreSectionName != null ? cltItem.WellboreSectionName.ToString() : ""));
-                dicLstCltData.Add("OutDiameter" + increment, (cltItem.AnnulusODInInch > 0 ? cltItem.AnnulusODInInch.ToString() : ""));
-                dicLstCltData.Add("InnDiameter" + increment, (cltItem.AnnulusIDInInch > 0 ? cltItem.AnnulusIDInInch.ToString() : ""));
-                dicLstCltData.Add("WellBoreWeight" + increment, (string.IsNullOrEmpty(cltWeight) ? "" : cltWeight));
-                dicLstCltData.Add("Grade" + increment, (string.IsNullOrEmpty(cltGrade.ToString()) ? "" : cltGrade));
-                dicLstCltData.Add("WellTop" + increment, (cltItem.AnnulusTopInFeet >= 0 ? cltItem.AnnulusTopInFeet.ToString() : ""));
-                dicLstCltData.Add("WellBottom" + increment, (cltItem.AnnulusBottomInFeet > 0 ? cltItem.AnnulusBottomInFeet.ToString() : ""));
-            }
-            Table tblCasingLinerTube = getCasingLinerTubing(objInputData, dicLstCltData, _tabheader); ;
-            increment = 0;
-            #endregion
-
-            #region Table Of Content
-            Table tblToc = new Table(3, false).SetBorder(Border.NO_BORDER);
-            tblToc = getTableOfcontent(strCasingLinerTubing);
+            Table tblCasingLinerTube = objCasingLinerTubing.GetCasingLinerTubing(objInputData, objHydCalSrvs, _tabheader);
+            
             #endregion
 
             #region BHA Input Data
@@ -415,37 +372,14 @@ namespace HydraulicCalAPI.Service
             #endregion
 
             #region Surface Equipment / Fluid Envelop / Fluid
-
             _tabheader = "Surface Equipment";
-            string _surfaceEquipmentData = objHydCalSrvs.surfaceEquipmentInput.CaseType.ToString();
-            double _totLength = getSurfaceEquipmentTotalLength(_surfaceEquipmentData.ToString());
-            pdfHederInfoData.Add("Surface Equipment", _surfaceEquipmentData != null ? _surfaceEquipmentData.ToString() : "");
-            pdfHederInfoData.Add("Total Length", _totLength > 0.00 ? _totLength.ToString() : "");
-            Table tblSurfaceEquipment = getSurfaceEquipDataTable(objInputData, pdfHederInfoData, _tabheader);
-            pdfHederInfoData.Clear();
-
+            Table tblSurfaceEquipment = objFluidSurface.GetSurfaceEquipDataTable(objInputData, _tabheader);
+           
             _tabheader = "Fluid Envelope";
-            pdfLstItemData = new Dictionary<string, string>();
-            pdfLstItemData.Add("MaximumAllowablePressure", objHydCalSrvs.maxflowpressure > 0 ? objHydCalSrvs.maxflowpressure.ToString() : "");
-            pdfLstItemData.Add("MaximumAllowableFlowrate", objHydCalSrvs.maxflowrate > 0 ? objHydCalSrvs.maxflowrate.ToString() : "");
-            pdfLstItemData.Add("Comments", objInputData.Comments != null ? objInputData.Comments.ToString() : "");
-            Table tblFluidEnvelope = getFluidEnvelopeInfo(objInputData, pdfLstItemData, _tabheader);
-
-            pdfLstItemData.Clear();
-
+            Table tblFluidEnvelope = objFluidSurface.GetFluidEnvelopeInfo(objInputData, _tabheader);
+            
             _tabheader = "Fluid";
-            foreach (var fluidlstitem in objInputData.FluidItemData)
-            {
-                pdfHederInfoData.Add("Solids", fluidlstitem.Solids > 0.00 ? fluidlstitem.Solids.ToString() : "");
-                pdfHederInfoData.Add("Drilling Fluid Type", fluidlstitem.DrillingFluidType != null ? fluidlstitem.DrillingFluidType.ToString() : "");
-                pdfHederInfoData.Add("Drilling Fluid Weight", objHydCalSrvs.fluidInput.DensityInPoundPerGallon > 0.00 ? objHydCalSrvs.fluidInput.DensityInPoundPerGallon.ToString() : "");
-                pdfHederInfoData.Add("Buoyancy Factor", fluidlstitem.BuoyancyFactor > 0.00 ? fluidlstitem.BuoyancyFactor.ToString() : "");
-                pdfHederInfoData.Add("Plastic Viscosity", objHydCalSrvs.fluidInput.PlasticViscosityInCentiPoise > 0.00 ? objHydCalSrvs.fluidInput.PlasticViscosityInCentiPoise.ToString() : "");
-                pdfHederInfoData.Add("Yield Point", objHydCalSrvs.fluidInput.YieldPointInPoundPerFeetSquare > 0.00 ? objHydCalSrvs.fluidInput.YieldPointInPoundPerFeetSquare.ToString() : "");
-                pdfHederInfoData.Add("Cutting Average Size", objHydCalSrvs.cuttingsInput.AverageCuttingSizeInInch > 0 ? objHydCalSrvs.cuttingsInput.AverageCuttingSizeInInch.ToString() : "");
-                pdfHederInfoData.Add("Cutting Type", fluidlstitem.CuttingType != null ? fluidlstitem.CuttingType.ToString() : "");
-            }
-            Table tblFluid = getSurfacePageInfo(objInputData, pdfHederInfoData, _tabheader);
+            Table tblFluid = objFluidSurface.GetFluidInfo(objInputData, _tabheader);
 
             pdfHederInfoData.Clear();
 
@@ -696,14 +630,14 @@ namespace HydraulicCalAPI.Service
         private void getGeneralInfo(PdfReportService objInputData, out string _tabheader, Dictionary<string, string> pdfHederInfoData, out Table tblGenInfo)
         {
             _tabheader = "General Information";
-            pdfHederInfoData.Add("PL Job Number", objInputData.JobNumber != null ? objInputData.JobNumber.ToString() : "");
+            pdfHederInfoData.Add("PL Job Number", objInputData.PlJobNumber != null ? objInputData.PlJobNumber.ToString() : "");
             pdfHederInfoData.Add("Project Name", objInputData.ProjectName != null ? objInputData.ProjectName.ToString() : "");
             pdfHederInfoData.Add("Customer Order Number", objInputData.CustomerOrderNumber != null ? objInputData.CustomerOrderNumber.ToString() : "");
             pdfHederInfoData.Add("Quote Number", objInputData.QuoteNumber != null ? objInputData.QuoteNumber.ToString() : "");
             pdfHederInfoData.Add("Rig Elevation", objInputData.RigElevation != null ? objInputData.RigElevation.ToString() : "");
             pdfHederInfoData.Add("Reservoir Type", objInputData.ReservoirType != null ? objInputData.ReservoirType.ToString() : "");
             pdfHederInfoData.Add("Water Depth", objInputData.WaterDepth != null ? objInputData.WaterDepth.ToString() : "");
-            pdfHederInfoData.Add("Well Depth (TVD)", objInputData.WellDepth > 0.00 ? objInputData.WellDepth.ToString() : "");
+            pdfHederInfoData.Add("Well Depth (TVD)", objInputData.WellDepthTVD > 0.00 ? objInputData.WellDepthTVD.ToString() : "");
             pdfHederInfoData.Add("Rig Type", objInputData.RigType != null ? objInputData.RigType.ToString() : "");
             pdfHederInfoData.Add("Well Classification", objInputData.WellClassification != null ? objInputData.WellClassification.ToString() : "");
             pdfHederInfoData.Add("Work String", objInputData.WorkString != null ? objInputData.WorkString.ToString() : "");
@@ -926,63 +860,7 @@ namespace HydraulicCalAPI.Service
             }
             return formattedDate;
         }
-        public Table getTableOfcontent(string strSubProductLine)
-        {
-            Table _tbltoc = new Table(3, true);
-
-            Cell tocHeader = new Cell(1, 3).Add(new Paragraph("Table Of Contents")).SetFontSize(18).SetBold().SetBorder(Border.NO_BORDER);
-
-            Cell tocLine1col1r1 = new Cell(1, 1).Add(new Paragraph("1.")).SetWidth(2).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine1col2r1 = new Cell(1, 1).Add(new Paragraph("Header Information")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine1col3r1 = new Cell(1, 1).Add(new Paragraph("3")).SetWidth(10).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
-
-            Cell tocLine2col1r2 = new Cell(1, 1).Add(new Paragraph("2.")).SetWidth(2).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine2col2r2 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Casing Liner Tubing")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine2col3r2 = new Cell(1, 1).Add(new Paragraph("4")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
-
-            Cell tocLine3col1r3 = new Cell(1, 1).Add(new Paragraph("3.")).SetWidth(2).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine3col2r3 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - BHA")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine3col3r3 = new Cell(1, 1).Add(new Paragraph("5")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
-
-            Cell tocLine4col1r4 = new Cell(1, 1).Add(new Paragraph("4.")).SetWidth(2).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine4col2r4 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Surface Equipment & Fluid Information")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine4col3r4 = new Cell(1, 1).Add(new Paragraph("6")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
-
-            Cell tocLine5col1r5 = new Cell(1, 1).Add(new Paragraph("5.")).SetWidth(2).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine5col2r5 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Standpipe vs Flowrate Graph")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine5col3r5 = new Cell(1, 1).Add(new Paragraph("7")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
-
-            Cell tocLine6col1r6 = new Cell(1, 1).Add(new Paragraph("6.")).SetWidth(2).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine6col2r6 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Hydraulic Output")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-            Cell tocLine6col3r6 = new Cell(1, 1).Add(new Paragraph("8")).SetFontSize(10).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
-
-
-            _tbltoc.AddCell(tocHeader);
-            _tbltoc.AddCell(tocLine1col1r1);
-            _tbltoc.AddCell(tocLine1col2r1);
-            _tbltoc.AddCell(tocLine1col3r1);
-
-            _tbltoc.AddCell(tocLine2col1r2);
-            _tbltoc.AddCell(tocLine2col2r2);
-            _tbltoc.AddCell(tocLine2col3r2);
-
-            _tbltoc.AddCell(tocLine3col1r3);
-            _tbltoc.AddCell(tocLine3col2r3);
-            _tbltoc.AddCell(tocLine3col3r3);
-
-            _tbltoc.AddCell(tocLine4col1r4);
-            _tbltoc.AddCell(tocLine4col2r4);
-            _tbltoc.AddCell(tocLine4col3r4);
-
-            _tbltoc.AddCell(tocLine5col1r5);
-            _tbltoc.AddCell(tocLine5col2r5);
-            _tbltoc.AddCell(tocLine5col3r5);
-
-            _tbltoc.AddCell(tocLine6col1r6);
-            _tbltoc.AddCell(tocLine6col2r6);
-            _tbltoc.AddCell(tocLine6col3r6);
-            return _tbltoc;
-        }
+      
         private static void AddFooter(PdfDocument pdfDocument, Document document, PdfReportService objFooterData)
         {
             Paragraph footer = new Paragraph();
@@ -1043,7 +921,7 @@ namespace HydraulicCalAPI.Service
             {
                 var page = pdfDocument.GetPage(pageId);
                 var leftMarginPosition = document.GetLeftMargin();
-                document.ShowTextAligned(footer, leftMarginPosition, UnitConverter.mm2uu(50), pageId,
+                document.ShowTextAligned(footer, leftMarginPosition, UnitConverter.mm2uu(55), pageId,
                     TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
             }
         }
@@ -1312,7 +1190,14 @@ namespace HydraulicCalAPI.Service
                             paint.Color = SKColor.Parse(hexString);
                             canvas.DrawRect(legendX, legendY, legendItemHeight, legendItemHeight, paint);
                         }
-                        canvas.DrawText($"{data.Label}", legendX + legendItemHeight + 5, legendY + 8, new SKPaint());
+                        using (var lblpaint = new SKPaint())
+                        {
+                            lblpaint.TextSize = 8;
+                            lblpaint.Color = SKColors.Black;
+                            lblpaint.TextAlign = SKTextAlign.Left;
+                            canvas.DrawText($"{labelPercentage}%" + "=>" + $"{data.Label}", legendX + legendItemHeight + 5, legendY + 8, lblpaint);
+                        }
+                           
                         legendY += legendItemHeight + 5;
                     }
 
@@ -1396,36 +1281,36 @@ namespace HydraulicCalAPI.Service
             Cell _blankcell, _blankcell1, _blankcell2;
 
             double annulusFrm = objHydrAnnulus.From * objUOM.UOM.DepthMultiplier;
-            double annulusTo = objHydrAnnulus.From * objUOM.UOM.DepthMultiplier;
-            double annulusAvgVel = objHydrAnnulus.From * objUOM.UOM.DepthMultiplier;
-            double annulusCritVel = objHydrAnnulus.From * objUOM.UOM.DepthMultiplier;
-            double annulusChipRt = objHydrAnnulus.From * objUOM.UOM.DepthMultiplier;
-            double annulusPrDrop = objHydrAnnulus.From * objUOM.UOM.PressureMultiplier;
+            double annulusTo = objHydrAnnulus.To * objUOM.UOM.DepthMultiplier;
+            double annulusAvgVel = objHydrAnnulus.AverageVelocity * objUOM.UOM.DepthMultiplier;
+            double annulusCritVel = objHydrAnnulus.CriticalVelocity * objUOM.UOM.DepthMultiplier;
+            double annulusChipRt = objHydrAnnulus.ChipRate * objUOM.UOM.DepthMultiplier;
+            double annulusPrDrop = objHydrAnnulus.PressureDrop * objUOM.UOM.PressureMultiplier;
 
             if (objHydrAnnulus.AnnulusColor.ToString().ToUpper() == "RED")
             {
-                _blankcell = new Cell(1, 1).SetBackgroundColor(ColorConstants.RED).Add(imgUpArrow).SetWidth(10);
+                _blankcell = new Cell(1, 1).SetBackgroundColor(ColorConstants.RED).Add(imgUpArrow).SetWidth(10).SetBorder(Border.NO_BORDER);
             }
             else if (objHydrAnnulus.AnnulusColor.ToString().ToUpper() == "YELLOW")
             {
-                _blankcell = new Cell(1, 1).SetBackgroundColor(ColorConstants.YELLOW).Add(imgUpArrow).SetWidth(10);
+                _blankcell = new Cell(1, 1).SetBackgroundColor(ColorConstants.YELLOW).Add(imgUpArrow).SetWidth(10).SetBorder(Border.NO_BORDER);
             }
             else
             {
-                _blankcell = new Cell(1, 1).SetBackgroundColor(ColorConstants.GREEN).Add(imgUpArrow).SetWidth(10);
+                _blankcell = new Cell(1, 1).SetBackgroundColor(ColorConstants.GREEN).Add(imgUpArrow).SetWidth(10).SetBorder(Border.NO_BORDER);
             }
-            _blankcell1 = new Cell(1, 1).Add(new Paragraph(" ")).SetWidth(10).SetBackgroundColor(lgtGrey);
+            _blankcell1 = new Cell(1, 1).Add(new Paragraph(" ")).SetWidth(10).SetBackgroundColor(lgtGrey).SetBorder(Border.NO_BORDER);
             if (objHydrAnnulus.AnnulusColor.ToString().ToUpper() == "RED")
             {
-                _blankcell2 = new Cell(1, 1).SetBackgroundColor(ColorConstants.RED).Add(imgUpArrow).SetWidth(10);
+                _blankcell2 = new Cell(1, 1).SetBackgroundColor(ColorConstants.RED).Add(imgUpArrow).SetWidth(10).SetBorder(Border.NO_BORDER);
             }
             else if (objHydrAnnulus.AnnulusColor.ToString().ToUpper() == "YELLOW")
             {
-                _blankcell2 = new Cell(1, 1).SetBackgroundColor(ColorConstants.YELLOW).Add(imgUpArrow).SetWidth(10);
+                _blankcell2 = new Cell(1, 1).SetBackgroundColor(ColorConstants.YELLOW).Add(imgUpArrow).SetWidth(10).SetBorder(Border.NO_BORDER);
             }
             else
             {
-                _blankcell2 = new Cell(1, 1).SetBackgroundColor(ColorConstants.GREEN).Add(imgUpArrow).SetWidth(10);
+                _blankcell2 = new Cell(1, 1).SetBackgroundColor(ColorConstants.GREEN).Add(imgUpArrow).SetWidth(10).SetBorder(Border.NO_BORDER);
             }
 
             Cell cellAnnulus = new Cell(1, 1).Add(new Paragraph(objHydrAnnulus.Annulus.ToString()).SetTextAlignment(TextAlignment.CENTER).SetWidth(39));
@@ -1784,18 +1669,7 @@ namespace HydraulicCalAPI.Service
               .SetFontSize(20).SetBold().SetFontColor(accuColor);
             return _headertext;
         }
-        public Table getTableContent(Dictionary<string, string> objDic)
-        {
-            Table _table = new Table(2, true);
-
-            foreach (var item in objDic)
-            {
-                _table.AddCell(new Paragraph(item.Key).SetTextAlignment(TextAlignment.LEFT).SetBold());
-                _table.AddCell(new Paragraph(item.Value).SetTextAlignment(TextAlignment.LEFT).SetWidth(150));
-            }
-            //doc.Add(table);
-            return _table.SetAutoLayout();
-        }
+        
         public Table getHeaderInfoTable(PdfReportService objUOM, Dictionary<string, string> objSegment, string tabHeader)
         {
             string tabheadertext = tabHeader;
@@ -1905,179 +1779,6 @@ namespace HydraulicCalAPI.Service
             }
             return _tableSeg.SetAutoLayout();
         }
-        #endregion
-
-        #region Casing / Liner / Tubing
-        public Table getDepthAnalysis(PdfReportService objUOM, List<string> objDpthAnalysisValue, string tablehead)
-        {
-            int count = 3;
-            string _tblheadText = tablehead;
-
-            string charFt = "ft";
-            if (objUOM.UOM.DepthName.ToUpper() != "FT")
-            {
-                charFt = objUOM.UOM.DepthName.ToString();
-            }
-
-            double _length;
-
-            Table _tabDepth = new Table(3, false);
-            _tabDepth.SetFontSize(8);
-
-            Cell da = new Cell(1, 3).Add(new Paragraph(_tblheadText)).SetTextAlignment(TextAlignment.LEFT).SetBold().SetBackgroundColor(lgtGrey).SetWidth(200);
-            _tabDepth.AddHeaderCell(da);
-
-            for (int i = 1; i <= count; i++)
-            {
-                switch (i)
-                {
-                    case 1:
-                        {
-                            _length = 0.00;
-                            Cell daAnnulusLength = new Cell(1, 1).Add(new Paragraph("Annulus Length")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(100);
-                            if(objDpthAnalysisValue[0] != "")
-                            {
-                                _length = double.Parse(objDpthAnalysisValue[0]) * objUOM.UOM.DepthMultiplier;
-                            }
-                            Cell daAnLen = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 2).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
-                            _tabDepth.AddCell(daAnnulusLength);
-                            _tabDepth.AddCell(daAnLen);
-                            break;
-                        }
-                    case 2:
-                        {
-                            _length = 0.00;
-                            Cell daBHALength = new Cell(1, 1).Add(new Paragraph("BHA Length")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(100);
-                            if (objDpthAnalysisValue[1] != "")
-                            {
-                                _length = double.Parse(objDpthAnalysisValue[1]) * objUOM.UOM.DepthMultiplier;
-                            }
-                             Cell daBhaLen = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 2).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
-                            _tabDepth.AddCell(daBHALength);
-                            _tabDepth.AddCell(daBhaLen);
-                            break;
-                        }
-                    case 3:
-                        {
-                            _length = 0.00;
-                            Cell daToolLength = new Cell(1, 1).Add(new Paragraph("Tool Depth")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(100);
-                            if (objDpthAnalysisValue[2] != "")
-                            {
-                                _length = double.Parse(objDpthAnalysisValue[2]) * objUOM.UOM.DepthMultiplier;
-                            }
-                            Cell daTulDpth = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 2).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
-                            _tabDepth.AddCell(daToolLength);
-                            _tabDepth.AddCell(daTulDpth);
-                            break;
-                        }
-                    default:
-                        break;
-                }
-                Cell celdaUom = new Cell(1, 1).Add(new Paragraph(" " + charFt)).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(100);
-                _tabDepth.AddCell(celdaUom);
-            }
-
-            return _tabDepth.SetAutoLayout();
-        }
-
-        public Table getCasingLinerTubing(PdfReportService objUOM, Dictionary<string, string> objclt, string tablehead)
-        {
-            string charFt = "ft";
-            string charIn = "in";
-            string charLbs = "lbs";
-            if (objUOM.UOM.SizeName.ToUpper() != "IN")
-            {
-                charIn = objUOM.UOM.SizeName.ToString();
-            }
-            else if (objUOM.UOM.WeightName.ToUpper() != "LBS")
-            {
-                charLbs = objUOM.UOM.WeightName.ToString();
-            }
-            else if (objUOM.UOM.DepthName.ToUpper() != "FT")
-            {
-                charFt = objUOM.UOM.DepthName.ToString();
-            }
-            else { }
-
-            string _tblcltheader = tablehead;
-
-            Table _tabclt = new Table(8, true);
-            _tabclt.SetFontSize(8);
-            Cell cltheadcell = new Cell(1, 8).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(_tblcltheader).SetBold().SetBackgroundColor(lgtGrey));
-            _tabclt.AddHeaderCell(cltheadcell);
-
-            Cell cltid = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("#").SetBold().SetBackgroundColor(lgtGrey));
-            Cell cltwellsection = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Wellbore Section").SetBold().SetBackgroundColor(lgtGrey));
-            Cell cltoutdia = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("OD (" + charIn + ")").SetBold().SetBackgroundColor(lgtGrey));
-            Cell cltindia = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("ID (" + charIn + ")").SetBold().SetBackgroundColor(lgtGrey));
-            Cell cltweight = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Weight (" + charLbs + "/" + charFt + ")").SetBold().SetBackgroundColor(lgtGrey));
-            Cell cltgrade = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Grade").SetBold().SetBackgroundColor(lgtGrey));
-            Cell clttop = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Top Depth (" + charFt + ")").SetBold().SetBackgroundColor(lgtGrey));
-            Cell cltbottom = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Bottom Depth (" + charFt + ")").SetBold().SetBackgroundColor(lgtGrey));
-
-            _tabclt.AddCell(cltid);
-            _tabclt.AddCell(cltwellsection);
-            _tabclt.AddCell(cltoutdia);
-            _tabclt.AddCell(cltindia);
-            _tabclt.AddCell(cltweight);
-            _tabclt.AddCell(cltgrade);
-            _tabclt.AddCell(clttop);
-            _tabclt.AddCell(cltbottom);
-
-            foreach (var item in objclt.Keys)
-            {
-                double newUom = 0.00;
-                string addtocell = string.IsNullOrEmpty(objclt[item]) ? "" : objclt[item].ToString();
-                if (item.Contains("OD"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objclt[item]) * objUOM.UOM.SizeMultiplier), 2);
-                    }
-                }
-                else if (item.Contains("ID"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objclt[item]) * objUOM.UOM.SizeMultiplier), 2);
-                    }
-                }
-                else if (item.Contains("Weight"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objclt[item]) * objUOM.UOM.WeightMultiplier), 2);
-                    }
-                }
-                else if (item.Contains("Top"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objclt[item]) * objUOM.UOM.DepthMultiplier), 2);
-                    }
-                }
-                else if (item.Contains("Bottom"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objclt[item]) * objUOM.UOM.DepthMultiplier), 2);
-                    }
-                }
-                else { }
-                if (newUom > 0)
-                {
-                    addtocell = newUom.ToString();
-                }
-                else
-                {
-                    addtocell = addtocell;
-                }
-                Cell cltidv = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(addtocell));
-                _tabclt.AddCell(cltidv);
-            }
-            return _tabclt.SetAutoLayout();
-        }
-
         #endregion
 
         #region Bottom Hole Assembly
@@ -2210,263 +1911,6 @@ namespace HydraulicCalAPI.Service
             }
 
             return _tblBHA.SetAutoLayout();
-        }
-        #endregion
-
-        #region Fluid Envelope
-        private double getSurfaceEquipmentTotalLength(string equipmenttyp)
-        {
-            double tlength = 0.00;
-            switch (equipmenttyp)
-            {
-                case "Case1":
-                    {
-                        tlength = 124.00;
-                        break;
-                    }
-                case "Case2":
-                    {
-                        tlength = 140.00;
-                        break;
-                    }
-                case "Case3":
-                    {
-                        tlength = 145.00;
-                        break;
-                    }
-                case "Case4":
-                    {
-                        tlength = 146.00;
-                        break;
-                    }
-                case "TopDrive":
-                    {
-                        tlength = 106.00;
-                        break;
-                    }
-                default:
-                    break;
-            }
-            return tlength;
-        }
-        public Table getSurfaceEquipDataTable(PdfReportService objUOM, Dictionary<string, string> objSurfEquip, string tabHeader)
-        {
-            string tabheadertext = tabHeader;
-            string charFt = "ft";
-            if (objUOM.UOM.DepthName.ToUpper() != "FT")
-            {
-                charFt = objUOM.UOM.DepthName.ToString();
-            }
-
-            double _surfLength = 0.00;
-            Table _tableSeg = new Table(5, true);
-            _tableSeg.SetFontSize(8);
-            Cell sn = new Cell(1, 5).Add(new Paragraph(tabheadertext)).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(lgtGrey).SetBold();
-            _tableSeg.AddHeaderCell(sn);
-
-            foreach (var item in objSurfEquip)
-            {
-                if (item.Key.Contains("Total"))
-                {
-                    _surfLength = double.Parse(item.Value) * objUOM.UOM.DensityMultiplier;
-                }
-
-                Cell celsrfEqpKey = new Cell(1, 1).Add(new Paragraph(item.Key)).SetBold().SetTextAlignment(TextAlignment.LEFT);
-                Cell celsrfEqpValue = new Cell(1, 1).Add(new Paragraph(_surfLength.ToString())).SetTextAlignment(TextAlignment.LEFT);
-                _tableSeg.AddCell(celsrfEqpKey);
-                _tableSeg.AddCell(celsrfEqpValue);
-            }
-            Cell surfEquipUom = new Cell(1, 1).Add(new Paragraph(" " + charFt)).SetTextAlignment(TextAlignment.LEFT).SetWidth(40);
-            _tableSeg.AddCell(surfEquipUom);
-            return _tableSeg.SetAutoLayout();
-        }
-        public Table getFluidEnvelopeInfo(PdfReportService objUOM, Dictionary<string, string> objfluidvalues, string fluidenvheader)
-        {
-            int count = 3;
-            string _tblheadText = fluidenvheader;
-            string charPsi = "psi";
-            string charGal = "gal/min";
-            if (objUOM.UOM.PressureName.ToUpper() != "PSI")
-            {
-                charPsi = objUOM.UOM.PressureName.ToString();
-            }
-            else if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
-            {
-                charGal = objUOM.UOM.FlowRateName.ToString();
-            }
-            else { }
-
-            double pfrValue;
-
-            Table _tabFluidEnvelope = new Table(3, false);
-            _tabFluidEnvelope.SetFontSize(8);
-
-            Cell da = new Cell(1, 3).Add(new Paragraph(_tblheadText)).SetTextAlignment(TextAlignment.LEFT).SetBold().SetBackgroundColor(lgtGrey);
-            _tabFluidEnvelope.AddHeaderCell(da);
-
-            for (int i = 1; i <= count; i++)
-            {
-                switch (i)
-                {
-                    case 1:
-                        {
-                            pfrValue = 0.00;
-                            Cell maxflowpressure = new Cell(1, 1).Add(new Paragraph("Maximum Allowable Pressure")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(150);
-                            if (objfluidvalues["MaximumAllowablePressure"] != "")
-                            {
-                                pfrValue = Math.Round((double.Parse(objfluidvalues["MaximumAllowablePressure"]) * objUOM.UOM.PressureMultiplier), 2);
-                            }
-                            Cell maxflowpr = new Cell(1, 1).Add(new Paragraph(pfrValue > 0 ? pfrValue.ToString() : "")).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
-                            Cell celMfpUom = new Cell(1, 1).Add(new Paragraph(" " + charPsi)).SetTextAlignment(TextAlignment.LEFT).SetWidth(50);
-                            _tabFluidEnvelope.AddCell(maxflowpressure);
-                            _tabFluidEnvelope.AddCell(maxflowpr);
-                            _tabFluidEnvelope.AddCell(celMfpUom);
-                            break;
-                        }
-                    case 2:
-                        {
-                            pfrValue = 0.00;
-                            Cell maxflowrate = new Cell(1, 1).Add(new Paragraph("Maximum Allowable Flowrate")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(150);
-                            if (objfluidvalues["MaximumAllowableFlowrate"] != "")
-                            {
-                                pfrValue = Math.Round((double.Parse(objfluidvalues["MaximumAllowableFlowrate"]) * objUOM.UOM.FlowRateMultiplier), 2);
-                            }
-                            Cell maxflrate = new Cell(1, 1).Add(new Paragraph(pfrValue > 0 ? pfrValue.ToString() : "")).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
-                            Cell celUomflrate = new Cell(1, 1).Add(new Paragraph(" " + charGal)).SetTextAlignment(TextAlignment.LEFT).SetWidth(50);
-                            _tabFluidEnvelope.AddCell(maxflowrate);
-                            _tabFluidEnvelope.AddCell(maxflrate);
-                            _tabFluidEnvelope.AddCell(celUomflrate);
-                            break;
-                        }
-                    case 3:
-                        {
-                            Cell fecomment = new Cell(1, 1).Add(new Paragraph("Comments")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(100);
-                            Cell fecomm = new Cell(1, 2).Add(new Paragraph(objfluidvalues["Comments"])).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
-                            _tabFluidEnvelope.AddCell(fecomment);
-                            _tabFluidEnvelope.AddCell(fecomm);
-                            break;
-                        }
-                    default:
-                        break;
-                }
-            }
-            return _tabFluidEnvelope.SetAutoLayout();
-        }
-        public Table getSurfacePageInfo(PdfReportService objUOM, Dictionary<string, string> objSegment, string tabHeader)
-        {
-            string tabheadertext = tabHeader;
-
-            string charIn = "in";
-            string charDens = "lb/gal";
-            string charCenti = "centipoise";
-            string charYld = "lbf/100ft²";
-
-            if (objUOM.UOM.SizeName.ToUpper() != "IN")
-            {
-                charIn = objUOM.UOM.SizeName.ToString();
-            }
-            else if (objUOM.UOM.YieldPointName.ToUpper() != "LBF/100FT^2")
-            {
-                charYld = objUOM.UOM.YieldPointName.ToString();
-            }
-            if (objUOM.UOM.DensityName.ToUpper() != "LB/GAL" || objUOM.UOM.DensityName.ToUpper() != "PSI")
-            {
-                charDens = objUOM.UOM.DensityName.ToString();
-            }
-            else if (objUOM.UOM.PlasticViscosityName.ToUpper() != "CENTIPOISE")
-            {
-                charCenti = objUOM.UOM.PlasticViscosityName.ToString();
-            }
-            else { }
-
-            Table _tableSurf = new Table(6, true);
-            _tableSurf.SetFontSize(8);
-            Cell sn = new Cell(1, 6).Add(new Paragraph(tabheadertext)).SetTextAlignment(TextAlignment.LEFT).SetBold().SetBackgroundColor(lgtGrey);
-            _tableSurf.AddHeaderCell(sn);
-
-            foreach (var item in objSegment)
-            {
-                Cell celfldValue, celfldUom;
-                string itmvalue = string.IsNullOrEmpty(item.Value) ? "" : item.Value.ToString();
-
-                Cell celFldKey = new Cell(1, 1).Add(new Paragraph(item.Key)).SetBold().SetTextAlignment(TextAlignment.LEFT);
-                _tableSurf.AddCell(celFldKey);
-                if (item.Key.Contains("Solids"))
-                {
-                    celfldValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
-                    _tableSurf.AddCell(celfldValue);
-                    celfldUom = new Cell(1, 1).Add(new Paragraph(" % "));
-                    _tableSurf.AddCell(celfldUom);
-                }
-                else if (item.Key.Contains("Fluid Type"))
-                {
-                    celfldValue = new Cell(1, 2).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
-                    _tableSurf.AddCell(celfldValue);
-                }
-                else if (item.Key.Contains("Fluid Weight"))
-                {
-                    if (itmvalue != "")
-                    {
-                        itmvalue = Math.Round((double.Parse(itmvalue) * objUOM.UOM.DensityMultiplier), 2).ToString();
-                    }
-                    celfldValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
-                    _tableSurf.AddCell(celfldValue);
-                    celfldUom = new Cell(1, 1).Add(new Paragraph(" " + charDens));
-                    _tableSurf.AddCell(celfldUom);
-                }
-                else if (item.Key.Contains("Buoyancy"))
-                {
-                    if (itmvalue != "")
-                    {
-                        itmvalue = Math.Round((double.Parse(itmvalue) * objUOM.UOM.DensityMultiplier), 2).ToString();
-                    }
-                    celfldValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
-                    _tableSurf.AddCell(celfldValue);
-                    celfldUom = new Cell(1, 1).Add(new Paragraph(" " + charDens));
-                    _tableSurf.AddCell(celfldUom);
-                }
-                else if (item.Key.Contains("Viscosity"))
-                {
-                    if (itmvalue != "")
-                    {
-                        itmvalue = Math.Round((double.Parse(itmvalue) * objUOM.UOM.PlasticViscosityMultiplier), 2).ToString();
-                    }
-                    celfldValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
-                    _tableSurf.AddCell(celfldValue);
-                    celfldUom = new Cell(1, 1).Add(new Paragraph(" " + charCenti));
-                    _tableSurf.AddCell(celfldUom);
-                }
-                else if (item.Key.Contains("Yield"))
-                {
-                    if (itmvalue != "")
-                    {
-                        itmvalue = Math.Round((double.Parse(itmvalue) * objUOM.UOM.YieldPointMultiplier), 2).ToString();
-                    }
-                    celfldValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
-                    _tableSurf.AddCell(celfldValue);
-                    celfldUom = new Cell(1, 1).Add(new Paragraph("  " + charYld));
-                    _tableSurf.AddCell(celfldUom);
-                }
-                else if (item.Key.Contains("Average Size"))
-                {
-                    if (itmvalue != "")
-                    {
-                        itmvalue = Math.Round((double.Parse(itmvalue) * objUOM.UOM.SizeMultiplier), 2).ToString();
-                    }
-                    celfldValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
-                    _tableSurf.AddCell(celfldValue);
-                    celfldUom = new Cell(1, 1).Add(new Paragraph(" " + charIn));
-                    _tableSurf.AddCell(celfldUom);
-                }
-                else if (item.Key.Contains("Cutting Type"))
-                {
-                    celfldValue = new Cell(1, 2).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
-                    _tableSurf.AddCell(celfldValue);
-                }
-                else { }
-
-            }
-            return _tableSurf.SetAutoLayout();
         }
         #endregion
 
