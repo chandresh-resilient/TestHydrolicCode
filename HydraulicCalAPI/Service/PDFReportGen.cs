@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
 
 using SkiaSharp;
@@ -79,7 +80,7 @@ namespace HydraulicCalAPI.Service
             PdfCanvas canvas = new PdfCanvas(page.NewContentStreamBefore(), page.GetResources(), pdfDoc);
             Rectangle pageSize = page.GetPageSize();
 
-            float x = pageSize.GetWidth() / 2 + 170;
+            float x = pageSize.GetWidth() / 2 + 165;
             float yStart = 180;
             float yEnd = yStart - 15;
             canvas.SaveState()
@@ -91,7 +92,7 @@ namespace HydraulicCalAPI.Service
 
             canvas.BeginText()
                 .SetFontAndSize(iText.Kernel.Font.PdfFontFactory.CreateFont(iText.IO.Font.Constants.StandardFonts.HELVETICA), 12)
-                .MoveText(pageSize.GetWidth() / 2 + 170, 170)
+                .MoveText(pageSize.GetWidth() / 2 + 180, 170)
                 .ShowText(pageNumber.ToString() + " out of " + numofpages)
                 .EndText();
             canvas.Release();
@@ -103,6 +104,8 @@ namespace HydraulicCalAPI.Service
         PgTableOfContent objTblOfContent = new PgTableOfContent();
         PgCasingLinerTubing objCasingLinerTubing = new PgCasingLinerTubing();
         PgFluidSurface objFluidSurface = new PgFluidSurface();
+        PgFooter objFooter = new PgFooter();
+        PgBottomHoleAssembly objBottomHoleAssembly = new PgBottomHoleAssembly();
 
         Color accuColor, rptgreen, lgtGrey, bhatblgreen;
         DateTime currentDate = DateTime.UtcNow.Date;
@@ -265,108 +268,7 @@ namespace HydraulicCalAPI.Service
 
             #region BHA Input Data
             _tabheader = "Bottom Hole Assembly (Top Down)";
-            Dictionary<string, string> dicLstBhaData = new Dictionary<string, string>();
-
-            foreach (var bhawrkStrlstitem in objHydCalSrvs.bhaInput)
-            {
-                string toolType = bhawrkStrlstitem.bhatooltype.ToString().ToUpper();
-                increment++;
-                switch (toolType)
-                {
-                    case "WRKSTR":
-                        {
-                            dicLstBhaData.Add("BhaLstID" + increment, increment.ToString());
-                            dicLstBhaData.Add("ToolDescription" + increment, bhawrkStrlstitem.SectionName != null ? bhawrkStrlstitem.SectionName.ToString() : "");
-                            dicLstBhaData.Add("SerialNumber" + increment, "");
-                            dicLstBhaData.Add("MeasuredOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "");
-                            dicLstBhaData.Add("InnerDiameter" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "");
-                            // code to get Workstring Weight and Upper Connection type
-                            var wrkStrWeight = objInputData.WorkStringItems.Where(wks => increment.Equals(bhawrkStrlstitem.PositionNumber))
-                                                  .Select(wks => wks.wrkWeight);
-                            var wrkStrUpConnTyp = objInputData.WorkStringItems.Where(wks => increment.Equals(bhawrkStrlstitem.PositionNumber))
-                                                    .Select(wks => wks.wrkUpperConnType);
-                            dicLstBhaData.Add("Weight" + increment, wrkStrWeight != null ? wrkStrWeight.FirstOrDefault() : "");
-                            dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "");
-                            dicLstBhaData.Add("UpperConnType" + increment, wrkStrUpConnTyp != null ? wrkStrUpConnTyp.FirstOrDefault() : "");
-                            dicLstBhaData.Add("LowerConnType" + increment, "");
-                            dicLstBhaData.Add("FishNeckOD" + increment, "");
-                            dicLstBhaData.Add("LenFshNck" + increment, "");
-                            dicLstBhaData.Add("HydraulicOD" + increment, "");
-                            dicLstBhaData.Add("HydraulicID" + increment, "");
-                            break;
-                        }
-                    default:
-                        {
-                            dicLstBhaData.Add("BhaLstID" + increment, increment.ToString());
-                            dicLstBhaData.Add("ToolDescription" + increment, bhawrkStrlstitem.toolDescription != null ? bhawrkStrlstitem.toolDescription.ToString() : "");
-                            dicLstBhaData.Add("SerialNumber" + increment, bhawrkStrlstitem.PositionNumber > 0 ? bhawrkStrlstitem.PositionNumber.ToString() : "");
-                            dicLstBhaData.Add("MeasuredOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "");
-                            dicLstBhaData.Add("InnerDiameter" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "");
-                            // code to get BHA Weight and Upper Connection type
-                            var bhatoolWeight = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
-                                                .Select(bt => bt.Weight);
-                            var bhatoolUpConnTyp = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
-                                                .Select(bt => bt.UpperConnType);
-                            var bhatoolLowConntyp = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
-                                                                    .Select(bt => bt.LowerConnType);
-                            var bhatoolFishNeckOD = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
-                                                                    .Select(bt => bt.FishNeckOD);
-                            var bhatoolFishNeckLen = objInputData.BHAToolItemData.Where(bt => bt.SerialNumber == bhawrkStrlstitem.PositionNumber)
-                                                                     .Select(bt => bt.FishNeckLength);
-                            string _bhatoolweight = bhatoolWeight.FirstOrDefault();
-                            if (_bhatoolweight == null || _bhatoolweight.ToUpper() == "NULL" || _bhatoolweight.ToUpper() == "NA")
-                            {
-                                dicLstBhaData.Add("Weight" + increment, "");
-                            }
-                            else
-                            {
-                                dicLstBhaData.Add("Weight" + increment, bhatoolWeight.FirstOrDefault().Substring(0, bhatoolWeight.FirstOrDefault().Length - 5)); 
-                            }
-                            dicLstBhaData.Add("Length" + increment, bhawrkStrlstitem.LengthInFeet > 0 ? bhawrkStrlstitem.LengthInFeet.ToString() : "");
-
-                            string _bhatoolUpConnTyp = bhatoolUpConnTyp.FirstOrDefault();
-                            if (_bhatoolUpConnTyp == null || _bhatoolUpConnTyp.ToUpper() == "NULL" || _bhatoolUpConnTyp.ToUpper() == "NA")
-                            {
-                                dicLstBhaData.Add("UpperConnType" + increment, ""); 
-                            }
-                            else
-                            {
-                                dicLstBhaData.Add("UpperConnType" + increment, bhatoolUpConnTyp.FirstOrDefault());
-                            }
-                            string _bhatoolLowConntyp = bhatoolLowConntyp.FirstOrDefault();
-                            if (_bhatoolLowConntyp == null || _bhatoolLowConntyp.ToUpper() == "NULL" || _bhatoolLowConntyp.ToUpper() == "NA")
-                            {
-                                dicLstBhaData.Add("LowerConnType" + increment, "");
-                            }
-                            else
-                            {
-                                dicLstBhaData.Add("LowerConnType" + increment, bhatoolLowConntyp.FirstOrDefault());
-                            }
-                            string _bhatoolFishNeckOD = bhatoolFishNeckOD.FirstOrDefault();
-                            if (_bhatoolFishNeckOD == null || _bhatoolFishNeckOD.ToUpper() == "NULL" || _bhatoolFishNeckOD.ToUpper() == "NA")
-                            {
-                                dicLstBhaData.Add("FishNeckOD" + increment, "");
-                            }
-                            else
-                            {
-                                dicLstBhaData.Add("FishNeckOD" + increment, bhatoolFishNeckOD.FirstOrDefault());
-                            }
-                            string _bhatoolFishNeckLen = bhatoolFishNeckLen.FirstOrDefault();
-                            if (_bhatoolFishNeckLen == null || _bhatoolFishNeckLen.ToUpper() == "NULL" || _bhatoolFishNeckLen.ToUpper() == "NA")
-                            {
-                                dicLstBhaData.Add("LenFshNck" + increment, "");
-                            }
-                            else
-                            {
-                                dicLstBhaData.Add("LenFshNck" + increment, bhatoolFishNeckLen.FirstOrDefault());
-                            }
-                            dicLstBhaData.Add("HydraulicOD" + increment, bhawrkStrlstitem.OutsideDiameterInInch > 0 ? bhawrkStrlstitem.OutsideDiameterInInch.ToString() : "");
-                            dicLstBhaData.Add("HydraulicID" + increment, bhawrkStrlstitem.InsideDiameterInInch > 0 ? bhawrkStrlstitem.InsideDiameterInInch.ToString() : "");
-                            break;
-                        }
-                }
-            }
-            Table tblBhaData = getBha(objInputData, dicLstBhaData, _tabheader);
+            Table tblBhaData = objBottomHoleAssembly.GetBha(objInputData, _tabheader);
             increment = 0;
 
             #endregion
@@ -531,7 +433,7 @@ namespace HydraulicCalAPI.Service
                 {
                     PositionNum = item.PositionNo > 0 ? item.PositionNo : 0,
                     WorkString = string.IsNullOrEmpty(item.Workstring) ? "" : item.Workstring.ToString(),
-                    Length = item.LengthBHA > 0 ? Math.Round(item.LengthBHA, 2) : 0,
+                    Length = item.LengthBHA > 0 ? Math.Round(item.LengthBHA, 3) : 0,
                     InputFlowRate = item.InputFlowRate > 0 ? Math.Round(item.InputFlowRate, 3) : 0,
                     AverageVelocity = item.AverageVelocity > 0 ? Math.Round(item.AverageVelocity, 3) : 0,
                     AvgVelocityColor = item.AverageVelocityColor.ToString() != null ? item.AverageVelocityColor.ToString() : "",
@@ -616,7 +518,7 @@ namespace HydraulicCalAPI.Service
                             PieChartTable, _chartheader, imgPie, legend, tblHeaderAnnulusOutput, dicLstAnnulusOutputData,
                             lstTblBHAheader, lstTblBhaSide, graph, document, pdf);
 
-                        AddFooter(pdf, document, objInputData);
+                        objFooter.AddFooter(pdf, document, objInputData);
                         pdf.AddEventHandler(PdfDocumentEvent.END_PAGE, new PageEventHandler());
                         document.Close();
                     }
@@ -849,6 +751,18 @@ namespace HydraulicCalAPI.Service
         }
 
         #region Methods
+        public static SKTypeface GetTypeface(string fullFontName)
+        {
+            SKTypeface result;
+
+            var assembly = Assembly.GetExecutingAssembly();
+            var stream = assembly.GetManifestResourceStream("ClassLibrary1.Font." + fullFontName);
+            if (stream == null)
+                return null;
+
+            result = SKTypeface.FromStream(stream);
+            return result;
+        }
         public string GetFormattedDate(string objDate)
         {
             DateTime dateObject;
@@ -861,80 +775,6 @@ namespace HydraulicCalAPI.Service
             return formattedDate;
         }
       
-        private static void AddFooter(PdfDocument pdfDocument, Document document, PdfReportService objFooterData)
-        {
-            Paragraph footer = new Paragraph();
-            List<PdfReportService> pdfFooter = new List<PdfReportService>();
-            pdfFooter.Add(new PdfReportService
-            {
-                JobID = (objFooterData.JobID != null ? objFooterData.JobID.ToString() : ""),
-                WPTSReportID = (objFooterData.WPTSReportID != null ? objFooterData.WPTSReportID.ToString() : ""),
-                AccuViewDocNo = (objFooterData.AccuViewDocNo != null ? objFooterData.AccuViewDocNo.ToString() : ""),
-                AccuViewVersion = (objFooterData.AccuViewVersion != null ? objFooterData.AccuViewVersion.ToString() : "")
-            });
-
-            Color footlineColor = new DeviceRgb(165, 42, 42);
-            SolidLine line = new SolidLine(3f);
-            line.SetColor(footlineColor);
-            LineSeparator footerSeperator = new LineSeparator(line);
-
-            // Creating Footer
-            Table footerTable = new Table(4, false).SetFontSize(7);
-            footerTable.AddCell("AccuView Job ID");
-            footerTable.AddCell("WPTS Report ID");
-            footerTable.AddCell("AccuView Document Number");
-            footerTable.AddCell("AccuView Version Number");
-
-            foreach (PdfReportService item in pdfFooter)
-            {
-                footerTable.AddCell(item.JobID.ToString()).SetTextAlignment(TextAlignment.LEFT);
-                footerTable.AddCell(item.WPTSReportID.ToString()).SetTextAlignment(TextAlignment.LEFT);
-                footerTable.AddCell(item.AccuViewDocNo.ToString()).SetTextAlignment(TextAlignment.LEFT);
-                footerTable.AddCell(item.AccuViewVersion.ToString()).SetTextAlignment(TextAlignment.LEFT);
-            }
-
-            Paragraph footerTradeMark = new Paragraph("AccuView" + "\u2122" + " is a Weatherford trademark").SetFontSize(7);
-
-            Paragraph footerDisclaimer = new Paragraph("© 2015 WEATHERFORD - All Rights Reserved -Proprietary and Confidential: This document is copyrighted and contains valuable proprietary and confidential" +
-                                       "information, whether patentable or unpatentable, of Weatherford. Recipients agree the document is loaned with confidential restrictions, and with the understanding that" +
-                                        "neither it nor the information contained therein will be reproduced, used or disclosed in whole or in part for any purpose except as may be specifically authorized in" +
-                                          "writing by Weatherford.This document shall be returned to Weatherford upon demand.").SetFontSize(7);
-
-            Table finalfooter = new Table(1, false).SetBorder(Border.NO_BORDER);
-            Cell _footcell = new Cell(1, 1).SetBorder(Border.NO_BORDER);
-            _footcell.Add(footerSeperator).SetWidth(500);
-            Cell _footcell1 = new Cell(2, 1).SetBorder(Border.NO_BORDER);
-            _footcell1.Add(footerTable);
-            Cell _footcell2 = new Cell(3, 1).SetBorder(Border.NO_BORDER);
-            _footcell2.Add(footerTradeMark);
-            Cell _footcell3 = new Cell(4, 1).SetBorder(Border.NO_BORDER);
-            _footcell3.Add(footerDisclaimer).SetWidth(500);
-
-            finalfooter.AddCell(_footcell);
-            finalfooter.AddCell(_footcell1);
-            finalfooter.AddCell(_footcell2);
-            finalfooter.AddCell(_footcell3);
-
-            footer.Add(finalfooter.SetAutoLayout());
-            var numPages = pdfDocument.GetNumberOfPages();
-            for (int pageId = 1; pageId <= numPages; pageId++)
-            {
-                var page = pdfDocument.GetPage(pageId);
-                var leftMarginPosition = document.GetLeftMargin();
-                document.ShowTextAligned(footer, leftMarginPosition, UnitConverter.mm2uu(55), pageId,
-                    TextAlignment.LEFT, VerticalAlignment.MIDDLE, 0);
-            }
-        }
-        public static class UnitConverter
-        {
-            public static float uu2inch(float uu) => uu / 72f;
-            public static float inch2uu(float inch) => inch * 72f;
-            public static float inch2mm(float inch) => inch * 25.4f;
-            public static float mm2inch(float mm) => mm / 25.4f;
-            public static float uu2mm(float uu) => inch2mm(uu2inch(uu));
-            public static float mm2uu(float mm) => inch2uu(mm2inch(mm));
-        }
-
         #region Graph and Chart Generate Method Section
         public Table getPieHeaderTable(PdfReportService objUOM, ChartAndGraphService objPieTableData)
         {
@@ -969,8 +809,8 @@ namespace HydraulicCalAPI.Service
             toolPressureDrop = objPieTableData.TotalPressureDrop;
 
             pHeader.AddCell(new Paragraph("Flow Rate : " + toolflowrate + " " + charFlowRt));
-            pHeader.AddCell(new Paragraph("Tool Depth : " + Math.Round(tooldepth, 2) + " " + charFt));
-            pHeader.AddCell(new Paragraph("Standpipe Pressure : " + Math.Round(toolPressureDrop, 2) + " " + charPsi));
+            pHeader.AddCell(new Paragraph("Tool Depth : " + Math.Round(tooldepth, 3) + " " + charFt));
+            pHeader.AddCell(new Paragraph("Standpipe Pressure : " + Math.Round(toolPressureDrop, 3) + " " + charPsi));
 
             return pHeader.SetAutoLayout();
         }
@@ -1195,6 +1035,7 @@ namespace HydraulicCalAPI.Service
                             lblpaint.TextSize = 8;
                             lblpaint.Color = SKColors.Black;
                             lblpaint.TextAlign = SKTextAlign.Left;
+                            lblpaint.Typeface = GetTypeface("Arial");
                             canvas.DrawText($"{labelPercentage}%" + "=>" + $"{data.Label}", legendX + legendItemHeight + 5, legendY + 8, lblpaint);
                         }
                            
@@ -1697,7 +1538,7 @@ namespace HydraulicCalAPI.Service
                 {
                     if(itmvalue != "")
                     {
-                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString();
                     }
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
@@ -1709,7 +1550,7 @@ namespace HydraulicCalAPI.Service
                 {
                     if (itmvalue != "" && itmvalue.ToUpper() != "NULL")
                     {
-                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString();
                     }
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
@@ -1720,7 +1561,7 @@ namespace HydraulicCalAPI.Service
                 {
                     if (itmvalue != "")
                     {
-                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString();
                     }
                     
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
@@ -1732,7 +1573,7 @@ namespace HydraulicCalAPI.Service
                 {
                     if (itmvalue != "")
                     {
-                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 2).ToString();
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString();
                     }
 
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
@@ -1778,139 +1619,6 @@ namespace HydraulicCalAPI.Service
                 }
             }
             return _tableSeg.SetAutoLayout();
-        }
-        #endregion
-
-        #region Bottom Hole Assembly
-        public Table getBha(PdfReportService objUOM, Dictionary<string, string> objbhaitem, string bhaheadtext)
-        {
-            string charFt = "ft";
-            string charIn = "in";
-            string charLbs = "lbs";
-            if (objUOM.UOM.SizeName.ToUpper() != "IN")
-            {
-                charIn = objUOM.UOM.SizeName.ToString();
-            }
-            else if (objUOM.UOM.WeightName.ToUpper() != "LBS")
-            {
-                charLbs = objUOM.UOM.WeightName.ToString();
-            }
-            else if (objUOM.UOM.DepthName.ToUpper() != "FT")
-            {
-                charFt = objUOM.UOM.DepthName.ToString();
-            }
-            else { }
-
-            string _tblbhaheader = bhaheadtext;
-
-            Table _tblBHA = new Table(13, true);
-            _tblBHA.SetFontSize(8);
-            Cell _bhaheadcell = new Cell(1, 13).Add(new Paragraph(_tblbhaheader)).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(lgtGrey).SetBold();
-            _tblBHA.AddHeaderCell(_bhaheadcell);
-
-            Cell bhaid = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("#").SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhatooldesc = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Tool Description").SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhaserialno = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Serial Number").SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhamod = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Measured OD (" + charIn + ")").SetBackgroundColor(lgtGrey).SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhainndia = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("ID (" + charIn + ")").SetBackgroundColor(lgtGrey).SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhaweight = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Weight (" + charLbs + ")").SetBackgroundColor(lgtGrey).SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhatoollength = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Length (" + charFt + ")").SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhaupcontyp = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Upper Conn. Type").SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhalowcontyp = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Lower Conn. Type").SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhafishneckod = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Fish Neck OD(" + charIn + ")").SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhafishnecklen = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Fish Neck Length (" + charFt + ")").SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhahydod = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Hydraulic OD(" + charIn + ")").SetBold()).SetBackgroundColor(lgtGrey);
-            Cell bhahydind = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph("Hydraulic ID(" + charIn + ")").SetBold()).SetBackgroundColor(lgtGrey);
-
-            _tblBHA.AddCell(bhaid);
-            _tblBHA.AddCell(bhatooldesc);
-            _tblBHA.AddCell(bhaserialno);
-            _tblBHA.AddCell(bhamod);
-            _tblBHA.AddCell(bhainndia);
-            _tblBHA.AddCell(bhaweight);
-            _tblBHA.AddCell(bhatoollength);
-            _tblBHA.AddCell(bhaupcontyp);
-            _tblBHA.AddCell(bhalowcontyp);
-            _tblBHA.AddCell(bhafishneckod);
-            _tblBHA.AddCell(bhafishnecklen);
-            _tblBHA.AddCell(bhahydod);
-            _tblBHA.AddCell(bhahydind);
-
-            foreach (var item in objbhaitem.Keys)
-            {
-                double newUom = 0.00;
-                string addtocell = string.IsNullOrEmpty(objbhaitem[item]) ? "" : objbhaitem[item].ToString();
-                if (item.Contains("Measured"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objbhaitem[item]) * objUOM.UOM.SizeMultiplier), 2);
-                    }
-                }
-                else if (item.Contains("InnerDiameter"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objbhaitem[item]) * objUOM.UOM.SizeMultiplier), 2);
-                    }
-                }
-                else if (item.Contains("Weight"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objbhaitem[item]) * objUOM.UOM.WeightMultiplier), 2);
-                    }
-                }
-                else if (item.Contains("Length"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objbhaitem[item]) * objUOM.UOM.DepthMultiplier), 2);
-                    }
-                }
-                else if (item.Contains("FishNeckOD"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objbhaitem[item]) * objUOM.UOM.SizeMultiplier), 2);
-                    }
-                }
-                else if (item.Contains("LenFshNck"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objbhaitem[item]) * objUOM.UOM.DepthMultiplier), 2);
-                    }
-                }
-                else if (item.Contains("HydraulicOD"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objbhaitem[item]) * objUOM.UOM.SizeMultiplier), 2);
-                    }
-                }
-                else if (item.Contains("HydraulicID"))
-                {
-                    if (addtocell != "")
-                    {
-                        newUom = Math.Round((float.Parse(objbhaitem[item]) * objUOM.UOM.SizeMultiplier), 2);
-                    }
-                }
-                else { }
-                if (newUom > 0)
-                {
-                    addtocell = newUom.ToString();
-                }
-                else
-                {
-                    addtocell = addtocell;
-                }
-
-                Cell bhaidv = new Cell(1, 1).SetTextAlignment(TextAlignment.LEFT).Add(new Paragraph(addtocell));
-                _tblBHA.AddCell(bhaidv);
-            }
-
-            return _tblBHA.SetAutoLayout();
         }
         #endregion
 

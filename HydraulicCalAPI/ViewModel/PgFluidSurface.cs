@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using HydraulicCalAPI.Service;
 
 using iText.Kernel.Colors;

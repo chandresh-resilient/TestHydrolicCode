@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using HydraulicCalAPI.Service;
 
@@ -35,26 +36,28 @@ namespace HydraulicCalAPI.ViewModel
                 //Code to get Annulus Length and BhaTool Length
                 double annulusLength = 0.00;
                 double bhatoolLength = 0.00;
+                double toolLength = 0.00;
                 int count = 3;
                 string _tblheadText = tablehead;
                 string charFt = "ft";
                 double _length;
 
                 Table _tabDepth = new Table(3, false);
-                _tabDepth.SetFontSize(8);
+                _tabDepth.SetFontSize(10);
 
-                foreach (var anulsitem in _objChartService.HydraulicOutputAnnulusList)
+                annulusLength = objUOM.HydraCalcService.annulusInput.Select(x => x.AnnulusBottomInFeet).LastOrDefault();
+                
+                foreach (var bhaTitem in objUOM.HydraCalcService.bhaInput)
                 {
-                    annulusLength += anulsitem.Length;
-                }
-                foreach (var bhaTitem in _objChartService.HydraulicOutputBHAList)
-                {
-                    bhatoolLength += bhaTitem.LengthBHA;
+                    if (bhaTitem.bhatooltype.ToString().ToUpper() != "WRKSTR")
+                        bhatoolLength += bhaTitem.LengthInFeet;
                 }
 
-                pdfCasingData.Add(annulusLength > 0 ? (Math.Round(annulusLength, 2).ToString()) : "");
-                pdfCasingData.Add(bhatoolLength > 0 ? (Math.Round(bhatoolLength, 2).ToString()) : "");
-                pdfCasingData.Add(_objChartService.ToolDepth > 0 ? (Math.Round(_objChartService.ToolDepth, 2).ToString()) : "");
+                toolLength = _objChartService.HydraulicOutputAnnulusList.Select(y => y.ToAnnulus).LastOrDefault();
+                
+                pdfCasingData.Add(annulusLength > 0 ? (Math.Round(annulusLength, 3).ToString()) : "");
+                pdfCasingData.Add(bhatoolLength > 0 ? (Math.Round(bhatoolLength, 3).ToString()) : "");
+                pdfCasingData.Add(toolLength > 0 ? (Math.Round(toolLength, 3).ToString()) : "");
 
                 if (objUOM.UOM.DepthName.ToUpper() != "FT")
                 {
@@ -77,7 +80,7 @@ namespace HydraulicCalAPI.ViewModel
                                 {
                                     _length = double.Parse(pdfCasingData[0]) * objUOM.UOM.DepthMultiplier;
                                 }
-                                Cell daAnLen = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 2).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
+                                Cell daAnLen = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 3).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
                                 _tabDepth.AddCell(daAnnulusLength);
                                 _tabDepth.AddCell(daAnLen);
                                 break;
@@ -90,7 +93,7 @@ namespace HydraulicCalAPI.ViewModel
                                 {
                                     _length = double.Parse(pdfCasingData[1]) * objUOM.UOM.DepthMultiplier;
                                 }
-                                Cell daBhaLen = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 2).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
+                                Cell daBhaLen = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 3).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
                                 _tabDepth.AddCell(daBHALength);
                                 _tabDepth.AddCell(daBhaLen);
                                 break;
@@ -103,7 +106,7 @@ namespace HydraulicCalAPI.ViewModel
                                 {
                                     _length = double.Parse(pdfCasingData[2]) * objUOM.UOM.DepthMultiplier;
                                 }
-                                Cell daTulDpth = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 2).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
+                                Cell daTulDpth = new Cell(1, 1).Add(new Paragraph(Math.Round(_length, 3).ToString())).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
                                 _tabDepth.AddCell(daToolLength);
                                 _tabDepth.AddCell(daTulDpth);
                                 break;
@@ -151,7 +154,7 @@ namespace HydraulicCalAPI.ViewModel
             try
             {
                 Table _tabclt = new Table(8, true);
-                _tabclt.SetFontSize(8);
+                _tabclt.SetFontSize(10);
 
                 List<CasingLinerTubingData> dataCLT = new List<CasingLinerTubingData>();
                 foreach (var itemCLT in _objHydCalSrvs.annulusInput)
@@ -203,21 +206,21 @@ namespace HydraulicCalAPI.ViewModel
                         cltwellsection = new Cell(1, 1).Add(new Paragraph(itmClltData.WellBoreSectionName)).SetTextAlignment(TextAlignment.CENTER);
                     if (itmClltData.AnnulusODInInch > 0)
                     {
-                        newUom = Math.Round(itmClltData.AnnulusODInInch * objUOM.UOM.SizeMultiplier, 2);
+                        newUom = Math.Round(itmClltData.AnnulusODInInch * objUOM.UOM.SizeMultiplier, 3);
                         cltoutdia = new Cell(1, 1).Add(new Paragraph(newUom.ToString())).SetTextAlignment(TextAlignment.LEFT);
                     }
                     else
                         cltoutdia = new Cell(1, 1).Add(new Paragraph("")).SetTextAlignment(TextAlignment.LEFT);
                     if (itmClltData.AnnulusIDInInch > 0)
                     {
-                        newUom = Math.Round(itmClltData.AnnulusIDInInch * objUOM.UOM.SizeMultiplier, 2);
+                        newUom = Math.Round(itmClltData.AnnulusIDInInch * objUOM.UOM.SizeMultiplier, 3);
                         cltindia = new Cell(1, 1).Add(new Paragraph(newUom.ToString())).SetTextAlignment(TextAlignment.LEFT);
                     }
                     else
                         cltindia = new Cell(1, 1).Add(new Paragraph("")).SetTextAlignment(TextAlignment.LEFT);
                     if (itmClltData.WellBoreWeight > 0)
                     {
-                        newUom = Math.Round(itmClltData.WellBoreWeight * objUOM.UOM.WeightMultiplier, 2);
+                        newUom = Math.Round(itmClltData.WellBoreWeight * objUOM.UOM.WeightMultiplier, 3);
                         cltweight = new Cell(1, 1).Add(new Paragraph(newUom.ToString())).SetTextAlignment(TextAlignment.LEFT);
                     }
                     else
@@ -228,14 +231,14 @@ namespace HydraulicCalAPI.ViewModel
                         cltgrade = new Cell(1, 1).Add(new Paragraph("")).SetTextAlignment(TextAlignment.LEFT);
                     if (itmClltData.AnnulusTopInFeet >= 0)
                     {
-                        newUom = Math.Round(itmClltData.AnnulusTopInFeet * objUOM.UOM.SizeMultiplier, 2);
+                        newUom = Math.Round(itmClltData.AnnulusTopInFeet * objUOM.UOM.SizeMultiplier, 3);
                         clttop = new Cell(1, 1).Add(new Paragraph(newUom.ToString())).SetTextAlignment(TextAlignment.LEFT);
                     }
                     else
                         clttop = new Cell(1, 1).Add(new Paragraph("")).SetTextAlignment(TextAlignment.LEFT);
                     if (itmClltData.AnnulusBottomInFeet > 0)
                     {
-                        newUom = Math.Round(itmClltData.AnnulusBottomInFeet * objUOM.UOM.SizeMultiplier, 2);
+                        newUom = Math.Round(itmClltData.AnnulusBottomInFeet * objUOM.UOM.SizeMultiplier, 3);
                         cltbottom = new Cell(1, 1).Add(new Paragraph(newUom.ToString())).SetTextAlignment(TextAlignment.LEFT);
                     }
                     else

@@ -16,14 +16,16 @@ namespace HydraulicCalAPI.Service
     }
     public class BhaTopToBottom
     {
-        public int SerialNumber { get; set; }
+        public string SerialNumber { get; set; }
         public string Weight { get; set; }
         public double Length { get; set; }
         public string UpperConnType { get; set; }
         public string LowerConnType { get; set; }
-        public string FishNeckOD { get; set; }
-        public string FishNeckLength { get; set; }
-     }
+        public double FishNeckOD { get; set; }
+        public double FishNeckLength { get; set; }
+        public double HydraulicOD { get; set; }
+        public double HydraulicID { get; set; }
+    }
     public class WorkStringData
     {
         public string wrkSectionName { get; set; }
