@@ -112,7 +112,7 @@ namespace HydraulicCalAPI.ViewModel
                 string _tblbhaheader = bhaheadtext;
 
                 Table _tblBHA = new Table(13, true);
-                _tblBHA.SetFontSize(10);
+                _tblBHA.SetFontSize(9);
                 Cell _bhaheadcell = new Cell(1, 13).Add(new Paragraph(_tblbhaheader)).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(lgtGrey).SetBold();
                 _tblBHA.AddHeaderCell(_bhaheadcell);
 

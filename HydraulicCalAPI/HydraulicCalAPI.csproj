@@ -12,16 +12,22 @@
 		<NoWarn>$(NoWarn);1591</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="itext7" Version="8.0.3"/>
-		<PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.3"/>
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.20"/>
-		<PackageReference Include="SkiaSharp" Version="2.88.7"/>
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+		<PackageReference Include="itext7" Version="8.0.3" />
+		<PackageReference Include="itext7.bouncy-castle-adapter" Version="8.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.20" />
+		<PackageReference Include="SkiaSharp" Version="2.88.7" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<Content Include="Images\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="Model\**" />
+	  <Content Remove="Model\**" />
+	  <EmbeddedResource Remove="Model\**" />
+	  <None Remove="Model\**" />
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="Ciloci.Flee">

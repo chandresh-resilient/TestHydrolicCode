@@ -5335,11 +5335,11 @@
   "project": {
     "version": "1.0.7",
     "restore": {
-      "projectUniqueName": "D:\\WebAPi\\TestHydrolicCode\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
+      "projectUniqueName": "D:\\PrjWebApi\\TestHydrolicCode\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
       "projectName": "HydraulicCalAPI",
-      "projectPath": "D:\\WebAPi\\TestHydrolicCode\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
+      "projectPath": "D:\\PrjWebApi\\TestHydrolicCode\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
       "packagesPath": "C:\\Users\\E270052\\.nuget\\packages\\",
-      "outputPath": "D:\\WebAPi\\TestHydrolicCode\\HydraulicCalAPI\\obj\\",
+      "outputPath": "D:\\PrjWebApi\\TestHydrolicCode\\HydraulicCalAPI\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\E270052\\AppData\\Roaming\\NuGet\\NuGet.Config",

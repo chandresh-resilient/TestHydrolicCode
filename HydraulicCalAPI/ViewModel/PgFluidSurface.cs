@@ -55,7 +55,7 @@ namespace HydraulicCalAPI.ViewModel
             try
             {
                 Table _tableSeg = new Table(5, true);
-                _tableSeg.SetFontSize(10);
+                _tableSeg.SetFontSize(9);
 
                 string _caseType = _objInputData.HydraCalcService.surfaceEquipmentInput.CaseType.ToString();
                 double _totLength = getSurfaceEquipmentTotalLength(_caseType);
@@ -117,7 +117,7 @@ namespace HydraulicCalAPI.ViewModel
                 else { }
 
                 Table _tabFluidEnvelope = new Table(3, false);
-                _tabFluidEnvelope.SetFontSize(10);
+                _tabFluidEnvelope.SetFontSize(9);
 
                 Cell da = new Cell(1, 3).Add(new Paragraph(_tblheadText)).SetTextAlignment(TextAlignment.LEFT).SetBold().SetBackgroundColor(lgtGrey);
                 _tabFluidEnvelope.AddHeaderCell(da);
@@ -205,7 +205,7 @@ namespace HydraulicCalAPI.ViewModel
                 string strCuttingType = objUOM.HydraCalcService.cuttingsInput.CuttingsType.ToString();
 
                 Table _tableFluidInfo = new Table(6, true);
-                _tableFluidInfo.SetFontSize(10);
+                _tableFluidInfo.SetFontSize(9);
                 Cell sn = new Cell(1, 6).Add(new Paragraph(tabheadertext)).SetTextAlignment(TextAlignment.LEFT).SetBold().SetBackgroundColor(lgtGrey);
                 _tableFluidInfo.AddHeaderCell(sn);
 

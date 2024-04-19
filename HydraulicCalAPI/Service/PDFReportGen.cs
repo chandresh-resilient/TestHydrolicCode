@@ -25,13 +25,6 @@ using iText.Kernel.Font;
 
 namespace HydraulicCalAPI.Service
 {
-    public class DataPoints
-    {
-        public float X { get; set; }
-        public float Y { get; set; }
-        public string LineClr { get; set; }
-    }
-    
     public class HydraulicBHAToolOutPutData
     {
         public int PositionNum { get; set; }
@@ -102,15 +95,16 @@ namespace HydraulicCalAPI.Service
         PgFooter objFooter = new PgFooter();
         PgBottomHoleAssembly objBottomHoleAssembly = new PgBottomHoleAssembly();
         PgPieChart objPieChart = new PgPieChart();
+        PgStandPipeVsFlowRateLineChart objSPVsFRLineChart = new PgStandPipeVsFlowRateLineChart();
+        PgHydraulicToolsLineChart objHydraulicToolsLineChart = new PgHydraulicToolsLineChart();
 
         Color accuColor, rptgreen, lgtGrey, bhatblgreen;
         DateTime currentDate = DateTime.UtcNow.Date;
        
-        
         HydraulicCalculationService objHydCalSrvs = new HydraulicCalculationService();
         string strCasingLinerTubing = "New Run";
         string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-        int increment = 0;
+        int increment =0;
 
         public byte[] generatePDF(HydraulicCalAPI.Service.PdfReportService objInputData, ChartAndGraphService objChartService, HydraulicCalculationService inputHydra)
         {
@@ -300,71 +294,7 @@ namespace HydraulicCalAPI.Service
             Paragraph _stdpipeHeader = new Paragraph("StandPipe Vs Flow Rate")
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetFontSize(12).SetBold();
-
-            List<DataPoints> dataPoints = new List<DataPoints>();
-            if (objChartService.standpipePressureListRL.Count > 0)
-            {
-                foreach (var item in objChartService.standpipePressureListRL)
-                {
-                    dataPoints.Add(new DataPoints
-                    {
-                        X = (float)item.PrimaryAxisValue,
-                        Y = (float)item.SecondaryAxisValue,
-                        LineClr = "Red"
-                    });
-                }
-            }
-            if (objChartService.standpipePressureListYL.Count > 0)
-            {
-                foreach (var item in objChartService.standpipePressureListYL)
-                {
-                    dataPoints.Add(new DataPoints
-                    {
-                        X = (float)item.PrimaryAxisValue,
-                        Y = (float)item.SecondaryAxisValue,
-                        LineClr = "Yellow"
-                    });
-                }
-            }
-            if (objChartService.standpipePressureListG.Count > 0)
-            {
-                foreach (var item in objChartService.standpipePressureListG)
-                {
-                    dataPoints.Add(new DataPoints
-                    {
-                        X = (float)item.PrimaryAxisValue,
-                        Y = (float)item.SecondaryAxisValue,
-                        LineClr = "Green"
-                    });
-                }
-            }
-            if (objChartService.standpipePressureListYH.Count > 0)
-            {
-                foreach (var item in objChartService.standpipePressureListYH)
-                {
-                    dataPoints.Add(new DataPoints
-                    {
-                        X = (float)item.PrimaryAxisValue,
-                        Y = (float)item.SecondaryAxisValue,
-                        LineClr = "Yellow"
-                    });
-                }
-            }
-            if (objChartService.standpipePressureListRH.Count > 0)
-            {
-                foreach (var item in objChartService.standpipePressureListRH)
-                {
-                    dataPoints.Add(new DataPoints
-                    {
-                        X = (float)item.PrimaryAxisValue,
-                        Y = (float)item.SecondaryAxisValue,
-                        LineClr = "Red"
-                    });
-                }
-            }
-
-            // Generate line graph image
-            byte[] graphBytes = DrawLineGraph(objChartService, dataPoints, objInputData);
+            byte[] graphBytes = objSPVsFRLineChart.GetLineChart(objChartService, objInputData);
             Image imgStdPvsFlwRate = new Image(ImageDataFactory.Create(graphBytes));
             #endregion
 
@@ -446,33 +376,8 @@ namespace HydraulicCalAPI.Service
             #endregion
 
             #region Hydraulic BHA Tools Graph section
-            Dictionary<string, Array> dicBhaChart = new Dictionary<string, Array>();
-            List<DataPoints> hyprodatapoints;
-            byte[] hydraprograph;
             List<Image> graph = new List<Image>();
-
-            for (int i = 0; i < objChartService.HydraulicOutputBHAList.Count; i++)
-            {
-                dicBhaChart.Add("HydraproLineSeries" + i, objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"].ToArray());
-            }
-
-            for (int i = 0; i < dicBhaChart.Count; i++)
-            {
-                hyprodatapoints = new List<DataPoints>();
-                string dictKey = "HydraproLineSeries" + i.ToString();
-                foreach (WFT.UI.Common.Charts.XYValueModelForLineData<double> hyproitem in dicBhaChart[dictKey])
-                {
-                    hyprodatapoints.Add(new DataPoints
-                    {
-                        X = (float)hyproitem.PrimaryAxisValue,
-                        Y = (float)hyproitem.SecondaryAxisValue,
-                        LineClr = "Blue"
-                    });
-                }
-                hydraprograph = DrawHydraulicToolsGraph(hyprodatapoints, objChartService.HydraulicOutputBHAList[i],objInputData);
-                graph.Add(new Image(ImageDataFactory.Create(hydraprograph)));
-                hyprodatapoints.Clear();
-            }
+            graph.AddRange(objHydraulicToolsLineChart.GetHydraulicToolsLineChart(objChartService,objInputData));
             #endregion
 
             #endregion
@@ -680,9 +585,7 @@ namespace HydraulicCalAPI.Service
             document.Add(head2);
 
             document.Add(PieChartTable);
-            PieChartTable.Flush();
-            PieChartTable.Complete();
-
+            
             document.Add(_chartheader);
             document.Add(imgPie);
             document.Add(tblHeaderAnnulusOutput);
@@ -695,7 +598,7 @@ namespace HydraulicCalAPI.Service
             #endregion
 
             #region Content Line chart for every Tool
-            Table bhatooldetail = new Table(2, true).SetBorder(Border.NO_BORDER);
+            Table bhatooldetail = new Table(2, false);
             Cell celltd1;
             Cell celltd2;
             Cell celltd3;
@@ -705,24 +608,22 @@ namespace HydraulicCalAPI.Service
             document.Add(head2);
             for (int gp = 0; gp < graphCount; gp++)
             {
-                celltd1 = new Cell(1, 2).Add(lstTblBHAheader[gp]);
-                celltd2 = new Cell(1, 1).Add(lstTblBhaSide[gp]).SetPadding(10);
-                celltd3 = new Cell(1, 1).Add(bhaToolGraphsLst[gp]);
+                celltd1 = new Cell(1, 2).Add(lstTblBHAheader[gp]).SetBorder(Border.NO_BORDER);
+                celltd2 = new Cell(1, 1).Add(lstTblBhaSide[gp]).SetPadding(10).SetBorder(Border.NO_BORDER);
+                celltd3 = new Cell(1, 1).Add(bhaToolGraphsLst[gp]).SetBorder(Border.NO_BORDER);
                 bhatooldetail.AddCell(celltd1);
                 bhatooldetail.AddCell(celltd2);
                 bhatooldetail.AddCell(celltd3);
                 document.Add(bhatooldetail);
-                document.Add(newline);
                 pageBreak++;
-                if (pageBreak == 2)
+                if (pageBreak >= 2)
                 {
+                    document.Add(newline);
                     document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
                     pageBreak = 0;
                 }
             }
-
-            bhatooldetail.Flush();
-            bhatooldetail.Complete();
+            
             #endregion
         }
 
@@ -763,8 +664,9 @@ namespace HydraulicCalAPI.Service
             double toolflowrate = 0.00;
             double tooldepth = 0.00;
             double toolPressureDrop = 0.00;
-            Table pHeader = new Table(3, true)
-                .SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(lgtGrey);
+            Table pHeader = new Table(3, false)
+                .SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(lgtGrey)
+                .UseAllAvailableWidth();
             foreach (var item in objPieTableData.HydraulicOutputBHAList)
             {
                 if (item.InputFlowRate >= 0)
@@ -954,7 +856,6 @@ namespace HydraulicCalAPI.Service
 
             return tblbhtoolSide.SetAutoLayout();
         }
-       
         public Table getAnnulusOutputTblHead(PdfReportService objUOM)
         {
             string charFt = "ft";
@@ -1086,302 +987,6 @@ namespace HydraulicCalAPI.Service
             _tblannulusdata.AddCell(celPressureDrp);
 
             return _tblannulusdata.SetAutoLayout();
-        }
-        public byte[] DrawLineGraph(ChartAndGraphService objCags, List<DataPoints> dataPoints, PdfReportService objUOM)
-        {
-            // Add labels and values to PDF document
-            string gXValue = "gal/min";
-            string gYValue = "psi";
-            if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
-            {
-                gXValue = objUOM.UOM.FlowRateName.ToString();
-            }
-            else if (objUOM.UOM.PressureName.ToUpper() != "PSI")
-            {
-                gYValue = objUOM.UOM.PressureName.ToString();
-            }
-            else { }
-            // Sample data (replace with your actual data)
-            List<float> flowrate = new List<float>();
-            List<float> pressure = new List<float>();
-
-            for (int i = 0; i < dataPoints.Count; i++)
-            {
-                flowrate.Add(dataPoints[i].X);
-                pressure.Add(dataPoints[i].Y);
-            }
-
-            using (var surfcae = SKSurface.Create(new SKImageInfo(500, 400)))
-            {
-                var canvas = surfcae.Canvas;
-                canvas.Clear(SKColors.White);
-                float width = 500;
-                float height = 400;
-                float margin = 40;
-
-                float graphWidth = width - 2 * margin;
-                float graphHeight = height - 2 * margin;
-
-                // Define the scaling factors
-                float maxX = flowrate[flowrate.Count - 1];
-                float maxY = pressure[pressure.Count - 1];
-                float scaleX = graphWidth / maxX;
-                float scaleY = graphHeight / maxY;
-
-                float opPointX = (float)objCags.MaxFlowRate;
-                float opPointY = (float)objCags.TotalPressureDrop;
-
-                float anx1 = margin + opPointX * scaleX;
-                float any1 = height - margin - opPointY * scaleY;
-               
-                using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1 })
-                {
-                    // Draw X and Y axis
-                    canvas.DrawLine(margin, margin, margin, height - margin, paint);
-                    canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint);
-                    canvas.DrawText("X", anx1 - 50 , any1 + 15, paint);
-
-                    float xpoints = (float)Math.Round(maxX / 100);
-                    float counterX = 1;
-                    float counterY = 1;
-                    float xpoint = margin;
-                    do
-                    {
-                        xpoint += 50;
-                        float valXAxis = counterX * 100;
-                        int cordsY = (int)(height - margin);
-                        canvas.DrawLine(xpoint, cordsY-5, xpoint, cordsY+5, paint);
-                        canvas.DrawText(valXAxis.ToString(), xpoint-5, cordsY+15, paint);
-                        counterX++;
-                    } while (counterX <= xpoints);
-
-                    float yMultiplier = 0;
-                    if(maxY > 1000)
-                    {
-                        yMultiplier = 1000;
-                    }
-                    else if (maxY > 100 && maxY < 1000)
-                    {
-                        yMultiplier = 100;
-                    }
-                    else
-                    {
-                        yMultiplier = 10;
-                    }
-
-                    float ypoint = height - margin;
-                    do
-                    {
-                        ypoint -= 50;
-                        int cordsX = (int)margin;
-                        canvas.DrawLine(cordsX - 2, ypoint, cordsX + 5, ypoint, paint);
-                        canvas.DrawText((counterY * yMultiplier).ToString(), new SKPoint(margin-28, ypoint), paint);
-                        counterY++;
-                    } while (counterY < 10);
-                }
-
-                using (var paint = new SKPaint { Color = SKColors.Red, StrokeWidth = 1, IsAntialias = true })
-                {
-                    // Draw data points and lines
-                    for (int i = 0; i < dataPoints.Count - 1; i++)
-                    {
-                        float x1 = margin + dataPoints[i].X * scaleX;
-                        float y1 = height - margin - dataPoints[i].Y * scaleY;
-                        float x2 = margin + dataPoints[i + 1].X * scaleX;
-                        float y2 = height - margin - dataPoints[i + 1].Y * scaleY;
-
-                        if (dataPoints[i].LineClr == "Yellow")
-                        {
-                            string colourName = dataPoints[i].LineClr;
-                            string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
-                            paint.Color = SKColor.Parse(hexString);
-                            canvas.DrawLine(x1, y1, x2, y2, paint);
-                        }
-                        else if (dataPoints[i].LineClr == "Green")
-                        {
-                            string colourName = dataPoints[i].LineClr;
-                            string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
-                            paint.Color = SKColor.Parse(hexString);
-                            canvas.DrawLine(x1, y1, x2, y2, paint);
-                        }
-                        else
-                        {
-                            canvas.DrawLine(x1, y1, x2, y2, paint);
-                        }
-                    }
-                }
-
-                // Add X-axis label
-                using (var xLabelPaint = new SKPaint())
-                {
-                    xLabelPaint.Color = SKColors.Black;
-                    xLabelPaint.TextAlign = SKTextAlign.Center;
-                    xLabelPaint.TextSize = 14;
-                    canvas.DrawText("Flow Rate (" + gXValue + ")", width / 2, margin / 2 + 370, xLabelPaint);
-                }
-
-                // Add Y-axis label
-                using (var yLabelPaint = new SKPaint())
-                {
-                    yLabelPaint.Color = SKColors.Black;
-                    yLabelPaint.TextAlign = SKTextAlign.Center;
-                    yLabelPaint.TextSize = 14;
-                    yLabelPaint.IsAntialias = true;
-                    canvas.RotateDegrees(-90);
-                    canvas.DrawText("Standpipe Pressure (" + gYValue + ")", -height / 2 - 5, (margin / 2)-10, yLabelPaint);
-                    canvas.RotateDegrees(90);
-                }
-
-                // Convert bitmap to byte array
-                using (var image = surfcae.Snapshot())
-                using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
-                {
-                    using (MemoryStream stream = new MemoryStream())
-                    {
-                        data.SaveTo(stream);
-                        return stream.ToArray();
-                    }
-                }
-            }
-        }
-        public byte[] DrawHydraulicToolsGraph(List<DataPoints> hyprobhadataPoints, ViewModel.HydraulicOutputBHAViewModel service, PdfReportService objUOM)
-        {
-            // Add labels and values to PDF document
-            string gXValue = "gal/min";
-            string gYValue = "psi";
-            if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
-            {
-                gXValue = objUOM.UOM.FlowRateName.ToString();
-            }
-            else if (objUOM.UOM.PressureName.ToUpper() != "PSI")
-            {
-                gYValue = objUOM.UOM.PressureName.ToString();
-            }
-            else { }
-            // Sample data (replace with your actual data)
-            List<float> flowrate = new List<float>();
-            List<float> pressure = new List<float>();
-
-            for (int i = 0; i < hyprobhadataPoints.Count; i++)
-            {
-                flowrate.Add(hyprobhadataPoints[i].X);
-                pressure.Add(hyprobhadataPoints[i].Y);
-            }
-
-            using (var surfcae = SKSurface.Create(new SKImageInfo(300, 280)))
-            {
-                var canvas = surfcae.Canvas;
-                canvas.Clear(SKColors.White);
-                float width = 280;
-                float height = 270;
-                float margin = 35;
-
-                float graphWidth = width - 2 * margin;
-                float graphHeight = height - 2 * margin;
-
-                // Define the scaling factors
-                float maxX = flowrate[flowrate.Count - 1];
-                float maxY = pressure[pressure.Count - 1];
-                float scaleX = graphWidth / maxX;
-                float scaleY = graphHeight / maxY;
-
-                float opPointX = (float)service.InputFlowRate;
-                float opPointY = (float)service.BHAPressureDrop;
-
-                float anx1 = margin + opPointX * scaleX;
-                float any1 = height - margin - opPointY * scaleY;
-
-                using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1 })
-                {
-                    // Draw X and Y axis
-                    canvas.DrawLine(margin, margin, margin, height - margin, paint);
-                    canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint);
-                    canvas.DrawText("X", anx1, any1, paint);
-
-                    float xpoints = (float)Math.Round(maxX / 100);
-                    float counterX = 1;
-                    float counterY = 1;
-                    float xpoint = margin;
-                    do
-                    {
-                        xpoint += 50;
-                        float valXAxis = counterX * 100;
-                        int cordsY = (int)(height - margin);
-                        canvas.DrawLine(xpoint, cordsY - 5, xpoint, cordsY + 5, paint);
-                        canvas.DrawText(valXAxis.ToString(), xpoint - 5, cordsY + 15, paint);
-                        counterX++;
-                    } while (counterX < xpoints);
-
-                    float yMultiplier = 0;
-                    if (maxY > 1000)
-                    {
-                        yMultiplier = 1000;
-                    }
-                    else if (maxY > 100 && maxY < 1000)
-                    {
-                        yMultiplier = 100;
-                    }
-                    else
-                    {
-                        yMultiplier = 20;
-                    }
-
-                    float ypoint = height - margin;
-                    do
-                    {
-                        ypoint -= 50;
-                        int cordsX = (int)margin;
-                        canvas.DrawLine(cordsX - 2, ypoint, cordsX + 5, ypoint, paint);
-                        canvas.DrawText((counterY * yMultiplier).ToString(), new SKPoint(margin - 18, ypoint), paint);
-                        counterY++;
-                    } while (counterY < 5);
-                }
-
-                using (var paint = new SKPaint { Color = SKColors.Blue, StrokeWidth = 1, IsAntialias = true })
-                {
-                    // Draw data points and lines
-                    for (int i = 0; i < hyprobhadataPoints.Count - 1; i++)
-                    {
-                        float x1 = margin + hyprobhadataPoints[i].X * scaleX;
-                        float y1 = height - margin - hyprobhadataPoints[i].Y * scaleY;
-                        float x2 = margin + hyprobhadataPoints[i + 1].X * scaleX;
-                        float y2 = height - margin - hyprobhadataPoints[i + 1].Y * scaleY;
-                        canvas.DrawLine(x1, y1, x2, y2, paint);
-                    }
-                }
-
-                // Add X-axis label
-                using (var xLabelPaint = new SKPaint())
-                {
-                    xLabelPaint.Color = SKColors.Black;
-                    xLabelPaint.TextAlign = SKTextAlign.Center;
-                    xLabelPaint.TextSize = 10;
-                    canvas.DrawText("Flow Rate (" + gXValue + ")", width / 2, margin / 2 + 250, xLabelPaint);
-                }
-
-                // Add Y-axis label
-                using (var yLabelPaint = new SKPaint())
-                {
-                    yLabelPaint.Color = SKColors.Black;
-                    yLabelPaint.TextAlign = SKTextAlign.Center;
-                    yLabelPaint.TextSize = 10;
-                    yLabelPaint.IsAntialias = true;
-                    canvas.RotateDegrees(-90);
-                    canvas.DrawText("Standpipe Pressure (" + gYValue + ")", -height / 2 - 5, (margin / 2) - 10, yLabelPaint);
-                    canvas.RotateDegrees(90);
-                }
-
-                // Convert bitmap to byte array
-                using (var image = surfcae.Snapshot())
-                using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
-                {
-                    using (MemoryStream stream = new MemoryStream())
-                    {
-                        data.SaveTo(stream);
-                        return stream.ToArray();
-                    }
-                }
-            }
         }
         #endregion
 

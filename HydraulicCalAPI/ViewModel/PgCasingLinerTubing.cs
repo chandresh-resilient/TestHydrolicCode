@@ -43,7 +43,7 @@ namespace HydraulicCalAPI.ViewModel
                 double _length;
 
                 Table _tabDepth = new Table(3, false);
-                _tabDepth.SetFontSize(10);
+                _tabDepth.SetFontSize(9);
 
                 annulusLength = objUOM.HydraCalcService.annulusInput.Select(x => x.AnnulusBottomInFeet).LastOrDefault();
                 
@@ -154,7 +154,7 @@ namespace HydraulicCalAPI.ViewModel
             try
             {
                 Table _tabclt = new Table(8, true);
-                _tabclt.SetFontSize(10);
+                _tabclt.SetFontSize(9);
 
                 List<CasingLinerTubingData> dataCLT = new List<CasingLinerTubingData>();
                 foreach (var itemCLT in _objHydCalSrvs.annulusInput)

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "JC+HJe6IkSyXjBvLbgYvSRIbC9UJlDgPwsc6wIAsyKiqA4uLbOSke9NQrLAInOIGc6a8iW4xdy/cN7QKBnoV0w==",
+  "dgSpecHash": "t4WF8SaOb6HHjOxmKXRpPxQRAutBX81+iOBiQj26PqGJXT2OFClTmE9QtcIApriB7qFypkBVbAZsPr8z7CuCxA==",
   "success": true,
-  "projectFilePath": "D:\\WebAPi\\TestHydrolicCode\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
+  "projectFilePath": "D:\\PrjWebApi\\TestHydrolicCode\\HydraulicCalAPI\\HydraulicCalAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\E270052\\.nuget\\packages\\bouncycastle.cryptography\\2.2.1\\bouncycastle.cryptography.2.2.1.nupkg.sha512",
     "C:\\Users\\E270052\\.nuget\\packages\\itext\\8.0.3\\itext.8.0.3.nupkg.sha512",
