@@ -31,12 +31,7 @@ namespace HydraulicCalAPI.Service
         public float Y { get; set; }
         public string LineClr { get; set; }
     }
-    public class PieData
-    {
-        public string Label { get; set; }
-        public float Value { get; set; }
-        public string Color { get; set; }
-    }
+    
     public class HydraulicBHAToolOutPutData
     {
         public int PositionNum { get; set; }
@@ -106,11 +101,12 @@ namespace HydraulicCalAPI.Service
         PgFluidSurface objFluidSurface = new PgFluidSurface();
         PgFooter objFooter = new PgFooter();
         PgBottomHoleAssembly objBottomHoleAssembly = new PgBottomHoleAssembly();
+        PgPieChart objPieChart = new PgPieChart();
 
         Color accuColor, rptgreen, lgtGrey, bhatblgreen;
         DateTime currentDate = DateTime.UtcNow.Date;
        
-        Dictionary<string, string> pdfPieChart = new Dictionary<string, string>();
+        
         HydraulicCalculationService objHydCalSrvs = new HydraulicCalculationService();
         string strCasingLinerTubing = "New Run";
         string baseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -295,27 +291,7 @@ namespace HydraulicCalAPI.Service
             Paragraph _chartheader = new Paragraph("Pressure Distribution Chart")
             .SetTextAlignment(TextAlignment.CENTER)
             .SetFontSize(12).SetBold();
-            List<PieData> pieDataPoints = new List<PieData>();
-
-            foreach (var pieitem in objChartService.PressureDistributionChartCollection)
-            {
-                pieDataPoints.Add(new PieData
-                {
-                    Label = pieitem.Name,
-                    Value = (float)pieitem.Value,
-                    Color = pieitem.Color
-                });
-            }
-
-            foreach (var itempiedata in objChartService.PressureDistributionChartCollection)
-            {
-                increment++;
-                pdfPieChart.Add("Name" + increment, itempiedata.Name != null ? itempiedata.Name.ToString() : "");
-                pdfPieChart.Add("Value" + increment, itempiedata.Value > 0 ? itempiedata.Value.ToString() : "");
-                pdfPieChart.Add("Color" + increment, itempiedata.Color != null ? itempiedata.Color.ToString() : "");
-            }
-            increment = 0;
-            byte[] chartBytes = GeneratePieChart(pdfPieChart, pieDataPoints);
+            byte[] chartBytes = objPieChart.GetPieChart(objChartService);
             Image imgPie = new Image(ImageDataFactory.Create(chartBytes));
             #endregion
 
@@ -751,18 +727,7 @@ namespace HydraulicCalAPI.Service
         }
 
         #region Methods
-        public static SKTypeface GetTypeface(string fullFontName)
-        {
-            SKTypeface result;
-
-            var assembly = Assembly.GetExecutingAssembly();
-            var stream = assembly.GetManifestResourceStream("ClassLibrary1.Font." + fullFontName);
-            if (stream == null)
-                return null;
-
-            result = SKTypeface.FromStream(stream);
-            return result;
-        }
+       
         public string GetFormattedDate(string objDate)
         {
             DateTime dateObject;
@@ -989,89 +954,7 @@ namespace HydraulicCalAPI.Service
 
             return tblbhtoolSide.SetAutoLayout();
         }
-        public byte[] GeneratePieChart(Dictionary<string, string> objPrsDrop, List<PieData> pieData)
-        {
-            float width = 200;
-            float height = 200;
-            float margin = 15;
-            using (var surfcae = SKSurface.Create(new SKImageInfo(350, 250)))
-            {
-                var canvas = surfcae.Canvas;
-                canvas.Clear(SKColors.White);
-                float centerX = width / 2f;
-                float centerY = height / 2f;
-                float radius = Math.Min(width, height) * 0.8f;
-                float labelPercentage = 0;
-                float totalValue = 0;
-                foreach (var itemval in objPrsDrop.Keys)
-                {
-                    if (itemval.Substring(0, 5) == "Value")
-                    {
-                        string fltVale = !string.IsNullOrEmpty(objPrsDrop[itemval]) ? objPrsDrop[itemval].ToString() : "0";
-                        float itmValue = (float)Math.Round(float.Parse(fltVale));
-                        totalValue += itmValue;
-                    }
-                }
-
-                float startAngle = 0;
-                float sweepAngle = 0;
-                foreach (var lstitem in objPrsDrop.Keys)
-                {
-                    float legendX = 400 - margin - 200;
-                    float legendY = margin;
-                    float legendItemHeight = 8;
-                    foreach (var data in pieData)
-                    {
-                        labelPercentage = (float)Math.Round((data.Value / totalValue) * 100);
-                        using (var paint = new SKPaint())
-                        {
-                            string colourName = data.Color;
-                            string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
-                            paint.Color = SKColor.Parse(hexString);
-                            canvas.DrawRect(legendX, legendY, legendItemHeight, legendItemHeight, paint);
-                        }
-                        using (var lblpaint = new SKPaint())
-                        {
-                            lblpaint.TextSize = 8;
-                            lblpaint.Color = SKColors.Black;
-                            lblpaint.TextAlign = SKTextAlign.Left;
-                            lblpaint.Typeface = GetTypeface("Arial");
-                            canvas.DrawText($"{labelPercentage}%" + "=>" + $"{data.Label}", legendX + legendItemHeight + 5, legendY + 8, lblpaint);
-                        }
-                           
-                        legendY += legendItemHeight + 5;
-                    }
-
-                    if (lstitem.Substring(0, 5) == "Value")
-                    {
-                        string fltVal = !string.IsNullOrEmpty(objPrsDrop[lstitem]) ? objPrsDrop[lstitem].ToString() : "0";
-                        float itValue = (float)Math.Round(float.Parse(fltVal));
-                        sweepAngle = (itValue / totalValue) * 360f;
-                    }
-                    if (lstitem.Substring(0, 5) == "Color")
-                    {
-                        using (var paint = new SKPaint())
-                        {
-                            string colourName = objPrsDrop[lstitem].ToString();
-                            string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
-
-                            paint.Color = SKColor.Parse(hexString);
-                            canvas.DrawArc(new SKRect(50, 50, 150, 150), startAngle, sweepAngle, true, paint);
-                            startAngle += sweepAngle;
-                        }
-                    }
-                }
-                using (var image = surfcae.Snapshot())
-                using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
-                {
-                    using (MemoryStream stream = new MemoryStream())
-                    {
-                        data.SaveTo(stream);
-                        return stream.ToArray();
-                    }
-                }
-            }
-        }
+       
         public Table getAnnulusOutputTblHead(PdfReportService objUOM)
         {
             string charFt = "ft";
