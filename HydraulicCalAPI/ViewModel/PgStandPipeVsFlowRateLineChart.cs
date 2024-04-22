@@ -167,13 +167,13 @@ namespace HydraulicCalAPI.ViewModel
                             float ypoint = height - 40 - i * scaleY;
                             if(i > 0)
                             {
-                                canvas.DrawLine(cordsX, ypoint, cordsX + width, ypoint, new SKPaint { Color = SKColors.LightGray });
+                                canvas.DrawLine(cordsX, ypoint, width - margin, ypoint, new SKPaint { Color = SKColors.LightGray });
                                 canvas.DrawText(i.ToString(), cordsX - 25, ypoint + 5, paint);
                             }
                         }
                     }
 
-                    using (var paint = new SKPaint { Color = SKColors.Red, StrokeWidth = 1, IsAntialias = true })
+                    using (var paint = new SKPaint { Color = SKColors.Red, StrokeWidth = 2, IsAntialias = true })
                     {
                         // Draw data points and lines
                         for (int i = 0; i < dataPoints.Count - 1; i++)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
 
 using SkiaSharp;
@@ -69,7 +69,7 @@ namespace HydraulicCalAPI.Service
             Rectangle pageSize = page.GetPageSize();
 
             float x = pageSize.GetWidth() / 2 + 165;
-            float yStart = 230;
+            float yStart = 180;
             float yEnd = yStart - 15;
             canvas.SaveState()
                 .SetLineWidth(1)
@@ -80,7 +80,7 @@ namespace HydraulicCalAPI.Service
 
             canvas.BeginText()
                 .SetFontAndSize(iText.Kernel.Font.PdfFontFactory.CreateFont(iText.IO.Font.Constants.StandardFonts.HELVETICA), 12)
-                .MoveText(pageSize.GetWidth() / 2 + 230, 190)
+                .MoveText(pageSize.GetWidth() / 2 + 180, 170)
                 .ShowText(pageNumber.ToString() + " out of " + numofpages)
                 .EndText();
             canvas.Release();
@@ -100,7 +100,7 @@ namespace HydraulicCalAPI.Service
 
         Color accuColor, rptgreen, lgtGrey, bhatblgreen;
         DateTime currentDate = DateTime.UtcNow.Date;
-       
+        
         HydraulicCalculationService objHydCalSrvs = new HydraulicCalculationService();
         string strCasingLinerTubing = "New Run";
         string baseDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -161,7 +161,7 @@ namespace HydraulicCalAPI.Service
             Dictionary<string, string> pdfHederInfoData = new Dictionary<string, string>();
             Paragraph _headerinfo = new Paragraph("Header Information")
              .SetTextAlignment(TextAlignment.CENTER)
-             .SetFontSize(20).SetBold();
+             .SetFontSize(18).SetBold();
 
             _tabheader = "Segment and Product / Service";
             pdfHederInfoData.Add("Segment", objInputData.ProductLine != null ? objInputData.ProductLine.ToString() : "");
@@ -442,6 +442,8 @@ namespace HydraulicCalAPI.Service
             Table PieChartTable, Paragraph _chartheader, Image imgPie, Paragraph legend, Table tblHeaderAnnulusOutput, List<Table> dicLstAnnulusOutputData,
             List<Table> lstTblBHAheader, List<Table> lstTblBhaSide, List<Image> bhaToolGraphsLst, Document document, PdfDocument pdf)
         {
+            
+
             #region Content First Page
             document.Add(img);
             document.Add(ls);
@@ -495,38 +497,41 @@ namespace HydraulicCalAPI.Service
 
             #region Content Header Information
             document.Add(head1);
-
+            document.Add(newline);
             document.Add(tblSegment);
             tblSegment.Flush();
             tblSegment.Complete();
-
+            document.Add(newline);
             document.Add(tblJobInformation);
             tblJobInformation.Flush();
             tblJobInformation.Complete();
-
+            document.Add(newline);
             document.Add(tblWellInformation);
             tblWellInformation.Flush();
             tblWellInformation.Complete();
-
+            document.Add(newline);
             document.Add(tblOriginator);
             tblOriginator.Flush();
             tblOriginator.Complete();
-
+            document.Add(newline);
             document.Add(tblCustomerContacts);
             tblCustomerContacts.Flush();
             tblCustomerContacts.Complete();
-
+            document.Add(newline);
             document.Add(tblWeatherfordContacts);
             tblWeatherfordContacts.Flush();
             tblWeatherfordContacts.Complete();
+            document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 
+            document.Add(newline);
             document.Add(tblGenInfo);
             tblGenInfo.Flush();
             tblGenInfo.Complete();
-
+            document.Add(newline);
             document.Add(tblApproval);
             tblApproval.Flush();
             tblApproval.Complete();
+            document.Add(newline);
             document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
             #endregion
 
@@ -598,25 +603,35 @@ namespace HydraulicCalAPI.Service
             #endregion
 
             #region Content Line chart for every Tool
-            Table bhatooldetail = new Table(2, false);
-            
-            int graphCount = bhaToolGraphsLst.Count;
+            int lstItemsCount = lstTblBHAheader.Count;
             int pageBreak = 0;
-            document.Add(head2);
-            for (int gp = 0; gp < graphCount; gp++)
+            for (int i =0; i < lstTblBHAheader.Count; i++)
             {
-                Cell celltd1 = new Cell(1, 2).Add(lstTblBHAheader[gp]).SetBorder(Border.NO_BORDER);
-                Cell celltd2 = new Cell(1, 1).Add(lstTblBhaSide[gp]).SetPadding(10).SetBorder(Border.NO_BORDER);
-                Cell celltd3 = new Cell(1, 1).Add(bhaToolGraphsLst[gp]).SetBorder(Border.NO_BORDER);
-                bhatooldetail.AddCell(celltd1);
-                bhatooldetail.AddCell(celltd2);
-                bhatooldetail.AddCell(celltd3);
+                Table bhatooldetail = new Table(2, true);
+                Cell c1 = new Cell(1, 2).Add(lstTblBHAheader[i]).SetBorder(Border.NO_BORDER);
+                bhatooldetail.AddCell(c1);
+                Cell c2 = new Cell(1, 1).Add(lstTblBhaSide[i]).SetBorder(Border.NO_BORDER);
+                bhatooldetail.AddCell(c2);
+                Cell c3 = new Cell(1, 1).Add(bhaToolGraphsLst[i]).SetBorder(Border.NO_BORDER);
+                bhatooldetail.AddCell(c3);
                 document.Add(bhatooldetail);
+                pageBreak++;
+                if(pageBreak == 2)
+                {
+                    if(i == lstItemsCount - 1)
+                    {
+                        document.Add(newline);
+                    }
+                    else {
+                        document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+                    }
+                    
+                    pageBreak = 0;
+                    
+                }
                 bhatooldetail.Flush();
-                document.Add(newline);
-                document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+                bhatooldetail.Complete();
             }
-            
             #endregion
         }
 
@@ -701,7 +716,7 @@ namespace HydraulicCalAPI.Service
                .SetTextAlignment(TextAlignment.LEFT).SetWidth(10).SetHeight(12).SetMarginBottom(3);
 
             Table tblbhtoolhead = new Table(8, false)
-                .SetBold().SetFontSize(7).SetWidth(UnitValue.CreatePercentValue(100));
+                .SetBold().SetFontSize(8).SetWidth(UnitValue.CreatePercentValue(100));
             Cell _blankcell;
 
             Cell tblhead01 = new Cell(1, 1).Add(new Paragraph("")).SetBackgroundColor(lgtGrey);
@@ -997,7 +1012,7 @@ namespace HydraulicCalAPI.Service
             string tabheadertext = tabHeader;
 
             Table _tableSeg = new Table(6, true);
-            _tableSeg.SetFontSize(7);
+            _tableSeg.SetFontSize(8);
             Cell sn = new Cell(1, 6).Add(new Paragraph(tabheadertext)).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(lgtGrey).SetBold();
             _tableSeg.AddHeaderCell(sn);
 

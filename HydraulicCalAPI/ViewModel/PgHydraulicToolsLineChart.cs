@@ -95,8 +95,8 @@ namespace HydraulicCalAPI.ViewModel
                     float maxY = hyprobhadataPoints.Max(p => p.Y);
 
                     // Calculate the scale for X and Y axis
-                    float scaleX = (width - 150) / (maxX - minX);
-                    float scaleY = (height - 150) / (maxY - minY);
+                    float scaleX = (width - 100) / (maxX - minX);
+                    float scaleY = (height - 100) / (maxY - minY);
 
                     float opPointX = (float)service.InputFlowRate;
                     float opPointY = (float)service.BHAPressureDrop;
@@ -104,7 +104,7 @@ namespace HydraulicCalAPI.ViewModel
                     float anx1 = margin + opPointX * scaleX;
                     float any1 = height - margin - opPointY * scaleY;
 
-                    using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1, TextSize=10 })
+                    using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1, TextSize=10, TextAlign=SKTextAlign.Right })
                     {
                         // Draw X and Y axis
                         canvas.DrawLine(margin, margin, margin, height - margin, paint);
@@ -119,7 +119,7 @@ namespace HydraulicCalAPI.ViewModel
                             float xpoint = 30 + i * scaleX;
                             float cordsY = height - 30;
                             canvas.DrawLine(xpoint, cordsY + 5, xpoint, cordsY - 5, paint);
-                            canvas.DrawText(i.ToString(), xpoint - 7, cordsY + 17, paint);
+                            canvas.DrawText(i.ToString(), xpoint+3, cordsY + 13, paint);
                         }
                         // Draw Scale Mark and Scale to Y-axis
                         var loopY = Math.Ceiling(maxY);
@@ -130,8 +130,8 @@ namespace HydraulicCalAPI.ViewModel
                             float ypoint = height - 30 - i * scaleY;
                             if (i > 0)
                             {
-                                canvas.DrawLine(cordsX, ypoint, cordsX + width, ypoint, new SKPaint { Color = SKColors.LightGray });
-                                canvas.DrawText(i.ToString(), cordsX - 25, ypoint + 5, paint);
+                                canvas.DrawLine(cordsX, ypoint, width-margin, ypoint, new SKPaint { Color = SKColors.LightGray });
+                                canvas.DrawText(i.ToString(), cordsX - 2, ypoint + 5, paint);
                             }
                         }
                     }
@@ -154,8 +154,8 @@ namespace HydraulicCalAPI.ViewModel
                     {
                         xLabelPaint.Color = SKColors.Black;
                         xLabelPaint.TextAlign = SKTextAlign.Center;
-                        xLabelPaint.TextSize = 10;
-                        canvas.DrawText("Flow Rate (" + gXValue + ")", width / 2, margin / 2 + 250, xLabelPaint);
+                        xLabelPaint.TextSize = 9;
+                        canvas.DrawText("Flow Rate (" + gXValue + ")", width / 2, margin / 2 + 180, xLabelPaint);
                     }
 
                     // Add Y-axis label
@@ -163,10 +163,10 @@ namespace HydraulicCalAPI.ViewModel
                     {
                         yLabelPaint.Color = SKColors.Black;
                         yLabelPaint.TextAlign = SKTextAlign.Center;
-                        yLabelPaint.TextSize = 10;
+                        yLabelPaint.TextSize = 9;
                         yLabelPaint.IsAntialias = true;
                         canvas.RotateDegrees(-90);
-                        canvas.DrawText("Standpipe Pressure (" + gYValue + ")", -height / 2 - 5, (margin / 2) - 10, yLabelPaint);
+                        canvas.DrawText("Standpipe Pressure (" + gYValue + ")", -height / 2 - 5, (margin / 2) - 8, yLabelPaint);
                         canvas.RotateDegrees(90);
                     }
 
@@ -192,11 +192,19 @@ namespace HydraulicCalAPI.ViewModel
             int gap = 0;
             if (loopValue > 1500)
             {
-                gap = 1500;
+                gap = 1000;
             }
-            else if (loopValue > 100 && loopValue <= 1500)
+            else if (loopValue > 1000 && loopValue <= 1500)
+            {
+                gap = 500;
+            }
+            else if (loopValue > 500 && loopValue <= 1000)
             {
                 gap = 100;
+            }
+            else if (loopValue > 100 && loopValue <= 500)
+            {
+                gap = 50;
             }
             else
             {

@@ -23,23 +23,23 @@ namespace HydraulicCalAPI.ViewModel
 
                 Cell tocLine2col1r2 = new Cell(1, 1).Add(new Paragraph("2.")).SetWidth(5).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
                 Cell tocLine2col2r2 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Casing Liner Tubing")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-                Cell tocLine2col3r2 = new Cell(1, 1).Add(new Paragraph("4")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
+                Cell tocLine2col3r2 = new Cell(1, 1).Add(new Paragraph("5")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
 
                 Cell tocLine3col1r3 = new Cell(1, 1).Add(new Paragraph("3.")).SetWidth(5).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
                 Cell tocLine3col2r3 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - BHA")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-                Cell tocLine3col3r3 = new Cell(1, 1).Add(new Paragraph("5")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
+                Cell tocLine3col3r3 = new Cell(1, 1).Add(new Paragraph("6")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
 
                 Cell tocLine4col1r4 = new Cell(1, 1).Add(new Paragraph("4.")).SetWidth(5).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
                 Cell tocLine4col2r4 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Surface Equipment & Fluid Information")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-                Cell tocLine4col3r4 = new Cell(1, 1).Add(new Paragraph("6")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
+                Cell tocLine4col3r4 = new Cell(1, 1).Add(new Paragraph("7")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
 
                 Cell tocLine5col1r5 = new Cell(1, 1).Add(new Paragraph("5.")).SetWidth(5).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
                 Cell tocLine5col2r5 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Standpipe vs Flowrate Graph")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-                Cell tocLine5col3r5 = new Cell(1, 1).Add(new Paragraph("7")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
+                Cell tocLine5col3r5 = new Cell(1, 1).Add(new Paragraph("8")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
 
                 Cell tocLine6col1r6 = new Cell(1, 1).Add(new Paragraph("6.")).SetWidth(5).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
                 Cell tocLine6col2r6 = new Cell(1, 1).Add(new Paragraph(strSubProductLine + " - Hydraulic Output")).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT);
-                Cell tocLine6col3r6 = new Cell(1, 1).Add(new Paragraph("8")).SetWidth(5).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
+                Cell tocLine6col3r6 = new Cell(1, 1).Add(new Paragraph("9")).SetWidth(5).SetFontSize(12).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.RIGHT).SetFontColor(ColorConstants.BLUE);
 
 
                 _tbltoc.AddCell(tocHeader);
