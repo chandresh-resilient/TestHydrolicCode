@@ -69,7 +69,7 @@ namespace HydraulicCalAPI.Service
             Rectangle pageSize = page.GetPageSize();
 
             float x = pageSize.GetWidth() / 2 + 165;
-            float yStart = 180;
+            float yStart = 230;
             float yEnd = yStart - 15;
             canvas.SaveState()
                 .SetLineWidth(1)
@@ -80,7 +80,7 @@ namespace HydraulicCalAPI.Service
 
             canvas.BeginText()
                 .SetFontAndSize(iText.Kernel.Font.PdfFontFactory.CreateFont(iText.IO.Font.Constants.StandardFonts.HELVETICA), 12)
-                .MoveText(pageSize.GetWidth() / 2 + 180, 170)
+                .MoveText(pageSize.GetWidth() / 2 + 230, 190)
                 .ShowText(pageNumber.ToString() + " out of " + numofpages)
                 .EndText();
             canvas.Release();
@@ -583,11 +583,11 @@ namespace HydraulicCalAPI.Service
 
             #region Content Pressure Drop
             document.Add(head2);
-
             document.Add(PieChartTable);
-            
             document.Add(_chartheader);
             document.Add(imgPie);
+            document.Add(newline);
+            document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
             document.Add(tblHeaderAnnulusOutput);
             for (int i = 0; i < dicLstAnnulusOutputData.Count; i++)
             {
@@ -599,29 +599,22 @@ namespace HydraulicCalAPI.Service
 
             #region Content Line chart for every Tool
             Table bhatooldetail = new Table(2, false);
-            Cell celltd1;
-            Cell celltd2;
-            Cell celltd3;
-
+            
             int graphCount = bhaToolGraphsLst.Count;
             int pageBreak = 0;
             document.Add(head2);
             for (int gp = 0; gp < graphCount; gp++)
             {
-                celltd1 = new Cell(1, 2).Add(lstTblBHAheader[gp]).SetBorder(Border.NO_BORDER);
-                celltd2 = new Cell(1, 1).Add(lstTblBhaSide[gp]).SetPadding(10).SetBorder(Border.NO_BORDER);
-                celltd3 = new Cell(1, 1).Add(bhaToolGraphsLst[gp]).SetBorder(Border.NO_BORDER);
+                Cell celltd1 = new Cell(1, 2).Add(lstTblBHAheader[gp]).SetBorder(Border.NO_BORDER);
+                Cell celltd2 = new Cell(1, 1).Add(lstTblBhaSide[gp]).SetPadding(10).SetBorder(Border.NO_BORDER);
+                Cell celltd3 = new Cell(1, 1).Add(bhaToolGraphsLst[gp]).SetBorder(Border.NO_BORDER);
                 bhatooldetail.AddCell(celltd1);
                 bhatooldetail.AddCell(celltd2);
                 bhatooldetail.AddCell(celltd3);
                 document.Add(bhatooldetail);
-                pageBreak++;
-                if (pageBreak >= 2)
-                {
-                    document.Add(newline);
-                    document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
-                    pageBreak = 0;
-                }
+                bhatooldetail.Flush();
+                document.Add(newline);
+                document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
             }
             
             #endregion

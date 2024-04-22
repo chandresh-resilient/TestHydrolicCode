@@ -146,11 +146,12 @@ namespace HydraulicCalAPI.ViewModel
                         // Draw X and Y axis
                         canvas.DrawLine(margin, margin, margin, height - margin, paint);
                         canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint);
-                        canvas.DrawText("X", anx1 - 50, any1 + 15, paint);
+                        //canvas.DrawText("X", anx1 - 50, any1 + 15, paint);
 
                         // Draw Scale Mark and Scale to X-axis
-                        var loopX = Math.Ceiling(maxX) + 100; 
-                        for (int i = 0; i <= loopX; i += 100)
+                        var loopX = Math.Ceiling(maxX);
+                        int extraX = GetExtraGap(loopX);
+                        for (int i = 0; i <= (loopX + extraX); i += extraX)
                         {
                             float xpoint = 40 + i * scaleX;
                             float cordsY = height - 40;
@@ -158,8 +159,9 @@ namespace HydraulicCalAPI.ViewModel
                             canvas.DrawText(i.ToString(), xpoint-7, cordsY + 17, paint);
                         }
                         // Draw Scale Mark and Scale to Y-axis
-                        var loopY = Math.Ceiling(maxY) + 1000;
-                        for (int i = 0; i <= loopY; i += 1000)
+                        var loopY = Math.Ceiling(maxY);
+                        int extraY = GetExtraGap(loopY); 
+                        for (int i = 0; i <= (loopY + extraY); i += extraY)
                         {
                             float cordsX = 40;
                             float ypoint = height - 40 - i * scaleY;
@@ -239,6 +241,23 @@ namespace HydraulicCalAPI.ViewModel
             {
                 throw ex;
             }
+        }
+        private int GetExtraGap(double loopValue)
+        {
+            int gap = 0;
+            if (loopValue > 1500)
+            {
+                gap = 1000;
+            }
+            else if (loopValue > 100 && loopValue <= 1500)
+            {
+                gap = 100;
+            }
+            else
+            {
+                gap = 10;
+            }
+            return gap;
         }
     }
 }

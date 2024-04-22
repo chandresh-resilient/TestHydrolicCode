@@ -109,7 +109,7 @@ namespace HydraulicCalAPI.ViewModel
                         // Draw X and Y axis
                         canvas.DrawLine(margin, margin, margin, height - margin, paint);
                         canvas.DrawLine(margin, height - margin, width - margin, height - margin, paint);
-                        canvas.DrawText("X", anx1, any1, paint);
+                        //canvas.DrawText("X", anx1, any1, paint);
 
                         // Draw Scale Mark and Scale to X-axis
                         var loopX = Math.Ceiling(maxX);
@@ -190,17 +190,17 @@ namespace HydraulicCalAPI.ViewModel
         private int GetExtraGap(double loopValue)
         {
             int gap = 0;
-            if (loopValue > 1000)
+            if (loopValue > 1500)
             {
-                gap = 2000;
+                gap = 1500;
             }
-            else if (loopValue > 100 && loopValue <= 1000)
+            else if (loopValue > 100 && loopValue <= 1500)
             {
-                gap = 200;
+                gap = 100;
             }
             else
             {
-                gap = 20;
+                gap = 10;
             }
             return gap;
         }
