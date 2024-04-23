@@ -258,11 +258,13 @@ namespace HydraulicCalAPI.ViewModel
         {
             double _toolWeight = 0;
             string bhaStrWeight = objBhaToolWeight.BHAToolItemData[increment].Weight;
-
-            var wtCorrection = bhaStrWeight.ToString().Substring(0,bhaStrWeight.IndexOf('(')).Trim();
-            if (wtCorrection != null)
+            if(bhaStrWeight != null)
             {
-                _toolWeight = double.Parse(wtCorrection);
+                var wtCorrection = bhaStrWeight.ToString().Substring(0, bhaStrWeight.IndexOf('(')).Trim();
+                if (wtCorrection != null)
+                {
+                    _toolWeight = double.Parse(wtCorrection);
+                }
             }
             return _toolWeight;
         }
