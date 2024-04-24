@@ -28,8 +28,8 @@ namespace HydraulicCalAPI.ViewModel
                     {
                         dataPoints.Add(new DataPoints
                         {
-                            X = (float)item.PrimaryAxisValue,
-                            Y = (float)item.SecondaryAxisValue,
+                            X = (float)Math.Round(item.PrimaryAxisValue,3),
+                            Y = (float)Math.Round(item.SecondaryAxisValue,3),
                             LineClr = "Red"
                         });
                     }

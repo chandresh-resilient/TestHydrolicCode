@@ -18,5 +18,9 @@
         public string PressureName { get; set; }
         public double DensityMultiplier { get; set; }
         public string DensityName { get; set; }
+        public double VelocityMultiplier { get; set; }
+        public string VelocityName { get; set; }
+        public double WeightperLengthMultiplier { get; set; }
+        public string WeightperLengthName { get; set; }
     }
 }
