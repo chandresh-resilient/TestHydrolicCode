@@ -523,6 +523,7 @@ namespace HydraulicCalAPI.Service
             tblWeatherfordContacts.Complete();
             document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
 
+            document.Add(head1);
             document.Add(newline);
             document.Add(tblGenInfo);
             tblGenInfo.Flush();
@@ -593,6 +594,9 @@ namespace HydraulicCalAPI.Service
             document.Add(imgPie);
             document.Add(newline);
             document.Add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+
+            document.Add(head2);
+            document.Add(newline);
             document.Add(tblHeaderAnnulusOutput);
             for (int i = 0; i < dicLstAnnulusOutputData.Count; i++)
             {
