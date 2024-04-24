@@ -61,12 +61,8 @@ namespace HydraulicCalAPI.ViewModel
                 double _totLength = getSurfaceEquipmentTotalLength(_caseType);
 
                 string tabheadertext = tblHeader;
-                string charFt = "ft";
-                if (_objInputData.UOM.DepthName.ToUpper() != "FT")
-                {
-                    charFt = _objInputData.UOM.DepthName.ToString();
-                }
-
+                string charFt = _objInputData.UOM.DepthName.ToUpper() != "FT" ? _objInputData.UOM.DepthName.ToString() : "ft";
+                
                 Cell sn = new Cell(1, 5).Add(new Paragraph(tabheadertext)).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(lgtGrey).SetBold();
                 _tableSeg.AddHeaderCell(sn);
 
@@ -104,18 +100,9 @@ namespace HydraulicCalAPI.ViewModel
             try
             {
                 string _tblheadText = fluidenvheader;
-                string charPsi = "psi";
-                string charGal = "gal/min";
-                if (objUOM.UOM.PressureName.ToUpper() != "PSI")
-                {
-                    charPsi = objUOM.UOM.PressureName.ToString();
-                }
-                else if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
-                {
-                    charGal = objUOM.UOM.FlowRateName.ToString();
-                }
-                else { }
-
+                string charPsi = objUOM.UOM.PressureName.ToUpper() != "PSI" ? objUOM.UOM.PressureName.ToString() : "psi";
+                string charGal = objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN" ? objUOM.UOM.FlowRateName.ToString() : "gal/min";
+                
                 Table _tabFluidEnvelope = new Table(3, false);
                 _tabFluidEnvelope.SetFontSize(9);
 
@@ -172,28 +159,10 @@ namespace HydraulicCalAPI.ViewModel
             {
                 string tabheadertext = tabHeader;
 
-                string charIn = "in";
-                string charDens = "lb/gal";
-                string charCenti = "centipoise";
-                string charYld = "lbf/100ft²";
-
-                if (objUOM.UOM.SizeName.ToUpper() != "IN")
-                {
-                    charIn = objUOM.UOM.SizeName.ToString();
-                }
-                else if (objUOM.UOM.YieldPointName.ToUpper() != "LBF/100FT^2")
-                {
-                    charYld = objUOM.UOM.YieldPointName.ToString();
-                }
-                if (objUOM.UOM.DensityName.ToUpper() != "LB/GAL")
-                {
-                    charDens = objUOM.UOM.DensityName.ToString();
-                }
-                else if (objUOM.UOM.PlasticViscosityName.ToUpper() != "CENTIPOISE")
-                {
-                    charCenti = objUOM.UOM.PlasticViscosityName.ToString();
-                }
-                else { }
+                string charIn = objUOM.UOM.SizeName.ToUpper() != "IN" ? objUOM.UOM.SizeName.ToString() : "in";
+                string charDens = objUOM.UOM.DensityName.ToUpper() != "LB/GAL" ? objUOM.UOM.DensityName.ToString() : "lb/gal";
+                string charCenti = objUOM.UOM.PlasticViscosityName.ToUpper() != "CENTIPOISE" ? objUOM.UOM.PlasticViscosityName.ToString() : "centipoise";
+                string charYld = objUOM.UOM.YieldPointName.ToUpper() != "LBF/100FT^2" ? objUOM.UOM.YieldPointName.ToString(): "lbf/100ft²";
 
                 string strSolids = objUOM.FluidItemData[0].Solids.ToString();
                 string strFluidType = objUOM.FluidItemData[0].DrillingFluidType.ToString();

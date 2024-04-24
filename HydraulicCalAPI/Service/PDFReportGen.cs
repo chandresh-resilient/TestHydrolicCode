@@ -656,23 +656,10 @@ namespace HydraulicCalAPI.Service
         #region Graph and Chart Generate Method Section
         public Table getPieHeaderTable(PdfReportService objUOM, ChartAndGraphService objPieTableData)
         {
-            string charPsi = "psi";
-            string charFlowRt = "gal/min";
-            string charFt = "ft";
-            if (objUOM.UOM.PressureName.ToUpper() != "PSI")
-            {
-                charPsi = objUOM.UOM.PressureName.ToString();
-            }
-            else if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
-            {
-                charFlowRt = objUOM.UOM.FlowRateName.ToString();
-            }
-            else if (objUOM.UOM.DepthName.ToUpper() != "FT")
-            {
-                charFt = objUOM.UOM.DepthName.ToString();
-            }
-            else { }
-
+            string charPsi = objUOM.UOM.PressureName.ToUpper() != "PSI" ? objUOM.UOM.PressureName.ToString() : "psi";
+            string charFlowRt = objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN" ? objUOM.UOM.FlowRateName.ToString() : "gal/min";
+            string charFt = objUOM.UOM.DepthName.ToUpper() != "FT" ? objUOM.UOM.DepthName.ToString(): "ft";
+            
             double toolflowrate = 0.00;
             double tooldepth = 0.00;
             double toolPressureDrop = 0.00;
@@ -684,10 +671,11 @@ namespace HydraulicCalAPI.Service
                 if (item.InputFlowRate >= 0)
                     toolflowrate += item.InputFlowRate;
             }
-            tooldepth = objPieTableData.ToolDepth;
-            toolPressureDrop = objPieTableData.TotalPressureDrop;
+            toolflowrate = toolflowrate * objUOM.UOM.FlowRateMultiplier;
+            tooldepth = objPieTableData.ToolDepth * objUOM.UOM.DepthMultiplier;
+            toolPressureDrop = objPieTableData.TotalPressureDrop * objUOM.UOM.PressureMultiplier;
 
-            pHeader.AddCell(new Paragraph("Flow Rate : " + toolflowrate + " " + charFlowRt));
+            pHeader.AddCell(new Paragraph("Flow Rate : " + Math.Round(toolflowrate,3) + " " + charFlowRt));
             pHeader.AddCell(new Paragraph("Tool Depth : " + Math.Round(tooldepth, 3) + " " + charFt));
             pHeader.AddCell(new Paragraph("Standpipe Pressure : " + Math.Round(toolPressureDrop, 3) + " " + charPsi));
 
@@ -695,23 +683,15 @@ namespace HydraulicCalAPI.Service
         }
         public Table getBHAToolLine(HydraulicBHAToolOutPutData objData, PdfReportService objUOM)
         {
-            string charPsi = "psi";
-            string charFlowRt = "gal/min";
-            string charFt = "ft";
-            if (objUOM.UOM.PressureName.ToUpper() != "PSI")
+            string charVel = "ft/sec";
+            string charPsi = objUOM.UOM.PressureName.ToUpper() != "PSI" ? objUOM.UOM.PressureName.ToString(): "psi";
+            string charFlowRt = objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN" ? objUOM.UOM.FlowRateName.ToString() : "gal/min";
+            if(objUOM.UOM.VelocityName.ToUpper() != "FT/MIN")
             {
-                charPsi = objUOM.UOM.PressureName.ToString();
+                charVel = objUOM.UOM.VelocityName.ToString().Replace("min", "sec");
             }
-            else if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
-            {
-                charFlowRt = objUOM.UOM.FlowRateName.ToString();
-            }
-            else if (objUOM.UOM.DepthName.ToUpper() != "FT")
-            {
-                charFt = objUOM.UOM.DepthName.ToString();
-            }
-            else { }
-
+           string charFt = objUOM.UOM.DepthName.ToUpper() != "FT" ? objUOM.UOM.DepthName.ToString() : "ft";
+            
             string dnArrowPath = System.IO.Path.Combine(baseDir, "Images", "down-arrow.png");
             bhatblgreen = new DeviceRgb(180, 241, 198);
             // Add image
@@ -727,8 +707,8 @@ namespace HydraulicCalAPI.Service
             Cell tblhead02 = new Cell(1, 1).Add(new Paragraph("Work String")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
             Cell tblhead03 = new Cell(1, 1).Add(new Paragraph("Length (" + charFt + ")")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
             Cell tblhead04 = new Cell(1, 1).Add(new Paragraph("Input Flow Rate (" + charFlowRt + ")")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
-            Cell tblhead05 = new Cell(1, 1).Add(new Paragraph("Average Velocity (" + charFt + "/sec)")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
-            Cell tblhead06 = new Cell(1, 1).Add(new Paragraph("Critical Velocity (" + charFt + "/sec)")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
+            Cell tblhead05 = new Cell(1, 1).Add(new Paragraph("Average Velocity (" + charVel + ")")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
+            Cell tblhead06 = new Cell(1, 1).Add(new Paragraph("Critical Velocity (" + charVel + ")")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
             Cell tblhead07 = new Cell(1, 1).Add(new Paragraph("Flow")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
             Cell tblhead08 = new Cell(1, 1).Add(new Paragraph("Pressure Drop (" + charPsi + ")")).SetBackgroundColor(lgtGrey).SetTextAlignment(TextAlignment.CENTER);
 
@@ -756,29 +736,29 @@ namespace HydraulicCalAPI.Service
 
             double tlLen = objData.Length * objUOM.UOM.DepthMultiplier;
             double tlInputFlwRt = objData.InputFlowRate * objUOM.UOM.FlowRateMultiplier;
-            double tlAvgVel = objData.AverageVelocity * objUOM.UOM.DepthMultiplier;
-            double tlCritVel = objData.CriticalVelocity * objUOM.UOM.DepthMultiplier;
+            double tlAvgVel = objData.AverageVelocity * objUOM.UOM.VelocityMultiplier * 0.0167;
+            double tlCritVel = objData.CriticalVelocity * objUOM.UOM.VelocityMultiplier * 0.0167;
             double tlPrDrop = objData.PressureDrop * objUOM.UOM.PressureMultiplier;
 
             Cell celWks = new Cell(1, 1).Add(new Paragraph(objData.WorkString)).SetTextAlignment(TextAlignment.CENTER);
-            Cell celLen = new Cell(1, 1).Add(new Paragraph(tlLen.ToString())).SetTextAlignment(TextAlignment.LEFT);
-            Cell celInFlow = new Cell(1, 1).Add(new Paragraph(tlInputFlwRt.ToString())).SetTextAlignment(TextAlignment.LEFT);
+            Cell celLen = new Cell(1, 1).Add(new Paragraph(tlLen.ToString("F3"))).SetTextAlignment(TextAlignment.LEFT);
+            Cell celInFlow = new Cell(1, 1).Add(new Paragraph(tlInputFlwRt.ToString("F3"))).SetTextAlignment(TextAlignment.LEFT);
             Cell celAvgV;
             if (objData.AvgVelocityColor.ToString().ToUpper() == "RED")
             {
-                celAvgV = new Cell(1, 1).Add(new Paragraph(tlAvgVel.ToString())).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(ColorConstants.RED);
+                celAvgV = new Cell(1, 1).Add(new Paragraph(tlAvgVel.ToString("F3"))).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(ColorConstants.RED);
             }
             else if (objData.AvgVelocityColor.ToString().ToUpper() == "YELLOW")
             {
-                celAvgV = new Cell(1, 1).Add(new Paragraph(tlAvgVel.ToString())).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(ColorConstants.YELLOW);
+                celAvgV = new Cell(1, 1).Add(new Paragraph(tlAvgVel.ToString("F3"))).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(ColorConstants.YELLOW);
             }
             else
             {
-                celAvgV = new Cell(1, 1).Add(new Paragraph(tlAvgVel.ToString()).SetFontColor(ColorConstants.WHITE)).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(rptgreen);
+                celAvgV = new Cell(1, 1).Add(new Paragraph(tlAvgVel.ToString("F3")).SetFontColor(ColorConstants.WHITE)).SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(rptgreen);
             }
-            Cell celCricVel = new Cell(1, 1).Add(new Paragraph(tlCritVel.ToString())).SetTextAlignment(TextAlignment.LEFT);
+            Cell celCricVel = new Cell(1, 1).Add(new Paragraph(tlCritVel.ToString("F3"))).SetTextAlignment(TextAlignment.LEFT);
             Cell celFlowtyp = new Cell(1, 1).Add(new Paragraph(objData.FlowType.ToString())).SetTextAlignment(TextAlignment.CENTER);
-            Cell celPressureDrp = new Cell(1, 1).Add(new Paragraph(tlPrDrop.ToString())).SetTextAlignment(TextAlignment.LEFT);
+            Cell celPressureDrp = new Cell(1, 1).Add(new Paragraph(tlPrDrop.ToString("F3"))).SetTextAlignment(TextAlignment.LEFT);
 
             tblbhtoolhead.AddCell(_blankcell);
             tblbhtoolhead.AddCell(celWks);
@@ -793,22 +773,15 @@ namespace HydraulicCalAPI.Service
         }
         public Table getBhaToolSide(HydraulicBHAToolOutPutData objData, PdfReportService objUOM)
         {
-            string charFt = "ft";
-            string charIn = "in";
-            string charPsi = "psi";
-            if (objUOM.UOM.PressureName.ToUpper() != "PSI")
+            string charFt = objUOM.UOM.DepthName.ToUpper() != "FT" ? objUOM.UOM.DepthName.ToString() : "ft";
+            string charIn = objUOM.UOM.SizeName.ToUpper() != "IN" ? objUOM.UOM.SizeName.ToString() : "in";
+            string charPsi = objUOM.UOM.PressureName.ToUpper() != "PSI" ? objUOM.UOM.PressureName.ToString() : "psi";
+            string charVel = "ft/sec";
+            if (objUOM.UOM.VelocityName.ToUpper() != "FT/MIN")
             {
-                charPsi = objUOM.UOM.PressureName.ToString();
+                charVel = objUOM.UOM.VelocityName.ToString().Replace("min", "sec");
             }
-            else if (objUOM.UOM.SizeName.ToUpper() != "IN")
-            {
-                charIn = objUOM.UOM.SizeName.ToString();
-            }
-            else if (objUOM.UOM.DepthName.ToUpper() != "FT")
-            {
-                charFt = objUOM.UOM.DepthName.ToString();
-            }
-            else { }
+
             Table tblbhtoolSide = new Table(3, false)
                 .SetTextAlignment(TextAlignment.LEFT).SetFontSize(7);
 
@@ -816,33 +789,33 @@ namespace HydraulicCalAPI.Service
             Cell cell01 = new Cell(1, 2).Add(new Paragraph(objData.FlowType)).SetWidth(80);
 
             Cell cell10 = new Cell(1, 1).Add(new Paragraph("Average Velocity").SetBold()).SetWidth(80);
-            double tlAvgVel = objData.AverageVelocity * objUOM.UOM.DepthMultiplier;
-            Cell cell11 = new Cell(1, 1).Add(new Paragraph(tlAvgVel.ToString())).SetWidth(60);
-            Cell cell12 = new Cell(1, 1).Add(new Paragraph(" " + charFt)).SetWidth(20);
+            double tlAvgVel = objData.AverageVelocity * objUOM.UOM.VelocityMultiplier * 0.0167;
+            Cell cell11 = new Cell(1, 1).Add(new Paragraph(tlAvgVel.ToString("F3"))).SetWidth(60);
+            Cell cell12 = new Cell(1, 1).Add(new Paragraph(" " + charVel)).SetWidth(20);
 
             Cell cell20 = new Cell(1, 1).Add(new Paragraph("Critical Velocity").SetBold()).SetWidth(80);
-            double tlCritVel = objData.CriticalVelocity * objUOM.UOM.DepthMultiplier;
-            Cell cell21 = new Cell(1, 1).Add(new Paragraph(tlCritVel.ToString())).SetWidth(60);
-            Cell cell22 = new Cell(1, 1).Add(new Paragraph(" " + charFt)).SetWidth(20);
+            double tlCritVel = objData.CriticalVelocity * objUOM.UOM.VelocityMultiplier * 0.0167;
+            Cell cell21 = new Cell(1, 1).Add(new Paragraph(tlCritVel.ToString("F3"))).SetWidth(60);
+            Cell cell22 = new Cell(1, 1).Add(new Paragraph(" " + charVel)).SetWidth(20);
 
             Cell cell30 = new Cell(1, 1).Add(new Paragraph("Pressure Drop").SetBold()).SetWidth(80);
             double tlPrDrop = objData.PressureDrop * objUOM.UOM.PressureMultiplier;
-            Cell cell31 = new Cell(1, 1).Add(new Paragraph(tlPrDrop.ToString())).SetWidth(60);
+            Cell cell31 = new Cell(1, 1).Add(new Paragraph(tlPrDrop.ToString("F3"))).SetWidth(60);
             Cell cell32 = new Cell(1, 1).Add(new Paragraph(" " + charPsi)).SetWidth(20);
 
             Cell cell40 = new Cell(1, 1).Add(new Paragraph("Hydraulic OD").SetBold()).SetWidth(80);
             double tlHydraOD = objData.HydraulicOD * objUOM.UOM.SizeMultiplier;
-            Cell cell41 = new Cell(1, 1).Add(new Paragraph(tlHydraOD.ToString())).SetWidth(60);
+            Cell cell41 = new Cell(1, 1).Add(new Paragraph(tlHydraOD.ToString("F3"))).SetWidth(60);
             Cell cell42 = new Cell(1, 1).Add(new Paragraph(" " + charIn)).SetWidth(20);
 
             Cell cell50 = new Cell(1, 1).Add(new Paragraph("Hydraulic ID").SetBold()).SetWidth(80);
             double tlHydraID = objData.HydraulicID * objUOM.UOM.SizeMultiplier;
-            Cell cell51 = new Cell(1, 1).Add(new Paragraph(tlHydraID.ToString())).SetWidth(60);
+            Cell cell51 = new Cell(1, 1).Add(new Paragraph(tlHydraID.ToString("F3"))).SetWidth(60);
             Cell cell52 = new Cell(1, 1).Add(new Paragraph(" " + charIn)).SetWidth(20);
 
             Cell cell60 = new Cell(1, 1).Add(new Paragraph("Length").SetBold()).SetWidth(80);
             double tlLen = objData.Length * objUOM.UOM.DepthMultiplier;
-            Cell cell61 = new Cell(1, 1).Add(new Paragraph(tlLen.ToString())).SetWidth(60);
+            Cell cell61 = new Cell(1, 1).Add(new Paragraph(tlLen.ToString("F3"))).SetWidth(60);
             Cell cell62 = new Cell(1, 1).Add(new Paragraph(" " + charFt)).SetWidth(20);
 
             tblbhtoolSide.AddCell(cell00);
@@ -870,28 +843,20 @@ namespace HydraulicCalAPI.Service
         }
         public Table getAnnulusOutputTblHead(PdfReportService objUOM)
         {
-            string charFt = "ft";
-            string charPsi = "psi";
-            if (objUOM.UOM.PressureName.ToUpper() != "PSI")
-            {
-                charPsi = objUOM.UOM.PressureName.ToString();
-            }
-            else if (objUOM.UOM.DepthName.ToUpper() != "PSI")
-            {
-                charFt = objUOM.UOM.DepthName.ToString();
-            }
-            else { }
-
+            string charFt = objUOM.UOM.DepthName.ToUpper() != "FT" ? objUOM.UOM.DepthName.ToString() : "ft";
+            string charPsi = objUOM.UOM.PressureName.ToUpper() != "PSI" ? objUOM.UOM.PressureName.ToString() : "psi";
+            string charVel = objUOM.UOM.VelocityName.ToUpper() != "FT/MIN" ? objUOM.UOM.VelocityName.ToString() : "ft/min";
+            
             Table tblhead = new Table(12, false).SetFontSize(7).SetWidth(UnitValue.CreatePercentValue(100));
             Cell tblhead01 = new Cell(1, 3).Add(new Paragraph(" ")).SetWidth(33).SetBackgroundColor(lgtGrey);
             Cell tblhead02 = new Cell(1, 1).Add(new Paragraph("Annulus").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(40);
             Cell tblhead03 = new Cell(1, 1).Add(new Paragraph("WorkString").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(103);
             Cell tblhead04 = new Cell(1, 1).Add(new Paragraph("From (" + charFt + ")").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(32);
             Cell tblhead05 = new Cell(1, 1).Add(new Paragraph("To (" + charFt + ")").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(32);
-            Cell tblhead06 = new Cell(1, 1).Add(new Paragraph("Average Velocity (" + charFt + "/min)").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
-            Cell tblhead07 = new Cell(1, 1).Add(new Paragraph("Critical Velocity (" + charFt + "/min)").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
+            Cell tblhead06 = new Cell(1, 1).Add(new Paragraph("Average Velocity (" + charVel + ")").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
+            Cell tblhead07 = new Cell(1, 1).Add(new Paragraph("Critical Velocity (" + charVel + ")").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
             Cell tblhead08 = new Cell(1, 1).Add(new Paragraph("Flow").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(68);
-            Cell tblhead09 = new Cell(1, 1).Add(new Paragraph("Chip Rate (" + charFt + "/min)").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
+            Cell tblhead09 = new Cell(1, 1).Add(new Paragraph("Chip Rate (" + charVel + ")").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
             Cell tblhead10 = new Cell(1, 1).Add(new Paragraph("Pressure Drop (" + charPsi + ")").SetTextAlignment(TextAlignment.CENTER)).SetBackgroundColor(lgtGrey).SetWidth(50);
 
             tblhead.AddCell(tblhead01);
@@ -919,9 +884,9 @@ namespace HydraulicCalAPI.Service
 
             double annulusFrm = objHydrAnnulus.From * objUOM.UOM.DepthMultiplier;
             double annulusTo = objHydrAnnulus.To * objUOM.UOM.DepthMultiplier;
-            double annulusAvgVel = objHydrAnnulus.AverageVelocity * objUOM.UOM.DepthMultiplier;
-            double annulusCritVel = objHydrAnnulus.CriticalVelocity * objUOM.UOM.DepthMultiplier;
-            double annulusChipRt = objHydrAnnulus.ChipRate * objUOM.UOM.DepthMultiplier;
+            double annulusAvgVel = objHydrAnnulus.AverageVelocity * objUOM.UOM.VelocityMultiplier;
+            double annulusCritVel = objHydrAnnulus.CriticalVelocity * objUOM.UOM.VelocityMultiplier;
+            double annulusChipRt = objHydrAnnulus.ChipRate * objUOM.UOM.VelocityMultiplier;
             double annulusPrDrop = objHydrAnnulus.PressureDrop * objUOM.UOM.PressureMultiplier;
 
             if (objHydrAnnulus.AnnulusColor.ToString().ToUpper() == "RED")
@@ -952,38 +917,38 @@ namespace HydraulicCalAPI.Service
 
             Cell cellAnnulus = new Cell(1, 1).Add(new Paragraph(objHydrAnnulus.Annulus.ToString()).SetTextAlignment(TextAlignment.CENTER).SetWidth(39));
             Cell celWks = new Cell(1, 1).Add(new Paragraph(objHydrAnnulus.WorkString.ToString()).SetTextAlignment(TextAlignment.CENTER).SetWidth(96));
-            Cell celFrom = new Cell(1, 1).Add(new Paragraph(annulusFrm.ToString()).SetTextAlignment(TextAlignment.LEFT).SetWidth(30));
-            Cell celTo = new Cell(1, 1).Add(new Paragraph(annulusTo.ToString()).SetTextAlignment(TextAlignment.LEFT).SetWidth(30));
+            Cell celFrom = new Cell(1, 1).Add(new Paragraph(annulusFrm.ToString("F3")).SetTextAlignment(TextAlignment.LEFT).SetWidth(30));
+            Cell celTo = new Cell(1, 1).Add(new Paragraph(annulusTo.ToString("F3")).SetTextAlignment(TextAlignment.LEFT).SetWidth(30));
             Cell celAvgV;
             if (objHydrAnnulus.AvgVelocityColor.ToString().ToUpper() == "RED")
             {
-                celAvgV = new Cell(1, 1).Add(new Paragraph(annulusAvgVel.ToString()).SetTextAlignment(TextAlignment.LEFT).SetWidth(47)).SetBackgroundColor(ColorConstants.RED);
+                celAvgV = new Cell(1, 1).Add(new Paragraph(annulusAvgVel.ToString("F3")).SetTextAlignment(TextAlignment.LEFT).SetWidth(47)).SetBackgroundColor(ColorConstants.RED);
             }
             else if (objHydrAnnulus.AvgVelocityColor.ToString().ToUpper() == "YELLOW")
             {
-                celAvgV = new Cell(1, 1).Add(new Paragraph(annulusAvgVel.ToString()).SetTextAlignment(TextAlignment.LEFT).SetWidth(47)).SetBackgroundColor(ColorConstants.YELLOW);
+                celAvgV = new Cell(1, 1).Add(new Paragraph(annulusAvgVel.ToString("F3")).SetTextAlignment(TextAlignment.LEFT).SetWidth(47)).SetBackgroundColor(ColorConstants.YELLOW);
             }
             else
             {
-                celAvgV = new Cell(1, 1).Add(new Paragraph(annulusAvgVel.ToString()).SetFontColor(ColorConstants.WHITE).SetTextAlignment(TextAlignment.LEFT).SetWidth(47)).SetBackgroundColor(rptgreen);
+                celAvgV = new Cell(1, 1).Add(new Paragraph(annulusAvgVel.ToString("F3")).SetFontColor(ColorConstants.WHITE).SetTextAlignment(TextAlignment.LEFT).SetWidth(47)).SetBackgroundColor(rptgreen);
             }
-            Cell celCricVel = new Cell(1, 1).Add(new Paragraph(annulusCritVel.ToString()).SetTextAlignment(TextAlignment.LEFT).SetWidth(47));
+            Cell celCricVel = new Cell(1, 1).Add(new Paragraph(annulusCritVel.ToString("F3")).SetTextAlignment(TextAlignment.LEFT).SetWidth(47));
             Cell celFlowtyp = new Cell(1, 1).Add(new Paragraph(objHydrAnnulus.Flow.ToString()).SetTextAlignment(TextAlignment.CENTER).SetWidth(63));
             Cell celChipcolor;
             if (objHydrAnnulus.ChipRateColor.ToString().ToUpper() == "RED")
             {
-                celChipcolor = new Cell(1, 1).Add(new Paragraph(annulusChipRt.ToString()).SetTextAlignment(TextAlignment.LEFT).SetWidth(48)).SetBackgroundColor(ColorConstants.RED);
+                celChipcolor = new Cell(1, 1).Add(new Paragraph(annulusChipRt.ToString("F3")).SetTextAlignment(TextAlignment.LEFT).SetWidth(48)).SetBackgroundColor(ColorConstants.RED);
             }
             else if (objHydrAnnulus.ChipRateColor.ToString().ToUpper() == "YELLOW")
             {
-                celChipcolor = new Cell(1, 1).Add(new Paragraph(annulusChipRt.ToString()).SetTextAlignment(TextAlignment.LEFT).SetWidth(48)).SetBackgroundColor(ColorConstants.YELLOW);
+                celChipcolor = new Cell(1, 1).Add(new Paragraph(annulusChipRt.ToString("F3")).SetTextAlignment(TextAlignment.LEFT).SetWidth(48)).SetBackgroundColor(ColorConstants.YELLOW);
             }
             else
             {
-                celChipcolor = new Cell(1, 1).Add(new Paragraph(annulusChipRt.ToString()).SetFontColor(ColorConstants.WHITE).SetTextAlignment(TextAlignment.LEFT).SetWidth(48)).SetBackgroundColor(rptgreen);
+                celChipcolor = new Cell(1, 1).Add(new Paragraph(annulusChipRt.ToString("F3")).SetFontColor(ColorConstants.WHITE).SetTextAlignment(TextAlignment.LEFT).SetWidth(48)).SetBackgroundColor(rptgreen);
             }
 
-            Cell celPressureDrp = new Cell(1, 1).Add(new Paragraph(annulusPrDrop.ToString()).SetTextAlignment(TextAlignment.LEFT).SetWidth(48));
+            Cell celPressureDrp = new Cell(1, 1).Add(new Paragraph(annulusPrDrop.ToString("F3")).SetTextAlignment(TextAlignment.LEFT).SetWidth(48));
 
             _tblannulusdata.AddCell(_blankcell);
             _tblannulusdata.AddCell(_blankcell1);
@@ -1023,12 +988,8 @@ namespace HydraulicCalAPI.Service
             foreach (var item in objSegment)
             {
                 Cell celhinfoValue, celhinfoUom;
-                string charFt = "ft";
-                if (objUOM.UOM.DepthName.ToUpper() != "FT")
-                {
-                    charFt = objUOM.UOM.DepthName.ToString();
-                }
-
+                string charFt = objUOM.UOM.DepthName.ToUpper() != "FT" ? objUOM.UOM.DepthName.ToString() :"ft";
+                
                 string itemKey = string.IsNullOrEmpty(item.Key) ? "" : item.Key.ToString();
                 string itmvalue = string.IsNullOrEmpty(item.Value) ? "" : item.Value.ToString();
 

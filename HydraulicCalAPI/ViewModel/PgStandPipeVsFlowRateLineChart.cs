@@ -40,8 +40,8 @@ namespace HydraulicCalAPI.ViewModel
                     {
                         dataPoints.Add(new DataPoints
                         {
-                            X = (float)item.PrimaryAxisValue,
-                            Y = (float)item.SecondaryAxisValue,
+                            X = (float)Math.Round(item.PrimaryAxisValue,3),
+                            Y = (float)Math.Round(item.SecondaryAxisValue,3),
                             LineClr = "Yellow"
                         });
                     }
@@ -52,8 +52,8 @@ namespace HydraulicCalAPI.ViewModel
                     {
                         dataPoints.Add(new DataPoints
                         {
-                            X = (float)item.PrimaryAxisValue,
-                            Y = (float)item.SecondaryAxisValue,
+                            X = (float)Math.Round(item.PrimaryAxisValue,3),
+                            Y = (float)Math.Round(item.SecondaryAxisValue,3),
                             LineClr = "Green"
                         });
                     }
@@ -64,8 +64,8 @@ namespace HydraulicCalAPI.ViewModel
                     {
                         dataPoints.Add(new DataPoints
                         {
-                            X = (float)item.PrimaryAxisValue,
-                            Y = (float)item.SecondaryAxisValue,
+                            X = (float)Math.Round(item.PrimaryAxisValue, 3),
+                            Y = (float)Math.Round(item.SecondaryAxisValue, 3),
                             LineClr = "Yellow"
                         });
                     }
@@ -76,8 +76,8 @@ namespace HydraulicCalAPI.ViewModel
                     {
                         dataPoints.Add(new DataPoints
                         {
-                            X = (float)item.PrimaryAxisValue,
-                            Y = (float)item.SecondaryAxisValue,
+                            X = (float)Math.Round(item.PrimaryAxisValue, 3),
+                            Y = (float)Math.Round(item.SecondaryAxisValue, 3),
                             LineClr = "Red"
                         });
                     }
@@ -96,17 +96,9 @@ namespace HydraulicCalAPI.ViewModel
             try
             {
                 // Add labels and values to PDF document
-                string gXValue = "gal/min";
-                string gYValue = "psi";
-                if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
-                {
-                    gXValue = objUOM.UOM.FlowRateName.ToString();
-                }
-                else if (objUOM.UOM.PressureName.ToUpper() != "PSI")
-                {
-                    gYValue = objUOM.UOM.PressureName.ToString();
-                }
-                else { }
+                string gXValue = objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN" ? objUOM.UOM.FlowRateName.ToString() : "gal/min";
+                string gYValue = objUOM.UOM.PressureName.ToUpper() != "PSI" ? objUOM.UOM.PressureName.ToString() : "psi";
+                
                 // Sample data (replace with your actual data)
                 List<float> flowrate = new List<float>();
                 List<float> pressure = new List<float>();
@@ -135,8 +127,8 @@ namespace HydraulicCalAPI.ViewModel
                     float scaleX = (width - 150) / (maxX - minX);
                     float scaleY = (height - 150) / (maxY - minY);
 
-                    float opPointX = (float)objCags.HydraulicOutputBHAList[0].InputFlowRate;
-                    float opPointY = (float)objCags.TotalPressureDrop;
+                    float opPointX = (float)Math.Round(objCags.HydraulicOutputBHAList[0].InputFlowRate);
+                    float opPointY = (float)Math.Round(objCags.TotalPressureDrop);
 
                     float anx1 = margin + opPointX * scaleX;
                     float any1 = height - margin - opPointY * scaleY;

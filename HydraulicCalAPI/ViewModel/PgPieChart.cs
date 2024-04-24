@@ -30,7 +30,7 @@ namespace HydraulicCalAPI.ViewModel
                     pieDataPoints.Add(new PieData
                     {
                         Label = pieitem.Name,
-                        Value = (float)pieitem.Value,
+                        Value = (float)Math.Round(pieitem.Value,3),
                         Color = pieitem.Color
                     });
                 }
@@ -39,7 +39,7 @@ namespace HydraulicCalAPI.ViewModel
                 {
                     increment++;
                     pdfPieChart.Add("Name" + increment, itempiedata.Name != null ? itempiedata.Name.ToString() : "");
-                    pdfPieChart.Add("Value" + increment, itempiedata.Value > 0 ? itempiedata.Value.ToString() : "");
+                    pdfPieChart.Add("Value" + increment, itempiedata.Value > 0 ? Math.Round(itempiedata.Value,3).ToString() : "");
                     pdfPieChart.Add("Color" + increment, itempiedata.Color != null ? itempiedata.Color.ToString() : "");
                 }
                 increment = 0;

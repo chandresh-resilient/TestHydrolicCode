@@ -42,22 +42,9 @@ namespace HydraulicCalAPI.ViewModel
         {
             try
             {
-                string charFt = "ft";
-                string charIn = "in";
-                string charLbs = "lbs";
-                if (objInputData.UOM.SizeName.ToUpper() != "IN")
-                {
-                    charIn = objInputData.UOM.SizeName.ToString();
-                }
-                else if (objInputData.UOM.WeightName.ToUpper() != "LBS")
-                {
-                    charLbs = objInputData.UOM.WeightName.ToString();
-                }
-                else if (objInputData.UOM.DepthName.ToUpper() != "FT")
-                {
-                    charFt = objInputData.UOM.DepthName.ToString();
-                }
-                else { }
+                string charFt = objInputData.UOM.DepthName.ToUpper() != "FT" ? objInputData.UOM.DepthName.ToString() : "ft";
+                string charIn = objInputData.UOM.SizeName.ToUpper() != "IN" ? objInputData.UOM.SizeName.ToString() : "in";
+                string charLbs = objInputData.UOM.WeightName.ToUpper() != "LBS"? objInputData.UOM.WeightName.ToString() : "lbs";
                 
                 foreach (var itmWrkString in objInputData.HydraCalcService.bhaInput)
                 {

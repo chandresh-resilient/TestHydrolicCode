@@ -37,8 +37,8 @@ namespace HydraulicCalAPI.ViewModel
                     {
                         hyprodatapoints.Add(new DataSeries
                         {
-                            X = (float)hyproitem.PrimaryAxisValue,
-                            Y = (float)hyproitem.SecondaryAxisValue,
+                            X = (float)Math.Round(hyproitem.PrimaryAxisValue,3),
+                            Y = (float)Math.Round(hyproitem.SecondaryAxisValue,3),
                             LineClr = "Blue"
                         });
                     }
@@ -59,17 +59,9 @@ namespace HydraulicCalAPI.ViewModel
             try
             {
                 // Add labels and values to PDF document
-                string gXValue = "gal/min";
-                string gYValue = "psi";
-                if (objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN")
-                {
-                    gXValue = objUOM.UOM.FlowRateName.ToString();
-                }
-                else if (objUOM.UOM.PressureName.ToUpper() != "PSI")
-                {
-                    gYValue = objUOM.UOM.PressureName.ToString();
-                }
-                else { }
+                string gXValue = objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN" ? objUOM.UOM.FlowRateName.ToString() : "gal/min";
+                string gYValue = objUOM.UOM.PressureName.ToUpper() != "PSI" ? objUOM.UOM.PressureName.ToString() : "psi";
+                
                 // Sample data (replace with your actual data)
                 List<float> flowrate = new List<float>();
                 List<float> pressure = new List<float>();
@@ -98,8 +90,8 @@ namespace HydraulicCalAPI.ViewModel
                     float scaleX = (width - 100) / (maxX - minX);
                     float scaleY = (height - 100) / (maxY - minY);
 
-                    float opPointX = (float)service.InputFlowRate;
-                    float opPointY = (float)service.BHAPressureDrop;
+                    float opPointX = (float)Math.Round(service.InputFlowRate,3);
+                    float opPointY = (float)Math.Round(service.BHAPressureDrop,3);
 
                     float anx1 = margin + opPointX * scaleX;
                     float any1 = height - margin - opPointY * scaleY;

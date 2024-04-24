@@ -39,7 +39,8 @@ namespace HydraulicCalAPI.ViewModel
                 double toolLength = 0.00;
                 int count = 3;
                 string _tblheadText = tablehead;
-                string charFt = "ft";
+               
+                string charFt = objUOM.UOM.DepthName.ToUpper() != "FT" ? objUOM.UOM.DepthName.ToString() : "ft";
                 double _length;
 
                 Table _tabDepth = new Table(3, false);
@@ -58,11 +59,6 @@ namespace HydraulicCalAPI.ViewModel
                 pdfCasingData.Add(annulusLength > 0 ? (Math.Round(annulusLength, 3).ToString()) : "");
                 pdfCasingData.Add(bhatoolLength > 0 ? (Math.Round(bhatoolLength, 3).ToString()) : "");
                 pdfCasingData.Add(toolLength > 0 ? (Math.Round(toolLength, 3).ToString()) : "");
-
-                if (objUOM.UOM.DepthName.ToUpper() != "FT")
-                {
-                    charFt = objUOM.UOM.DepthName.ToString();
-                }
 
                 // Adding Data to cell
                 Cell da = new Cell(1, 3).Add(new Paragraph(_tblheadText)).SetTextAlignment(TextAlignment.LEFT).SetBold().SetBackgroundColor(lgtGrey).SetWidth(200);
@@ -134,23 +130,10 @@ namespace HydraulicCalAPI.ViewModel
         {
             int counter = 0;
             string _tblcltheader = tablehead;
-            string charFt = "ft";
-            string charIn = "in";
-            string charLbs = "lbs";
-            if (objUOM.UOM.SizeName.ToUpper() != "IN")
-            {
-                charIn = objUOM.UOM.SizeName.ToString();
-            }
-            else if (objUOM.UOM.WeightName.ToUpper() != "LBS")
-            {
-                charLbs = objUOM.UOM.WeightName.ToString();
-            }
-            else if (objUOM.UOM.DepthName.ToUpper() != "FT")
-            {
-                charFt = objUOM.UOM.DepthName.ToString();
-            }
-            else { }
-
+            string charFt = objUOM.UOM.DepthName.ToUpper() != "FT" ? objUOM.UOM.DepthName.ToString() : "ft";
+            string charIn = objUOM.UOM.SizeName.ToUpper() != "IN" ? objUOM.UOM.SizeName.ToString() : "in";
+            string charLbsFt = objUOM.UOM.WeightperLengthName != "LBS/FT"? objUOM.UOM.WeightperLengthName.ToString() : "lbs/ft";
+            
             try
             {
                 Table _tabclt = new Table(8, true);
@@ -183,7 +166,7 @@ namespace HydraulicCalAPI.ViewModel
                 Cell cltwellsection = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Wellbore Section")).SetBold().SetBackgroundColor(lgtGrey);
                 Cell cltoutdia = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("OD (" + charIn + ")")).SetBold().SetBackgroundColor(lgtGrey);
                 Cell cltindia = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("ID (" + charIn + ")")).SetBold().SetBackgroundColor(lgtGrey);
-                Cell cltweight = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Weight (" + charLbs + "/" + charFt + ")")).SetBold().SetBackgroundColor(lgtGrey);
+                Cell cltweight = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Weight (" + charLbsFt + ")")).SetBold().SetBackgroundColor(lgtGrey);
                 Cell cltgrade = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Grade")).SetBold().SetBackgroundColor(lgtGrey);
                 Cell clttop = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Top Depth (" + charFt + ")")).SetBold().SetBackgroundColor(lgtGrey);
                 Cell cltbottom = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Bottom Depth (" + charFt + ")")).SetBold().SetBackgroundColor(lgtGrey);
@@ -206,6 +189,7 @@ namespace HydraulicCalAPI.ViewModel
                         cltwellsection = new Cell(1, 1).Add(new Paragraph(itmClltData.WellBoreSectionName)).SetTextAlignment(TextAlignment.CENTER);
                     if (itmClltData.AnnulusODInInch > 0)
                     {
+                        
                         newUom = Math.Round(itmClltData.AnnulusODInInch * objUOM.UOM.SizeMultiplier, 3);
                         cltoutdia = new Cell(1, 1).Add(new Paragraph(newUom.ToString("F3"))).SetTextAlignment(TextAlignment.LEFT);
                     }
@@ -220,7 +204,7 @@ namespace HydraulicCalAPI.ViewModel
                         cltindia = new Cell(1, 1).Add(new Paragraph("")).SetTextAlignment(TextAlignment.LEFT);
                     if (itmClltData.WellBoreWeight > 0)
                     {
-                        newUom = Math.Round(itmClltData.WellBoreWeight * objUOM.UOM.WeightMultiplier, 3);
+                        newUom = Math.Round(itmClltData.WellBoreWeight * objUOM.UOM.WeightperLengthMultiplier, 3);
                         cltweight = new Cell(1, 1).Add(new Paragraph(newUom.ToString("F3"))).SetTextAlignment(TextAlignment.LEFT);
                     }
                     else
@@ -231,14 +215,14 @@ namespace HydraulicCalAPI.ViewModel
                         cltgrade = new Cell(1, 1).Add(new Paragraph("")).SetTextAlignment(TextAlignment.LEFT);
                     if (itmClltData.AnnulusTopInFeet >= 0)
                     {
-                        newUom = Math.Round(itmClltData.AnnulusTopInFeet * objUOM.UOM.SizeMultiplier, 3);
+                        newUom = Math.Round(itmClltData.AnnulusTopInFeet * objUOM.UOM.DepthMultiplier, 3);
                         clttop = new Cell(1, 1).Add(new Paragraph(newUom.ToString("F3"))).SetTextAlignment(TextAlignment.LEFT);
                     }
                     else
                         clttop = new Cell(1, 1).Add(new Paragraph("")).SetTextAlignment(TextAlignment.LEFT);
                     if (itmClltData.AnnulusBottomInFeet > 0)
                     {
-                        newUom = Math.Round(itmClltData.AnnulusBottomInFeet * objUOM.UOM.SizeMultiplier, 3);
+                        newUom = Math.Round(itmClltData.AnnulusBottomInFeet * objUOM.UOM.DepthMultiplier, 3);
                         cltbottom = new Cell(1, 1).Add(new Paragraph(newUom.ToString("F3"))).SetTextAlignment(TextAlignment.LEFT);
                     }
                     else
