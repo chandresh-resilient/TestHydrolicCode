@@ -32,7 +32,7 @@ namespace HydraulicCalAPI.ViewModel
 
                 pdfAuthor = new Dictionary<string, string>();
                 pdfAuthor.Add("Customer : ", _objInputData.Customer != null ? _objInputData.Customer.ToString() : "");
-                pdfAuthor.Add("Job Number : ", _objInputData.JobNumber != null ? _objInputData.JobNumber.ToString() : "");
+                pdfAuthor.Add("Job Number : ", _objInputData.PlJobNumber != null ? _objInputData.PlJobNumber.ToString() : "");
                 pdfAuthor.Add("Well Name and Number : ", _objInputData.WellNameNumber != null ? _objInputData.WellNameNumber.ToString() : "");
                 pdfAuthor.Add("Prepared By : ", _objInputData.PreparedBy != null ? _objInputData.PreparedBy.ToString() : "");
                 pdfAuthor.Add("Prepared On : ", dtPrepared);

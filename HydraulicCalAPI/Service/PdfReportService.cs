@@ -57,6 +57,7 @@ namespace HydraulicCalAPI.Service
         public string ProductLine { get; set; }
         public string SubProductLine { get; set; }
         public string JobStartDate { get; set; }
+        public string JobLocation { get; set; }
         public string WellLocation { get; set; }
         public double WellDepth { get; set; }
         public string JobEndDate { get; set; }

@@ -130,7 +130,7 @@ namespace HydraulicCalAPI.Service
             line.SetColor(accuColor);
             LineSeparator ls = new LineSeparator(line);
 
-            if (string.IsNullOrEmpty(objInputData.RunName.ToString()))
+            if (!string.IsNullOrEmpty(objInputData.RunName.ToString()))
             {
                 strCasingLinerTubing = objInputData.RunName.ToString();
             }
@@ -172,7 +172,7 @@ namespace HydraulicCalAPI.Service
 
             _tabheader = "Job Information";
             pdfHederInfoData.Add("Job Start Date", (objInputData.JobStartDate == null || objInputData.JobStartDate == "NA") ? "" : GetFormattedDate(objInputData.JobStartDate.ToString()));
-            pdfHederInfoData.Add("Well Location", objInputData.WellLocation != null ? objInputData.WellLocation.ToString() : "");
+            pdfHederInfoData.Add("Well Location", objInputData.JobLocation != null ? objInputData.JobLocation.ToString() : "");
             pdfHederInfoData.Add("Customer", objInputData.Customer != null ? objInputData.Customer.ToString() : "");
             pdfHederInfoData.Add("Well Depth (MD)", objInputData.WellDepth > 0.00 ? objInputData.WellDepth.ToString() : "");
             pdfHederInfoData.Add("Job End Date", (objInputData.JobEndDate == null || objInputData.JobEndDate == "NA") ? "" : GetFormattedDate(objInputData.JobEndDate.ToString()));
@@ -183,7 +183,7 @@ namespace HydraulicCalAPI.Service
 
             _tabheader = "Well Information";
             pdfHederInfoData.Add("Well Name and Number", objInputData.WellNameNumber != null ? objInputData.WellNameNumber.ToString() : "");
-            pdfHederInfoData.Add("Well Location", objInputData.WFRDLocation != null ? objInputData.WFRDLocation.ToString() : "");
+            pdfHederInfoData.Add("Well Location", objInputData.WellLocation != null ? objInputData.WellLocation.ToString() : "");
             pdfHederInfoData.Add("Field", objInputData.Field != null ? objInputData.Field.ToString() : "");
             pdfHederInfoData.Add("Lease", objInputData.Lease != null ? objInputData.Lease.ToString() : "");
             pdfHederInfoData.Add("Rig", objInputData.Rig != null ? objInputData.Rig.ToString() : "");
@@ -1034,7 +1034,7 @@ namespace HydraulicCalAPI.Service
                 {
                     if(itmvalue != "")
                     {
-                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString();
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString("F3");
                     }
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
@@ -1046,7 +1046,7 @@ namespace HydraulicCalAPI.Service
                 {
                     if (itmvalue != "" && itmvalue.ToUpper() != "NULL")
                     {
-                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString();
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString("F3");
                     }
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
                     _tableSeg.AddCell(celhinfoValue);
@@ -1057,7 +1057,7 @@ namespace HydraulicCalAPI.Service
                 {
                     if (itmvalue != "")
                     {
-                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString();
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString("F3");
                     }
                     
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);
@@ -1069,7 +1069,7 @@ namespace HydraulicCalAPI.Service
                 {
                     if (itmvalue != "")
                     {
-                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString();
+                        itmvalue = Math.Round((float.Parse(itmvalue) * objUOM.UOM.DepthMultiplier), 3).ToString("F3");
                     }
 
                     celhinfoValue = new Cell(1, 1).Add(new Paragraph(itmvalue)).SetTextAlignment(TextAlignment.LEFT);

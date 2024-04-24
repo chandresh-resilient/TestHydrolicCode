@@ -90,7 +90,7 @@ namespace HydraulicCalAPI.ViewModel
                                objBhaToolData.Add(new BhaToolData
                                 {
                                     PositionNo = itmWrkString.PositionNumber,
-                                    ToolDescription = itmWrkString.SectionName,
+                                    ToolDescription = itmWrkString.toolDescription,
                                     SerialNo = GetSerialNo(objInputData, bhaCounter),
                                     ToolOuterDia = itmWrkString.OutsideDiameterInInch,
                                     ToolInnerDia = itmWrkString.InsideDiameterInInch,
@@ -165,25 +165,25 @@ namespace HydraulicCalAPI.ViewModel
                     {
                         outdia = Math.Round((item.ToolOuterDia * objInputData.UOM.SizeMultiplier), 3);
                     }
-                    bhamod = new Cell(1, 1).Add(new Paragraph(outdia > 0 ? outdia.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                    bhamod = new Cell(1, 1).Add(new Paragraph(outdia > 0 ? outdia.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                     _tblBHA.AddCell(bhamod);
                     if (item.ToolInnerDia > 0)
                     {
                         inndia = Math.Round((item.ToolInnerDia * objInputData.UOM.SizeMultiplier), 3);
                     }
-                    bhainndia = new Cell(1, 1).Add(new Paragraph(inndia > 0 ? inndia.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                    bhainndia = new Cell(1, 1).Add(new Paragraph(inndia > 0 ? inndia.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                     _tblBHA.AddCell(bhainndia);
                     if (item.ToolWeight > 0)
                     {
                         toolwt = Math.Round((item.ToolWeight * objInputData.UOM.WeightMultiplier), 3);
                     }
-                    bhaweight = new Cell(1, 1).Add(new Paragraph(toolwt > 0 ? toolwt.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                    bhaweight = new Cell(1, 1).Add(new Paragraph(toolwt > 0 ? toolwt.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                     _tblBHA.AddCell(bhaweight);
                     if (item.ToolLength > 0)
                     {
                         toollen = Math.Round((item.ToolLength * objInputData.UOM.DepthMultiplier), 3);
                     }
-                    bhatoollength = new Cell(1,1).Add(new Paragraph(toollen > 0 ? toollen.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                    bhatoollength = new Cell(1,1).Add(new Paragraph(toollen > 0 ? toollen.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                     _tblBHA.AddCell(bhatoollength);
                     bhaupcontyp = new Cell(1,1).Add(new Paragraph(item.ToolUpperConnType != null ? item.ToolUpperConnType.ToString() :"")).SetTextAlignment(TextAlignment.LEFT);
                     _tblBHA.AddCell(bhaupcontyp);
@@ -193,25 +193,25 @@ namespace HydraulicCalAPI.ViewModel
                     {
                         fishod = Math.Round((item.ToolFishNeckOD * objInputData.UOM.SizeMultiplier), 3);
                     }
-                    bhafishneckod = new Cell(1,1).Add(new Paragraph(fishod > 0 ? fishod.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                    bhafishneckod = new Cell(1,1).Add(new Paragraph(fishod > 0 ? fishod.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                     _tblBHA.AddCell(bhafishneckod);
                     if (item.ToolFishNeckLength > 0)
                     {
                         fishlen = Math.Round((item.ToolFishNeckLength * objInputData.UOM.DepthMultiplier), 3);
                     }
-                    bhafishnecklen = new Cell(1,1).Add(new Paragraph(fishlen > 0 ? fishlen.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                    bhafishnecklen = new Cell(1,1).Add(new Paragraph(fishlen > 0 ? fishlen.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                     _tblBHA.AddCell(bhafishnecklen);
                     if (item.ToolHydraulicOD > 0)
                     {
                         hydod = Math.Round((item.ToolHydraulicOD * objInputData.UOM.SizeMultiplier), 3);
                     }
-                    bhahydod = new Cell(1, 1).Add(new Paragraph(hydod > 0 ? hydod.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                    bhahydod = new Cell(1, 1).Add(new Paragraph(hydod > 0 ? hydod.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                     _tblBHA.AddCell(bhahydod);
                     if (item.ToolHydraulicID > 0)
                     {
                         hydid = Math.Round((item.ToolHydraulicID * objInputData.UOM.SizeMultiplier), 3);
                     }
-                    bhahydind = new Cell(1, 1).Add(new Paragraph(hydid > 0 ? hydid.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                    bhahydind = new Cell(1, 1).Add(new Paragraph(hydid > 0 ? hydid.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                     _tblBHA.AddCell(bhahydind);
                 }
 
@@ -258,11 +258,13 @@ namespace HydraulicCalAPI.ViewModel
         {
             double _toolWeight = 0;
             string bhaStrWeight = objBhaToolWeight.BHAToolItemData[increment].Weight;
-
-            var wtCorrection = bhaStrWeight.ToString().Substring(0,bhaStrWeight.IndexOf('(')).Trim();
-            if (wtCorrection != null)
+            if (bhaStrWeight != null)
             {
-                _toolWeight = double.Parse(wtCorrection);
+                var wtCorrection = bhaStrWeight.ToString().Substring(0, bhaStrWeight.IndexOf('(')).Trim();
+                if (wtCorrection != null)
+                {
+                    _toolWeight = double.Parse(wtCorrection);
+                }
             }
             return _toolWeight;
         }

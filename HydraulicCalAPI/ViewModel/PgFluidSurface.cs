@@ -76,8 +76,8 @@ namespace HydraulicCalAPI.ViewModel
                 Cell c4 = new Cell(1, 1);
                 if (_totLength > 0)
                 {
-                    _totLength = _totLength * _objInputData.UOM.DensityMultiplier;
-                    c4 = new Cell(1, 1).Add(new Paragraph(_totLength.ToString())).SetWidth(30).SetTextAlignment(TextAlignment.LEFT).SetBold();
+                    _totLength = Math.Round(_totLength * _objInputData.UOM.DensityMultiplier,3);
+                    c4 = new Cell(1, 1).Add(new Paragraph(_totLength.ToString("F3"))).SetWidth(30).SetTextAlignment(TextAlignment.LEFT).SetBold();
                 }
                 Cell surfEquipUom = new Cell(1, 1).Add(new Paragraph(" " + charFt)).SetWidth(15).SetTextAlignment(TextAlignment.LEFT);
 
@@ -125,25 +125,25 @@ namespace HydraulicCalAPI.ViewModel
                 double _maxPressure = objUOM.HydraCalcService.maxflowpressure > 0 ? objUOM.HydraCalcService.maxflowpressure : 0;
                 if(_maxPressure > 0)
                 {
-                    _maxPressure = _maxPressure * objUOM.UOM.PressureMultiplier;
+                    _maxPressure =  Math.Round((_maxPressure * objUOM.UOM.PressureMultiplier),3);
                 }
                 double _maxFlowRate = objUOM.HydraCalcService.maxflowrate > 0 ? objUOM.HydraCalcService.maxflowrate : 0;
                 if (_maxFlowRate > 0)
                 {
-                    _maxFlowRate = _maxFlowRate * objUOM.UOM.FlowRateMultiplier;
+                    _maxFlowRate = Math.Round((_maxFlowRate * objUOM.UOM.FlowRateMultiplier),3);
                 }
                 string _comments = objUOM.Comments != null ? objUOM.Comments : "";
 
                 // Building Table
                 Cell c1 = new Cell(1, 1).Add(new Paragraph("Maximum Allowable Pressure")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(150);
-                Cell c2 = new Cell(1, 1).Add(new Paragraph(_maxPressure > 0 ? _maxPressure.ToString() : "")).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
+                Cell c2 = new Cell(1, 1).Add(new Paragraph(_maxPressure > 0 ? _maxPressure.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
                 Cell c3 = new Cell(1, 1).Add(new Paragraph(" " + charPsi)).SetTextAlignment(TextAlignment.LEFT).SetWidth(50);
                 _tabFluidEnvelope.AddCell(c1);
                 _tabFluidEnvelope.AddCell(c2);
                 _tabFluidEnvelope.AddCell(c3);
 
                 c1 = new Cell(1, 1).Add(new Paragraph("Maximum Allowable Flowrate")).SetTextAlignment(TextAlignment.LEFT).SetBold().SetWidth(150);
-                c2 = new Cell(1, 1).Add(new Paragraph(_maxFlowRate > 0 ?_maxFlowRate.ToString() : "")).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
+                c2 = new Cell(1, 1).Add(new Paragraph(_maxFlowRate > 0 ?_maxFlowRate.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT).SetWidth(100);
                 c3 = new Cell(1, 1).Add(new Paragraph(" " + charGal)).SetTextAlignment(TextAlignment.LEFT).SetWidth(50);
                 _tabFluidEnvelope.AddCell(c1);
                 _tabFluidEnvelope.AddCell(c2);
@@ -213,44 +213,44 @@ namespace HydraulicCalAPI.ViewModel
                 Cell cSolidValue = new Cell(1, 1).Add(new Paragraph(strSolids)).SetTextAlignment(TextAlignment.LEFT);
                 Cell celSolidUom = new Cell(1, 1).Add(new Paragraph(" % "));
                 Cell cFluidType = new Cell(1, 1).Add(new Paragraph("Drilling Fluid Type")).SetTextAlignment(TextAlignment.LEFT).SetBold();
-                Cell cFludTypValue = new Cell(1, 2).Add(new Paragraph(strFluidType)).SetTextAlignment(TextAlignment.LEFT);
+                Cell cFludTypValue = new Cell(1, 2).Add(new Paragraph(strFluidType!= null ? strFluidType.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
                 Cell cFluidWgt = new Cell(1, 1).Add(new Paragraph("Drilling Fluid Weight")).SetTextAlignment(TextAlignment.LEFT).SetBold();
                 if (dblFluidWeight > 0)
                 {
                     dblFluidWeight = dblFluidWeight * objUOM.UOM.DensityMultiplier;
                 }
-                Cell cFludWgtValue = new Cell(1, 1).Add(new Paragraph(dblFluidWeight > 0 ? dblFluidWeight.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                Cell cFludWgtValue = new Cell(1, 1).Add(new Paragraph(dblFluidWeight > 0 ? dblFluidWeight.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                 Cell celFludWgtUom = new Cell(1, 1).Add(new Paragraph(" " + charDens));
                 Cell cBuoyancy = new Cell(1, 1).Add(new Paragraph("Buoyancy Factor")).SetTextAlignment(TextAlignment.LEFT).SetBold();
                 if (dblBuoyancy > 0)
                 {
                     dblBuoyancy = dblBuoyancy * objUOM.UOM.DensityMultiplier;
                 }
-                Cell cBuoyValue = new Cell(1, 1).Add(new Paragraph(dblBuoyancy > 0 ? dblBuoyancy.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                Cell cBuoyValue = new Cell(1, 1).Add(new Paragraph(dblBuoyancy > 0 ? dblBuoyancy.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                 Cell celBuoyUom = new Cell(1, 1).Add(new Paragraph(" " + charDens));
                 Cell cPlastic = new Cell(1, 1).Add(new Paragraph("Plastic Viscosity")).SetTextAlignment(TextAlignment.LEFT).SetBold();
                 if (dblPlasticViscocity > 0)
                 {
                     dblPlasticViscocity = dblPlasticViscocity * objUOM.UOM.PlasticViscosityMultiplier;
                 }
-                Cell cPlasticValue = new Cell(1, 1).Add(new Paragraph(dblPlasticViscocity > 0 ? dblPlasticViscocity.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                Cell cPlasticValue = new Cell(1, 1).Add(new Paragraph(dblPlasticViscocity > 0 ? dblPlasticViscocity.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                 Cell celPlasticUom = new Cell(1, 1).Add(new Paragraph(" " + charCenti));
                 Cell cYieldPoints = new Cell(1, 1).Add(new Paragraph("Yield Point")).SetTextAlignment(TextAlignment.LEFT).SetBold();
                 if (dblYieldPoints > 0)
                 {
                     dblYieldPoints = dblYieldPoints * objUOM.UOM.YieldPointMultiplier;
                 }
-                Cell cYldPtValue = new Cell(1, 1).Add(new Paragraph(dblYieldPoints > 0 ? dblYieldPoints.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                Cell cYldPtValue = new Cell(1, 1).Add(new Paragraph(dblYieldPoints > 0 ? dblYieldPoints.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                 Cell celYldPtUom = new Cell(1, 1).Add(new Paragraph(" " + charYld));
                 Cell cCutAvgSize = new Cell(1, 1).Add(new Paragraph("Cutting Average Size")).SetTextAlignment(TextAlignment.LEFT).SetBold();
                 if (dblAvgCuttingSize > 0)
                 {
                     dblAvgCuttingSize = dblAvgCuttingSize * objUOM.UOM.SizeMultiplier;
                 }
-                Cell cCutAvgSizeValue = new Cell(1, 1).Add(new Paragraph(dblAvgCuttingSize > 0 ? dblAvgCuttingSize.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
+                Cell cCutAvgSizeValue = new Cell(1, 1).Add(new Paragraph(dblAvgCuttingSize > 0 ? dblAvgCuttingSize.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                 Cell celCutAvgSizeUom = new Cell(1, 1).Add(new Paragraph(" " + charIn));
                 Cell cCutType = new Cell(1, 1).Add(new Paragraph("Cutting Type")).SetTextAlignment(TextAlignment.LEFT).SetBold();
-                Cell cCutTypValue = new Cell(1, 2).Add(new Paragraph(strFluidType)).SetTextAlignment(TextAlignment.LEFT);
+                Cell cCutTypValue = new Cell(1, 2).Add(new Paragraph(strCuttingType !=null? strCuttingType.ToString() : "")).SetTextAlignment(TextAlignment.LEFT);
 
                 //Add data to table
                 _tableFluidInfo.AddCell(cSolid);
@@ -265,7 +265,7 @@ namespace HydraulicCalAPI.ViewModel
                 _tableFluidInfo.AddCell(cBuoyValue);
                 _tableFluidInfo.AddCell(celBuoyUom);
                 _tableFluidInfo.AddCell(cPlastic);
-                _tableFluidInfo.AddCell(cPlasticValue);
+                _tableFluidInfo.AddCell(cPlasticValue); 
                 _tableFluidInfo.AddCell(celPlasticUom);
                 _tableFluidInfo.AddCell(cYieldPoints);
                 _tableFluidInfo.AddCell(cYldPtValue);
