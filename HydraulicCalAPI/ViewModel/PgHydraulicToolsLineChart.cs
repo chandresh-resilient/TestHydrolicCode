@@ -23,6 +23,7 @@ namespace HydraulicCalAPI.ViewModel
         {
             Dictionary<string, Array> dicBhaChart = new Dictionary<string, Array>();
             List<Image> lstBHAToolsLineChart = new List<Image>();
+            string _lineColor = "Blue";
             try
             {
                 for (int i = 0; i < objChartService.HydraulicOutputBHAList.Count; i++)
@@ -31,6 +32,22 @@ namespace HydraulicCalAPI.ViewModel
                     Dictionary<string, List<WFT.UI.Common.Charts.XYValueModelForLineData<double>>> bHAchart = objChartService.HydraulicOutputBHAList[i].BHAchart;
                     foreach (var bHA in bHAchart.Keys)
                     {
+                        switch (bHA.ToUpper())
+                        {
+                            case "HYDRAPROREGIONTWOLINESERIES":
+                                {
+                                    _lineColor = "Red";
+                                    break;
+                                }
+                            case "HYDRAPROREGIONTHREELINESERIES":
+                                {
+                                    _lineColor = "Yellow";
+                                    break;
+                                }
+                            default:
+                                _lineColor = "Blue";
+                                break;
+                        }
                         List<DataSeries> dataSeries = new List<DataSeries>();
                         foreach (var item in bHAchart[bHA].ToArray())
                         {
@@ -38,9 +55,8 @@ namespace HydraulicCalAPI.ViewModel
                             {
                                 X = (float)Math.Round(item.PrimaryAxisValue, 3),
                                 Y = (float)Math.Round(item.SecondaryAxisValue, 3),
-                                LineClr = "Blue"
+                                LineClr = _lineColor
                             });
-
                         }
                         list.Add(dataSeries);
                     }
@@ -108,18 +124,6 @@ namespace HydraulicCalAPI.ViewModel
                 string gXValue = objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN" ? objUOM.UOM.FlowRateName.ToString() : "gal/min";
                 string gYValue = objUOM.UOM.PressureName.ToUpper() != "PSI" ? objUOM.UOM.PressureName.ToString() : "psi";
 
-                // Sample data (replace with your actual data)
-                /*
-                 * List<float> flowrate = new List<float>();
-                List<float> pressure = new List<float>();
-
-                for (int i = 0; i < hyprobhadataPoints.Count; i++)
-                {
-                    flowrate.Add(hyprobhadataPoints[i].X);
-                    pressure.Add(hyprobhadataPoints[i].Y);
-                }
-                */
-
                 using (var surfcae = SKSurface.Create(new SKImageInfo(250, 200)))
                 {
                     var canvas = surfcae.Canvas;
@@ -180,9 +184,11 @@ namespace HydraulicCalAPI.ViewModel
 
                     foreach (var hyprobhadataPoints in hyprobhadataPointss)
                     {
-                        using (var paint = new SKPaint { Color = SKColors.Blue, StrokeWidth = 1, IsAntialias = true })
+                        using (var paint = new SKPaint {StrokeWidth = 1, IsAntialias = true })
                         {
-
+                            string colourName = hyprobhadataPoints[0].LineClr;
+                            string hexString = ViewModel.ColorConverter.ColorNameToHexString(colourName);
+                            paint.Color = SKColor.Parse(hexString);
                             for (int i = 0; i < hyprobhadataPoints.Count - 1; i++)
                             {
                                 float x1 = margin + hyprobhadataPoints[i].X * scaleX;
