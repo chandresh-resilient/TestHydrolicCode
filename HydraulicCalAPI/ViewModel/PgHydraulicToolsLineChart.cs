@@ -18,7 +18,7 @@ namespace HydraulicCalAPI.ViewModel
     }
     public class PgHydraulicToolsLineChart
     {
-        
+
         public List<Image> GetHydraulicToolsLineChart(ChartAndGraphService objChartService, PdfReportService objInputData)
         {
             Dictionary<string, Array> dicBhaChart = new Dictionary<string, Array>();
@@ -27,24 +27,25 @@ namespace HydraulicCalAPI.ViewModel
             {
                 for (int i = 0; i < objChartService.HydraulicOutputBHAList.Count; i++)
                 {
-                    dicBhaChart.Add("HydraproLineSeries" + i, objChartService.HydraulicOutputBHAList[i].BHAchart["HydraproLineSeries"].ToArray());
-                }
-                for (int i = 0; i < dicBhaChart.Count; i++)
-                {
-                    List<DataSeries> hyprodatapoints = new List<DataSeries>();
-                    string dictKey = "HydraproLineSeries" + i.ToString();
-                    foreach (WFT.UI.Common.Charts.XYValueModelForLineData<double> hyproitem in dicBhaChart[dictKey])
+                    List<List<DataSeries>> list = new List<List<DataSeries>>();
+                    Dictionary<string, List<WFT.UI.Common.Charts.XYValueModelForLineData<double>>> bHAchart = objChartService.HydraulicOutputBHAList[i].BHAchart;
+                    foreach (var bHA in bHAchart.Keys)
                     {
-                        hyprodatapoints.Add(new DataSeries
+                        List<DataSeries> dataSeries = new List<DataSeries>();
+                        foreach (var item in bHAchart[bHA].ToArray())
                         {
-                            X = (float)Math.Round(hyproitem.PrimaryAxisValue,3),
-                            Y = (float)Math.Round(hyproitem.SecondaryAxisValue,3),
-                            LineClr = "Blue"
-                        });
+                            dataSeries.Add(new DataSeries
+                            {
+                                X = (float)Math.Round(item.PrimaryAxisValue, 3),
+                                Y = (float)Math.Round(item.SecondaryAxisValue, 3),
+                                LineClr = "Blue"
+                            });
+
+                        }
+                        list.Add(dataSeries);
                     }
-                    byte[] hydraprograph = DrawHydraulicToolsGraph(hyprodatapoints, objChartService.HydraulicOutputBHAList[i], objInputData);
+                    byte[] hydraprograph = DrawHydraulicToolsGraph(list, objChartService.HydraulicOutputBHAList[i], objInputData);
                     lstBHAToolsLineChart.Add(new Image(ImageDataFactory.Create(hydraprograph)));
-                    hyprodatapoints.Clear();
                 }
                 return lstBHAToolsLineChart;
             }
@@ -53,17 +54,63 @@ namespace HydraulicCalAPI.ViewModel
                 throw ex;
             }
         }
+        private (float MaxX, float MaxY) FindMaxCoordinates(List<List<DataSeries>> hyprobhadataPoints)
+        {
+            float maxX = float.MinValue;
+            float maxY = float.MinValue;
 
-        private byte[] DrawHydraulicToolsGraph(List<DataSeries> hyprobhadataPoints, ViewModel.HydraulicOutputBHAViewModel service, PdfReportService objUOM)
+            // Iterate through each sublist
+            foreach (var dataList in hyprobhadataPoints)
+            {
+                // Iterate through each DataSeries in the sublist
+                foreach (var data in dataList)
+                {
+                    // Update maxX if current X is larger
+                    if (data.X > maxX)
+                        maxX = data.X;
+
+                    // Update maxY if current Y is larger
+                    if (data.Y > maxY)
+                        maxY = data.Y;
+                }
+            }
+
+            return (maxX, maxY);
+        }
+        private (float MinX, float MinY) FindMinCoordinates(List<List<DataSeries>> hyprobhadataPoints)
+        {
+            float minX = float.MaxValue;
+            float minY = float.MaxValue;
+
+            // Iterate through each sublist
+            foreach (var dataList in hyprobhadataPoints)
+            {
+                // Iterate through each DataSeries in the sublist
+                foreach (var data in dataList)
+                {
+                    // Update minX if current X is smaller
+                    if (data.X < minX)
+                        minX = data.X;
+
+                    // Update minY if current Y is smaller
+                    if (data.Y < minY)
+                        minY = data.Y;
+                }
+            }
+
+            return (minX, minY);
+        }
+        private byte[] DrawHydraulicToolsGraph(List<List<DataSeries>> hyprobhadataPointss, ViewModel.HydraulicOutputBHAViewModel service, PdfReportService objUOM)
         {
             try
             {
                 // Add labels and values to PDF document
                 string gXValue = objUOM.UOM.FlowRateName.ToUpper() != "GAL/MIN" ? objUOM.UOM.FlowRateName.ToString() : "gal/min";
                 string gYValue = objUOM.UOM.PressureName.ToUpper() != "PSI" ? objUOM.UOM.PressureName.ToString() : "psi";
-                
+
                 // Sample data (replace with your actual data)
-                List<float> flowrate = new List<float>();
+                /*
+                 * List<float> flowrate = new List<float>();
                 List<float> pressure = new List<float>();
 
                 for (int i = 0; i < hyprobhadataPoints.Count; i++)
@@ -71,6 +118,7 @@ namespace HydraulicCalAPI.ViewModel
                     flowrate.Add(hyprobhadataPoints[i].X);
                     pressure.Add(hyprobhadataPoints[i].Y);
                 }
+                */
 
                 using (var surfcae = SKSurface.Create(new SKImageInfo(250, 200)))
                 {
@@ -81,22 +129,23 @@ namespace HydraulicCalAPI.ViewModel
                     float margin = 30;
 
                     // Define the scaling factors
-                    float minX = hyprobhadataPoints.Min(p => p.X);
-                    float maxX = hyprobhadataPoints.Max(p => p.X);
-                    float minY = hyprobhadataPoints.Min(p => p.Y);
-                    float maxY = hyprobhadataPoints.Max(p => p.Y);
-
+                    var max = FindMaxCoordinates(hyprobhadataPointss);
+                    var min = FindMinCoordinates(hyprobhadataPointss);
+                    float minX = min.MinX;
+                    float maxX = max.MaxX;
+                    float minY = min.MinY;
+                    float maxY = max.MaxY;
                     // Calculate the scale for X and Y axis
                     float scaleX = (width - 100) / (maxX - minX);
                     float scaleY = (height - 100) / (maxY - minY);
 
-                    float opPointX = (float)Math.Round(service.InputFlowRate,3);
-                    float opPointY = (float)Math.Round(service.BHAPressureDrop,3);
+                    float opPointX = (float)Math.Round(service.InputFlowRate, 3);
+                    float opPointY = (float)Math.Round(service.BHAPressureDrop, 3);
 
                     float anx1 = margin + opPointX * scaleX;
                     float any1 = height - margin - opPointY * scaleY;
 
-                    using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1, TextSize=10, TextAlign=SKTextAlign.Right })
+                    using (var paint = new SKPaint { Color = SKColors.Black, StrokeWidth = 1, TextSize = 10, TextAlign = SKTextAlign.Right })
                     {
                         // Draw X and Y axis
                         canvas.DrawLine(margin, margin, margin, height - margin, paint);
@@ -111,7 +160,7 @@ namespace HydraulicCalAPI.ViewModel
                             float xpoint = 30 + i * scaleX;
                             float cordsY = height - 30;
                             canvas.DrawLine(xpoint, cordsY + 5, xpoint, cordsY - 5, paint);
-                            canvas.DrawText(i.ToString(), xpoint+3, cordsY + 13, paint);
+                            canvas.DrawText(i.ToString(), xpoint + 3, cordsY + 13, paint);
                         }
                         // Draw Scale Mark and Scale to Y-axis
                         var loopY = Math.Ceiling(maxY);
@@ -122,22 +171,26 @@ namespace HydraulicCalAPI.ViewModel
                             float ypoint = height - 30 - i * scaleY;
                             if (i > 0)
                             {
-                                canvas.DrawLine(cordsX, ypoint, width-margin, ypoint, new SKPaint { Color = SKColors.LightGray });
+                                canvas.DrawLine(cordsX, ypoint, width - margin, ypoint, new SKPaint { Color = SKColors.LightGray });
                                 canvas.DrawText(i.ToString(), cordsX - 2, ypoint + 5, paint);
                             }
                         }
                     }
 
-                    using (var paint = new SKPaint { Color = SKColors.Blue, StrokeWidth = 1, IsAntialias = true })
+
+                    foreach (var hyprobhadataPoints in hyprobhadataPointss)
                     {
-                        // Draw data points and lines
-                        for (int i = 0; i < hyprobhadataPoints.Count - 1; i++)
+                        using (var paint = new SKPaint { Color = SKColors.Blue, StrokeWidth = 1, IsAntialias = true })
                         {
-                            float x1 = margin + hyprobhadataPoints[i].X * scaleX;
-                            float y1 = height - margin - hyprobhadataPoints[i].Y * scaleY;
-                            float x2 = margin + hyprobhadataPoints[i + 1].X * scaleX;
-                            float y2 = height - margin - hyprobhadataPoints[i + 1].Y * scaleY;
-                            canvas.DrawLine(x1, y1, x2, y2, paint);
+
+                            for (int i = 0; i < hyprobhadataPoints.Count - 1; i++)
+                            {
+                                float x1 = margin + hyprobhadataPoints[i].X * scaleX;
+                                float y1 = height - margin - hyprobhadataPoints[i].Y * scaleY;
+                                float x2 = margin + hyprobhadataPoints[i + 1].X * scaleX;
+                                float y2 = height - margin - hyprobhadataPoints[i + 1].Y * scaleY;
+                                canvas.DrawLine(x1, y1, x2, y2, paint);
+                            }
                         }
                     }
 
