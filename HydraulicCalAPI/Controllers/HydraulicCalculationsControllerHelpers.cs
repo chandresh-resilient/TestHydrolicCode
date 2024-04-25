@@ -198,10 +198,7 @@ internal static class HydraulicCalculationsControllerHelpers
             lstNozzles.Add(_nozzles);
             return lstNozzles;
         }
-        else
-        {
-            return null;
-        }
+        return lstNozzles;
 
     }
 }
