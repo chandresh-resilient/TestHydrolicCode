@@ -159,7 +159,7 @@ internal static class HydraulicCalculationsControllerHelpers
                             LengthInFeet = item.LengthInFeet,
                             NozzlesInfomation = GetNozzleList(item.NozzlesInfomation),
                             InsideDiameterInInch = item.InsideDiameterInInch,
-                            ToolAccuset = item.ToolAccuset
+                            ToolAccuset = new Accuset(item.ToolAccuset.AccusetSystemName,item.ToolAccuset.StandardNozzleSize, objHcs.fluidInput.DensityInPoundPerGallon)
                         });
                         break;
                     }
@@ -189,15 +189,18 @@ internal static class HydraulicCalculationsControllerHelpers
         List<Nozzles> lstNozzles = new List<Nozzles>();
         if (objNozzle != null)
         {
-            Nozzles _nozzles = (new Nozzles
+            foreach (HydraulicCalculationService.BHATool.Nozzles noxzzel in objNozzle)
             {
-                ncount = objNozzle[0].NozzleQuantity,
-                nozType = (Nozzles.NozzleTypes)objNozzle[0].NozzleType,
-                dia = objNozzle[0].NozzleDiameterInInch
-            });
-            lstNozzles.Add(_nozzles);
-            return lstNozzles;
+                Nozzles _nozzles = new Nozzles
+                {
+                    ncount = objNozzle[0].NozzleQuantity,
+                    nozType = (Nozzles.NozzleTypes)objNozzle[0].NozzleType,
+                    dia = objNozzle[0].NozzleDiameterInInch
+                };
+                lstNozzles.Add(_nozzles);
+            }
         }
+        
         return lstNozzles;
 
     }
