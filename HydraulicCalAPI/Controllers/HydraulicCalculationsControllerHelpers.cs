@@ -159,7 +159,8 @@ internal static class HydraulicCalculationsControllerHelpers
                             LengthInFeet = item.LengthInFeet,
                             NozzlesInfomation = GetNozzleList(item.NozzlesInfomation),
                             InsideDiameterInInch = item.InsideDiameterInInch,
-                            ToolAccuset = (new Accuset { 
+                            ToolAccuset = (new Accuset
+                            {
                                 AccusetSystemName = !string.IsNullOrEmpty(item.ToolAccuset.AccusetSystemName) ? item.ToolAccuset.AccusetSystemName.ToString() : "",
                                 StandardNozzleSize = item.ToolAccuset.StandardNozzleSize > 0 ? item.ToolAccuset.StandardNozzleSize : 0,
                                 Fluid = GetFluidName(objHcs.fluidInput.DensityInPoundPerGallon > 0 ? objHcs.fluidInput.DensityInPoundPerGallon : 0)
@@ -207,15 +208,13 @@ internal static class HydraulicCalculationsControllerHelpers
             {
                 Nozzles _nozzles = new Nozzles
                 {
-                    ncount = objNozzle[0].NozzleQuantity,
-                    nozType = (Nozzles.NozzleTypes)objNozzle[0].NozzleType,
-                    dia = objNozzle[0].NozzleDiameterInInch
+                    ncount = noxzzel.NozzleQuantity,
+                    nozType = (Nozzles.NozzleTypes)noxzzel.NozzleType,
+                    dia = noxzzel.NozzleDiameterInInch
                 };
                 lstNozzles.Add(_nozzles);
             }
         }
-        
         return lstNozzles;
-
     }
 }
