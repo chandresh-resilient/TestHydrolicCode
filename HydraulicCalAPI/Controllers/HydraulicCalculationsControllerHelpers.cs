@@ -159,7 +159,11 @@ internal static class HydraulicCalculationsControllerHelpers
                             LengthInFeet = item.LengthInFeet,
                             NozzlesInfomation = GetNozzleList(item.NozzlesInfomation),
                             InsideDiameterInInch = item.InsideDiameterInInch,
-                            ToolAccuset = new Accuset(item.ToolAccuset.AccusetSystemName,item.ToolAccuset.StandardNozzleSize, objHcs.fluidInput.DensityInPoundPerGallon)
+                            ToolAccuset = (new Accuset { 
+                                AccusetSystemName = !string.IsNullOrEmpty(item.ToolAccuset.AccusetSystemName) ? item.ToolAccuset.AccusetSystemName.ToString() : "",
+                                StandardNozzleSize = item.ToolAccuset.StandardNozzleSize > 0 ? item.ToolAccuset.StandardNozzleSize : 0,
+                                Fluid = GetFluidName(objHcs.fluidInput.DensityInPoundPerGallon > 0 ? objHcs.fluidInput.DensityInPoundPerGallon : 0)
+                            })
                         });
                         break;
                     }
@@ -183,11 +187,21 @@ internal static class HydraulicCalculationsControllerHelpers
         return bhatools;
     }
 
+    private static string GetFluidName(double mudDensityInPoundsPerGallons)
+    {
+        if (mudDensityInPoundsPerGallons >= 6.9 && mudDensityInPoundsPerGallons <= 8.6)
+            return "Water";
+        else if (mudDensityInPoundsPerGallons >= 8.7 && mudDensityInPoundsPerGallons <= 18)
+            return "Mud";
+        else
+            return "";
+    }
+
     private static List<Nozzles> GetNozzleList(List<HydraulicCalculationService.BHATool.Nozzles> nozzlesInfomation)
     {
         var objNozzle = nozzlesInfomation;
         List<Nozzles> lstNozzles = new List<Nozzles>();
-        if (objNozzle != null)
+        if (objNozzle != null && objNozzle.Count > 0)
         {
             foreach (HydraulicCalculationService.BHATool.Nozzles noxzzel in objNozzle)
             {

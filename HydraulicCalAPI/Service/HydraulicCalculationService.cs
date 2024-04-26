@@ -103,6 +103,12 @@ namespace HydraulicCalAPI.Service
             /// <summary>
             /// Input Points for BHAToolType10
             /// </summary>
+            public class Accuset
+            {
+                public string AccusetSystemName { get; set; }
+                public double StandardNozzleSize { get; set; }
+                public double mudDensityInPoundsPerGallons { get; set; }
+            }
             public Accuset ToolAccuset { get; set; }
 
             /// <summary>
