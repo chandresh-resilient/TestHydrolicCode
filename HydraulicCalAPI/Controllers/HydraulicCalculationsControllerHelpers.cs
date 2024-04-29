@@ -159,12 +159,7 @@ internal static class HydraulicCalculationsControllerHelpers
                             LengthInFeet = item.LengthInFeet,
                             NozzlesInfomation = GetNozzleList(item.NozzlesInfomation),
                             InsideDiameterInInch = item.InsideDiameterInInch,
-                            ToolAccuset = (new Accuset
-                            {
-                                AccusetSystemName = !string.IsNullOrEmpty(item.ToolAccuset.AccusetSystemName) ? item.ToolAccuset.AccusetSystemName.ToString() : "",
-                                StandardNozzleSize = item.ToolAccuset.StandardNozzleSize > 0 ? item.ToolAccuset.StandardNozzleSize : 0,
-                                Fluid = GetFluidName(objHcs.fluidInput.DensityInPoundPerGallon > 0 ? objHcs.fluidInput.DensityInPoundPerGallon : 0)
-                            })
+                            ToolAccuset = getAccuSet(objHcs, item)
                         });
                         break;
                     }
@@ -186,6 +181,15 @@ internal static class HydraulicCalculationsControllerHelpers
         }
 
         return bhatools;
+    }
+
+    private static Accuset getAccuSet(HydraulicCalculationService objHcs, HydraulicCalculationService.BHATool item)
+    {
+        var AccusetSystemName = !string.IsNullOrEmpty(item.ToolAccuset.AccusetSystemName) ? item.ToolAccuset.AccusetSystemName.ToString() : "";
+        var StandardNozzleSize = item.ToolAccuset.StandardNozzleSize > 0 ? item.ToolAccuset.StandardNozzleSize : 0;
+        return new Accuset(
+            AccusetSystemName, StandardNozzleSize, objHcs.fluidInput.DensityInPoundPerGallon
+            );
     }
 
     private static string GetFluidName(double mudDensityInPoundsPerGallons)
