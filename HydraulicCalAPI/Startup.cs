@@ -156,7 +156,7 @@ public class DoubleConverter : JsonConverter<Double>
 
     public override void Write(Utf8JsonWriter writer, double value, JsonSerializerOptions options)
     {
-        if (double.IsPositiveInfinity(value) || double.IsNegativeInfinity(value) || double.IsNaN(value))
+        if (double.IsPositiveInfinity(value) || double.IsNegativeInfinity(value) || double.IsNaN(value)  || value == double.MinValue || value == double.MaxValue)
         {
             writer.WriteNumberValue(0);
         }
