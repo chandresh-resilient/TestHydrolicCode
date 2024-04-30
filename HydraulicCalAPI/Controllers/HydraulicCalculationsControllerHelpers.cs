@@ -185,11 +185,15 @@ internal static class HydraulicCalculationsControllerHelpers
 
     private static Accuset getAccuSet(HydraulicCalculationService objHcs, HydraulicCalculationService.BHATool item)
     {
-        var AccusetSystemName = !string.IsNullOrEmpty(item.ToolAccuset.AccusetSystemName) ? item.ToolAccuset.AccusetSystemName.ToString() : "";
-        var StandardNozzleSize = item.ToolAccuset.StandardNozzleSize > 0 ? item.ToolAccuset.StandardNozzleSize : 0;
-        return new Accuset(
-            AccusetSystemName, StandardNozzleSize, objHcs.fluidInput.DensityInPoundPerGallon
-            );
+        if (item.ToolAccuset != null)
+        {
+            var AccusetSystemName = !string.IsNullOrEmpty(item.ToolAccuset.AccusetSystemName) ? item.ToolAccuset.AccusetSystemName.ToString() : "";
+            var StandardNozzleSize = item.ToolAccuset.StandardNozzleSize > 0 ? item.ToolAccuset.StandardNozzleSize : 0;
+            return new Accuset(
+                AccusetSystemName, StandardNozzleSize, objHcs.fluidInput.DensityInPoundPerGallon
+                );
+        }
+        else { return null; }
     }
 
     private static string GetFluidName(double mudDensityInPoundsPerGallons)
