@@ -666,14 +666,18 @@ namespace HydraulicCalAPI.Service
             Table pHeader = new Table(3, false)
                 .SetTextAlignment(TextAlignment.LEFT).SetBackgroundColor(lgtGrey)
                 .UseAllAvailableWidth();
-            foreach (var item in objPieTableData.HydraulicOutputBHAList)
+            toolflowrate = objUOM.HydraCalcService.flowRateInGPMInput;
+            toolflowrate = Math.Round((toolflowrate * objUOM.UOM.FlowRateMultiplier), 3);
+            tooldepth = Math.Round((objUOM.HydraCalcService.toolDepthInFeet * objUOM.UOM.DepthMultiplier),3);
+            foreach (var item in objPieTableData.HydraulicOutputAnnulusList)
             {
-                if (item.InputFlowRate >= 0)
-                    toolflowrate += item.InputFlowRate;
+                toolPressureDrop += Math.Round(item.AnnulusPressureDrop,3);
             }
-            toolflowrate = toolflowrate * objUOM.UOM.FlowRateMultiplier;
-            tooldepth = objPieTableData.ToolDepth * objUOM.UOM.DepthMultiplier;
-            toolPressureDrop = objPieTableData.TotalPressureDrop * objUOM.UOM.PressureMultiplier;
+            foreach (var itemBha in objPieTableData.HydraulicOutputBHAList)
+            {
+                toolPressureDrop += Math.Round(itemBha.BHAPressureDrop,3);
+            }
+            toolPressureDrop = Math.Round((toolPressureDrop * objUOM.UOM.PressureMultiplier),3);
 
             pHeader.AddCell(new Paragraph("Flow Rate : " + Math.Round(toolflowrate,3) + " " + charFlowRt));
             pHeader.AddCell(new Paragraph("Tool Depth : " + Math.Round(tooldepth, 3) + " " + charFt));

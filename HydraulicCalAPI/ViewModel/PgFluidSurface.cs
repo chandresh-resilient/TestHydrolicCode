@@ -186,35 +186,35 @@ namespace HydraulicCalAPI.ViewModel
                 Cell cFluidWgt = new Cell(1, 1).Add(new Paragraph("Drilling Fluid Weight")).SetTextAlignment(TextAlignment.LEFT).SetBold();
                 if (dblFluidWeight > 0)
                 {
-                    dblFluidWeight = dblFluidWeight * objUOM.UOM.DensityMultiplier;
+                    dblFluidWeight = Math.Round((dblFluidWeight * objUOM.UOM.DensityMultiplier),3);
                 }
                 Cell cFludWgtValue = new Cell(1, 1).Add(new Paragraph(dblFluidWeight > 0 ? dblFluidWeight.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                 Cell celFludWgtUom = new Cell(1, 1).Add(new Paragraph(" " + charDens));
                 Cell cBuoyancy = new Cell(1, 1).Add(new Paragraph("Buoyancy Factor")).SetTextAlignment(TextAlignment.LEFT).SetBold();
                 if (dblBuoyancy > 0)
                 {
-                    dblBuoyancy = dblBuoyancy * objUOM.UOM.DensityMultiplier;
+                    dblBuoyancy = Math.Round((dblBuoyancy * objUOM.UOM.DensityMultiplier),3);
                 }
                 Cell cBuoyValue = new Cell(1, 1).Add(new Paragraph(dblBuoyancy > 0 ? dblBuoyancy.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                 Cell celBuoyUom = new Cell(1, 1).Add(new Paragraph(" " + charDens));
                 Cell cPlastic = new Cell(1, 1).Add(new Paragraph("Plastic Viscosity")).SetTextAlignment(TextAlignment.LEFT).SetBold();
                 if (dblPlasticViscocity > 0)
                 {
-                    dblPlasticViscocity = dblPlasticViscocity * objUOM.UOM.PlasticViscosityMultiplier;
+                    dblPlasticViscocity = Math.Round((dblPlasticViscocity * objUOM.UOM.PlasticViscosityMultiplier),3);
                 }
                 Cell cPlasticValue = new Cell(1, 1).Add(new Paragraph(dblPlasticViscocity > 0 ? dblPlasticViscocity.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                 Cell celPlasticUom = new Cell(1, 1).Add(new Paragraph(" " + charCenti));
                 Cell cYieldPoints = new Cell(1, 1).Add(new Paragraph("Yield Point")).SetTextAlignment(TextAlignment.LEFT).SetBold();
                 if (dblYieldPoints > 0)
                 {
-                    dblYieldPoints = dblYieldPoints * objUOM.UOM.YieldPointMultiplier;
+                    dblYieldPoints = Math.Round((dblYieldPoints * objUOM.UOM.YieldPointMultiplier),3);
                 }
                 Cell cYldPtValue = new Cell(1, 1).Add(new Paragraph(dblYieldPoints > 0 ? dblYieldPoints.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                 Cell celYldPtUom = new Cell(1, 1).Add(new Paragraph(" " + charYld));
                 Cell cCutAvgSize = new Cell(1, 1).Add(new Paragraph("Cutting Average Size")).SetTextAlignment(TextAlignment.LEFT).SetBold();
                 if (dblAvgCuttingSize > 0)
                 {
-                    dblAvgCuttingSize = dblAvgCuttingSize * objUOM.UOM.SizeMultiplier;
+                    dblAvgCuttingSize = Math.Round((dblAvgCuttingSize * objUOM.UOM.SizeMultiplier),3);
                 }
                 Cell cCutAvgSizeValue = new Cell(1, 1).Add(new Paragraph(dblAvgCuttingSize > 0 ? dblAvgCuttingSize.ToString("F3") : "")).SetTextAlignment(TextAlignment.LEFT);
                 Cell celCutAvgSizeUom = new Cell(1, 1).Add(new Paragraph(" " + charIn));
